@@ -1,0 +1,438 @@
+#!/usr/bin/env sh
+
+## Helpers #######################################
+
+Logger() {
+    #cat >> /gi_log
+    printf "$Log\n"
+    unset Log
+}
+
+Clean_Packages() {
+    Log="Removing packages that are no longer needed..."
+    Logger
+
+    emerge -uDN @world && \
+        emerge -av --depclean && \
+        emerge --update --changed-use --deep @world
+}
+
+Clean_Source() {
+    Log="Removing temporary files..."
+    Logger
+
+    rm -rf /usr/portage/packages/* \
+       /usr/portage/distfiles/* \
+       /var/tmp/portage/* \
+       /stage3*.tar.bz2
+
+    find /usr/src/linux/ ! -name 'vmlinux' -delete;
+}
+
+Detect_Cores() {
+    Log="Detecting total number of cores to compile with..."
+    Logger
+
+    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)
+}
+
+Setup_Ssh() {
+    Log=""
+    Logger
+
+    rc-update add sshd default
+}
+
+
+## Boot ##########################################
+
+Boot_Config() {
+    Log=""
+    Logger
+
+    nano /etc/rc.conf
+    nano /etc/conf.d/keymaps
+    nano /etc/conf.d/hwclock
+}
+
+Boot_Grub() {
+    Log=""
+    Logger
+
+    Grub_Target="/dev/sda"
+
+    emerge --ask --verbose sys-boot/grub:2 && \
+        grub-install /dev/sda && \
+        grub-mkconfig -o /boot/grub/grub.cfg
+}
+
+
+## Disks #########################################
+
+Disk_Fstab() {
+    Log=""
+    Logger
+
+    echo "/swapfile none swap sw 0 0" >> /etc/fstab
+
+    nano /etc/fstab
+}
+
+Disk_Setup() {
+    Log="Please partition and mount your disk(s) before proceeding!"
+    Logger
+
+    read -ep "Proceed with installation? [Y/N]: " Proceed
+    if echo $Proceed | grep -iq "^y" ; then
+        continue
+    else
+        exit
+    fi
+}
+
+
+## Environment ###################################
+
+Env_Chroot() {
+    Log="Chrooting into the environment..."
+    Logger
+
+    cd /mnt/gentoo && \
+        chroot /mnt/gentoo /bin/bash
+}
+
+Env_Reload() {
+    Log="Reloading the environment..."
+    Logger
+
+    source /etc/profile
+    export PS1="(chroot) $PS1"
+}
+
+Env_Update() {
+    Log="Updating the environment..."
+    Logger
+
+    env-update && Env_Reload
+}
+
+
+## Host ##########################################
+
+HostsFile() {
+    Log=""
+    Logger
+
+    nano /etc/hosts
+}
+
+HostName() {
+    Log="Setting "
+    Logger
+
+    read -ep "Hostname: " Target_Hostname
+    echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
+        nano /etc/conf.d/hostname
+}
+
+
+## Kernel ########################################
+
+Kernel_Install() {
+    Log="Downloading, building, and installing kernel..."
+    Logger
+
+    emerge --ask \
+           sys-kernel/gentoo-sources \
+           sys-kernel/linux-firmware \
+           sys-apps/pciutils \
+           sys-kernel/genkernel &&
+        cd /usr/src/linux && \
+            make -j${CPU_CORES} defconfig && \
+            make -j${CPU_CORES} && \
+            make -j${CPU_CORES} modules_install && \
+            make -j${CPU_CORES} install && \
+            genkernel --install initramfs
+}
+
+
+## Locale ########################################
+
+Locales() {
+    Log="Setting desired locales..."
+    Logger
+
+    nano /etc/locale.gen && \
+        locale-gen && locale -a && \
+        eselect locale list && \
+        read -ep "Target locale: " Target_Locale && \
+        eselect locale set ${Target_Locale}
+}
+
+
+## Networking ####################################
+
+Network_Wired() {
+    Log="Configuring wired networking..."
+    Logger
+
+    emerge --ask net-misc/dhcpcd && \
+        emerge --ask --noreplace net-misc/netifrc && \
+        echo 'config_enp3s0="dhcp"' > /etc/conf.d/net && \
+        cd /etc/init.d && \
+        ln -s net.lo net.enp3s0 && \
+        rc-update add net.enp3s0 default
+}
+
+Network_Wireless() {
+    Log="Configuring wireless networking..."
+    Logger
+
+    emerge --ask net-wireless/wpa_supplicant
+}
+
+
+## Portage #######################################
+
+Portage_MakeConf() {
+    Log="Downloading portage 'make.conf'..."
+    Logger
+
+    echo '# /etc/portage/make.conf
+CHOST="x86_64-pc-linux-gnu"
+PORTDIR="/usr/portage"
+DISTDIR="${PORTDIR}/distfiles"
+PKGDIR="${PORTDIR}/packages"
+
+MAKEOPTS="-j${CPU_CORES}"
+EMERGE_DEFAULT_OPTS="--jobs=2"
+CFLAGS="-march=native -O3 -pipe"
+CXXFLAGS="${CFLAGS}"
+CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
+INPUT_DEVICES="synaptics libinput"
+VIDEO_CARDS="intel nouveau radeon amdgpu vmware"
+
+USE_Allow="bindist deblob minimal"
+USE_Block="-multilib -doc -systemd -pulseaudio -avahi"
+USE="${USE_Block} ${USE_Allow}"' \
+         > /mnt/gentoo/etc/portage/make.conf
+}
+
+Portage_Mirrors() {
+    Log="Setting up portage mirrors..."
+    Logger
+
+    mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf && \
+        mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
+        cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
+           /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
+        cp -vL /etc/resolv.conf /mnt/gentoo/etc/
+}
+
+Portage_Sync() {
+    Log="Syncing emerge and setting profile..."
+    Logger
+
+    emerge-webrsync && \
+        eselect profile list && \
+        read -ep "Which profile?: " Target_Profile && \
+        eselect profile set $Target_Profile && \
+        emerge --ask --update --deep --newuse @world
+}
+
+
+## Stage #########################################
+
+Stage_Download() {
+    Log="Downloading and extracting Stage3 release..."
+    Logger
+
+    S3_ARCH="amd64"
+    S3_DATE="20170706"
+    cd /mnt/gentoo
+    wget http://distfiles.gentoo.org/releases/${S3_ARCH}/autobuilds/${S3_DATE}/stage3-${S3_ARCH}-${S3_DATE}.tar.bz2 && \
+        tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+}
+
+Stage_Mounts() {
+    Log="Mounting hardware..."
+    Logger
+
+    mount -t proc /proc /mnt/gentoo/proc && \
+        mount --rbind /sys /mnt/gentoo/sys && \
+        mount --make-rslave /mnt/gentoo/sys && \
+        mount --rbind /dev /mnt/gentoo/dev && \
+        mount --make-rslave /mnt/gentoo/dev
+}
+
+Stage_Swap() {
+    Log="Setting up temporary swapfile..."
+    Logger
+
+    SwapFile="/mnt/gentoo/swapfile"
+
+    fallocate -l 2048M $SwapFile && \
+        mkswap $SwapFile && \
+        chmod 0600 $SwapFile && \
+        swapon $SwapFile
+}
+
+
+## Time ##########################################
+
+Time_Date() {
+    Log="Setting current time via 'date'..."
+    Logger
+
+    Ye=""
+    Mo=""
+    Da=""
+    Ho=""
+    Mi=""
+    Se=""
+
+    date ${YY}${MM}${DD}${HH}${SS}
+}
+
+Time_Ntpd() {
+    Log="Setting current time via 'ntpd'..."
+    Logger
+
+    ntpd -q -g
+}
+
+Time_Zone() {
+    Log="Setting timezone..."
+    Logger
+
+    ls /usr/share/zoneinfo && \
+        read -ep "Target region: " Target_Region && \
+        ls /usr/share/zoneinfo/${Target_Region} && \
+        read -ep "Target city: " Target_City && \
+        TimeZone=${Target_Region}"/"${Target_City} && \
+        echo "${TimeZone}" > /etc/timezone && \
+        emerge --config sys-libs/timezone-data
+}
+
+
+## User ##########################################
+
+User_Make() {
+    Log="Creating user account..."
+    Logger
+
+    read -ep "Setup a standard user? [Y/N]: " Proceed
+    if echo $Proceed | grep -iq "^y"; then
+        read -ep "Username: " Target_User && \
+            useradd -m -G wheel -s /bin/zsh $Target_User && \
+            passwd $Target_User
+    else
+        exit
+    fi
+}
+
+User_Root() {
+    Log="Setting root password..."
+    Logger
+
+    passwd
+}
+
+
+## Utilities #####################################
+
+Utils_Base() {
+    Log="Installing base utilities..."
+    Logger
+
+    emerge --ask sudo app-misc/tmux app-editors/vim
+}
+
+Utils_Desktop() {
+    Log="Installing desktop utilities..."
+    Logger
+
+    emerge --ask dev-libs/wayland && \
+        USE="X xwayland" emerge --ask dev-libs/weston && \
+        USE="swaybar swaybg swaygrab swaylock swaymsg" emerge --ask dev-libs/sway && \
+        emerge --ask x11-terms/st && \
+        emerge --ask app-misc/ranger && \
+        USE="gtk3 icu" emerge --ask www-client/chromium && \
+        emerge --ask media-sound/cmus && \
+        emerge --ask sys-firmware/alsa-firmware && \
+        emerge --ask media-sound/alsa-utils && \
+        USE="opengl vaapi vdpau wayland" emerge --ask media-video/mpv && \
+        emerge --ask net-misc/youtube-dl
+}
+
+Utils_Laptop() {
+    Log="Installing laptop utilities..."
+    Logger
+
+    USE="acpi bluetooth" emerge --ask app-laptop/laptop-mode-tools && \
+        rc-update add laptop_mode default
+}
+
+Utils_Server() {
+    Log="Installing server utilities..."
+    Logger
+}
+
+
+## Execution #####################################
+
+case $1 in
+    init|-i)
+        Disk_Setup
+        Time_Ntpd
+        Stage_Download
+        Stage_Mounts
+        Stage_Swap
+        Portage_MakeConf
+        Portage_Mirrors
+        Env_Chroot
+        ;;
+
+    base|-b)
+        Env_Reload
+        Detect_Cores
+        Portage_Sync
+        Time_Zone
+        Locales
+        Env_Update
+        Kernel_Install
+        Disk_Fstab
+        HostName
+        Network_Wired
+        HostsFile
+        User_Root
+        Boot_Config
+        Boot_Grub
+        Utils_Base
+        User_Make
+        ;;
+
+    desktop|-d)
+        Utils_Desktop
+        ;;
+
+    laptop|-l)
+        Utils_Laptop
+        ;;
+
+    server|-s)
+        Utils_Server
+        ;;
+
+    clean|-c)
+        Clean_Packages
+        Clean_Source
+        ;;
+
+    *)
+        Log="You entered an invalid option.\n"
+        Log=${Log}"Available options: init (-i), base (-b), "
+        Log=${Log}"desktop (-d), laptop(-l), server (-s), clean (-c)"
+        Logger
+        ;;
+esac
