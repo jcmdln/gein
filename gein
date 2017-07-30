@@ -248,9 +248,10 @@ Stage_Download() {
     Logger
 
     S3_ARCH="amd64"
-    S3_DATE="20170706"
+    S3_DATE="20170727"
+
     cd /mnt/gentoo
-    wget http://distfiles.gentoo.org/releases/${S3_ARCH}/autobuilds/${S3_DATE}/stage3-${S3_ARCH}-${S3_DATE}.tar.bz2 && \
+    wget http://distfiles.gentoo.org/releases/${S3_ARCH}/autobuilds/${S3_DATE}/stage3-${S3_ARCH}-nomultilib-${S3_DATE}.tar.bz2 && \
         tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
 }
 
