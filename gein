@@ -205,6 +205,8 @@ PORTDIR="/usr/portage"
 DISTDIR="${PORTDIR}/distfiles"
 PKGDIR="${PORTDIR}/packages"
 
+GENTOO_MIRRORS="https://mirrors.kernel.org/gentoo/"
+
 MAKEOPTS="-j${CPU_CORES}"
 EMERGE_DEFAULT_OPTS="--jobs=2"
 CFLAGS="-march=native -O3 -pipe"
@@ -391,7 +393,7 @@ case $1 in
         Stage_Mounts
         Stage_Swap
         Portage_MakeConf
-        Portage_Mirrors
+        #Portage_Mirrors
         Env_Chroot
         ;;
 
