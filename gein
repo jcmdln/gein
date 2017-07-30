@@ -188,8 +188,8 @@ Network_Wireless() {
     Log="Configuring wireless networking..."
     Logger
 
-    USE="ethernet openvpn wifi" emerge --ask net-misc/connman
-    emerge --ask net-wireless/wpa_supplicant
+    USE="dbus" emerge --ask net-wireless/wpa_supplicant
+    USE="ethernet openvpn wifi" emerge --ask net-misc/connman    
 }
 
 
