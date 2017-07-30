@@ -188,6 +188,7 @@ Network_Wireless() {
     Log="Configuring wireless networking..."
     Logger
 
+    USE="ethernet openvpn wifi" emerge --ask net-misc/connman
     emerge --ask net-wireless/wpa_supplicant
 }
 
@@ -369,8 +370,7 @@ Utils_Desktop() {
 Utils_Laptop() {
     Log="Installing laptop utilities..."
     Logger
-    
-    USE="bluetooth ethernet openvpn wifi" emerge --ask net-misc/connman
+
     USE="acpi bluetooth" emerge --ask app-laptop/laptop-mode-tools && \
         rc-update add laptop_mode default
 }
