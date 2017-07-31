@@ -110,7 +110,7 @@ HostsFile() {
 }
 
 HostName() {
-    Log="Setting " && Logger
+    Log="Setting hostname..." && Logger
 
     read -ep "Hostname: " Target_Hostname && \
         echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
