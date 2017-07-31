@@ -26,7 +26,8 @@ Clean_Source() {
        /var/tmp/portage/* \
        /stage3*.tar.bz2
 
-    find /usr/src/linux/ ! -name 'vmlinux' -delete;
+    cd /usr/src/linux && \
+        find . ! -name 'vmlinux' -exec 'rm -rf' {} \;
 }
 
 Detect_Cores() {
@@ -62,7 +63,7 @@ Boot_Grub() {
     Grub_Target="/dev/sda"
 
     emerge --ask --verbose sys-boot/grub:2 && \
-        grub-install /dev/sda && \
+        grub-install $Grub_Target && \
         grub-mkconfig -o /boot/grub/grub.cfg
 }
 
@@ -142,13 +143,13 @@ Kernel_Install() {
     Log="Downloading, building, and installing kernel..."
     Logger
 
-    emerge --ask \
-           sys-kernel/gentoo-sources \
+    emerge --ask sys-kernel/gentoo-sources \
            sys-kernel/linux-firmware \
            sys-apps/pciutils \
            sys-kernel/genkernel &&
         cd /usr/src/linux && \
             make -j${CPU_CORES} defconfig && \
+            make -j${CPU_CORES} menuconfig && \
             make -j${CPU_CORES} && \
             make -j${CPU_CORES} modules_install && \
             make -j${CPU_CORES} install && \
@@ -185,7 +186,7 @@ Network_Wireless() {
     Logger
 
     USE="dbus" emerge --ask net-wireless/wpa_supplicant && \
-         USE="ethernet openvpn wifi" emerge --ask net-misc/connman    
+        USE="ethernet openvpn wifi" emerge --ask net-misc/connman
 }
 
 
@@ -206,8 +207,8 @@ EMERGE_DEFAULT_OPTS="--jobs=2"
 CFLAGS="-march=native -O3 -pipe"
 CXXFLAGS="${CFLAGS}"
 CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
-INPUT_DEVICES="synaptics libinput"
-VIDEO_CARDS="intel nouveau radeon amdgpu vmware"
+INPUT_DEVICES="libinput"
+VIDEO_CARDS="intel nouveau amdgpu"
 
 USE_Allow="bindist deblob minimal"
 USE_Block="-multilib -doc -systemd -pulseaudio -avahi"
@@ -322,7 +323,7 @@ User_Make() {
     read -ep "Setup a standard user? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^y"; then
         read -ep "Username: " Target_User && \
-            useradd -m -G wheel -s /bin/zsh $Target_User && \
+            useradd -m -G wheel $Target_User && \
             passwd $Target_User
     else
         exit
@@ -339,28 +340,43 @@ User_Root() {
 
 ## Utilities #####################################
 
-Utils_Base() {
-    Log="Installing base utilities..."
-    Logger
-
-    emerge --ask sudo app-misc/tmux app-editors/vim
-}
-
 Utils_Desktop() {
     Log="Installing desktop utilities..."
     Logger
 
-    emerge --ask dev-libs/wayland && \
-        USE="X xwayland" emerge --ask dev-libs/weston && \
-        USE="swaybar swaybg swaygrab swaylock swaymsg" emerge --ask dev-libs/sway && \
-        emerge --ask x11-terms/st && \
-        emerge --ask app-misc/ranger && \
-        USE="gtk3 icu" emerge --ask www-client/chromium && \
-        emerge --ask media-sound/cmus && \
-        emerge --ask sys-firmware/alsa-firmware && \
-        emerge --ask media-sound/alsa-utils && \
-        USE="opengl vaapi vdpau wayland" emerge --ask media-video/mpv && \
-        emerge --ask net-misc/youtube-dl
+    # Display
+    emerge --ask x11-drivers/xf86-video-intel
+    emerge --ask x11-drivers/xf86-video-amdgpu
+    emerge --ask x11-drivers/xf86-video-nouveau
+    USE="-*" emerge --ask --verbose x11-base/xorg-drivers
+    emerge --ask x11-base/xorg-server
+
+    # Input
+    emerge --ask x11-misc/xdotool x11-misc/wmctrl
+
+    # Media
+    emerge --ask media-gfx/scrot
+    emerge --ask media-sound/cmus
+    emerge --ask media-video/ffmpeg
+    USE="opengl vaapi vdpau" emerge --ask media-video/mpv
+    emerge --ask net-misc/youtube-dl
+    emerge --ask sys-firmware/alsa-firmware
+    emerge --ask media-sound/alsa-utils
+
+    # Utilities
+    USE="X" emerge --ask app-editors/vim
+    emerge --ask app-misc/ranger
+    emerge --ask app-misc/tmux
+    emerge --ask dev-vcs/git
+    emerge --ask net-misc/curl
+    emerge --ask www-client/elinks
+    emerge --ask x11-terms/st
+
+    # Window Manager
+    emerge --ask x11-wm/i3
+    emerge --ask x11-misc/dmenu
+    emerge --ask x11-misc/i3lock
+    emerge --ask x11-misc/i3status
 }
 
 Utils_Laptop() {
@@ -406,7 +422,6 @@ case $1 in
         User_Root
         Boot_Config
         Boot_Grub
-        Utils_Base
         User_Make
         ;;
 
