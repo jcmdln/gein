@@ -176,20 +176,16 @@ Network_Wired() {
     Log="Configuring wired networking..."
     Logger
 
-    emerge --ask net-misc/dhcpcd && \
-        emerge --ask --noreplace net-misc/netifrc && \
-        echo 'config_enp3s0="dhcp"' > /etc/conf.d/net && \
-        cd /etc/init.d && \
-        ln -s net.lo net.enp3s0 && \
-        rc-update add net.enp3s0 default
+    USE="ipv6" emerge --ask --noreplace net-misc/netifrc && \
+        emerge --ask net-misc/dhcpcd
 }
 
 Network_Wireless() {
     Log="Configuring wireless networking..."
     Logger
 
-    USE="dbus" emerge --ask net-wireless/wpa_supplicant
-    USE="ethernet openvpn wifi" emerge --ask net-misc/connman    
+    USE="dbus" emerge --ask net-wireless/wpa_supplicant && \
+         USE="ethernet openvpn wifi" emerge --ask net-misc/connman    
 }
 
 
