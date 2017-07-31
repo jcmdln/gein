@@ -9,8 +9,7 @@ Logger() {
 }
 
 Clean_Packages() {
-    Log="Removing packages that are no longer needed..."
-    Logger
+    Log="Removing packages that are no longer needed..." && Logger
 
     emerge -uDN @world && \
         emerge -av --depclean && \
@@ -18,28 +17,22 @@ Clean_Packages() {
 }
 
 Clean_Source() {
-    Log="Removing temporary files..."
-    Logger
+    Log="Removing temporary files..." && Logger
 
     rm -rf /usr/portage/packages/* \
        /usr/portage/distfiles/* \
        /var/tmp/portage/* \
        /stage3*.tar.bz2
-
-    #cd /usr/src/linux && \
-    #    find . ! -name 'vmlinux' -exec 'rm -rf' {} \;
 }
 
 Detect_Cores() {
-    Log="Detecting total number of cores to compile with..."
-    Logger
+    Log="Detecting total number of cores to compile with..." && Logger
 
     export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)
 }
 
 Setup_Ssh() {
-    Log=""
-    Logger
+    Log="Setting up SSH..." && Logger
 
     rc-update add sshd default
 }
@@ -48,8 +41,7 @@ Setup_Ssh() {
 ## Boot ##########################################
 
 Boot_Config() {
-    Log=""
-    Logger
+    Log="Editing system defaults..." && Logger
 
     nano /etc/rc.conf
     nano /etc/conf.d/keymaps
@@ -57,82 +49,71 @@ Boot_Config() {
 }
 
 Boot_Grub() {
-    Log=""
-    Logger
+    Log="Installing Grub..." && Logger
 
-    Grub_Target="/dev/sda"
-
-    emerge --ask --verbose sys-boot/grub:2 && \
-        grub-install $Grub_Target && \
-        grub-mkconfig -o /boot/grub/grub.cfg
+    read -ep "Where to install Grub: " Grub_Target && \
+        emerge --ask --verbose sys-boot/grub:2 && \
+            grub-install $Grub_Target && \
+            grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 
 ## Disks #########################################
 
 Disk_Fstab() {
-    Log=""
-    Logger
+    Log="Editing '/etc/fstab'..." && Logger
 
-    echo "/swapfile none swap sw 0 0" >> /etc/fstab
-
-    nano /etc/fstab
+    echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
+        nano /etc/fstab
 }
 
 Disk_Setup() {
-    Log="Please partition and mount your disk(s) before proceeding!"
-    Logger
+    Log="Please setup partitions and mount them before proceeding!" && Logger
 
-    read -ep "Proceed with installation? [Y/N]: " Proceed
-    if echo $Proceed | grep -iq "^y" ; then
-        continue
-    else
-        exit
-    fi
+    read -ep "Proceed with installation? [Y/N]: " Proceed && \
+        if echo $Proceed | grep -iq "^n" ; then
+            exit
+        fi
 }
 
 
 ## Environment ###################################
 
 Env_Chroot() {
-    Log="Chrooting into the environment..."
-    Logger
+    Log="Chrooting into the environment..." && Logger
 
     cd /mnt/gentoo && \
         chroot /mnt/gentoo /bin/bash
 }
 
 Env_Reload() {
-    Log="Reloading the environment..."
-    Logger
+    Log="Reloading the environment..." && Logger
 
-    source /etc/profile
-    export PS1="(chroot) $PS1"
+    source /etc/profile && \
+        export PS1="(chroot) $PS1"
 }
 
 Env_Update() {
-    Log="Updating the environment..."
-    Logger
+    Log="Updating the environment..." && Logger
 
-    env-update && Env_Reload
+    env-update && \
+        Env_Reload
 }
 
 
 ## Host ##########################################
 
 HostsFile() {
-    Log=""
-    Logger
+    Log="Updating hosts file..." && Logger
 
     nano /etc/hosts
 }
 
 HostName() {
-    Log="Setting "
-    Logger
+    Log="Setting " && Logger
 
-    read -ep "Hostname: " Target_Hostname
-    echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
+    read -ep "Hostname: " Target_Hostname && \
+        echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
         nano /etc/conf.d/hostname
 }
 
@@ -140,8 +121,7 @@ HostName() {
 ## Kernel ########################################
 
 Kernel_Install() {
-    Log="Downloading, building, and installing kernel..."
-    Logger
+    Log="Downloading, building, and installing kernel..." && Logger
 
     emerge --ask sys-kernel/gentoo-sources \
            sys-kernel/linux-firmware \
@@ -160,8 +140,7 @@ Kernel_Install() {
 ## Locale ########################################
 
 Locales() {
-    Log="Setting desired locales..."
-    Logger
+    Log="Setting desired locales..." && Logger
 
     nano /etc/locale.gen && \
         locale-gen && locale -a && \
@@ -174,16 +153,14 @@ Locales() {
 ## Networking ####################################
 
 Network_Wired() {
-    Log="Configuring wired networking..."
-    Logger
+    Log="Configuring wired networking..." && Logger
 
     USE="ipv6" emerge --ask --noreplace net-misc/netifrc && \
         emerge --ask net-misc/dhcpcd
 }
 
 Network_Wireless() {
-    Log="Configuring wireless networking..."
-    Logger
+    Log="Configuring wireless networking..." && Logger
 
     USE="dbus" emerge --ask net-wireless/wpa_supplicant && \
         USE="ethernet openvpn wifi" emerge --ask net-misc/connman
@@ -193,8 +170,7 @@ Network_Wireless() {
 ## Portage #######################################
 
 Portage_MakeConf() {
-    Log="Downloading portage 'make.conf'..."
-    Logger
+    Log="Downloading portage 'make.conf'..." && Logger
 
     echo '# /etc/portage/make.conf
 CHOST="x86_64-pc-linux-gnu"
@@ -217,8 +193,7 @@ USE="${USE_Block} ${USE_Allow}"' \
 }
 
 Portage_Mirrors() {
-    Log="Setting up portage mirrors..."
-    Logger
+    Log="Setting up portage mirrors..." && Logger
 
     mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf && \
         mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
@@ -228,8 +203,7 @@ Portage_Mirrors() {
 }
 
 Portage_Sync() {
-    Log="Syncing emerge and setting profile..."
-    Logger
+    Log="Syncing emerge and setting profile..." && Logger
 
     emerge-webrsync && \
         eselect profile list && \
@@ -242,8 +216,7 @@ Portage_Sync() {
 ## Stage #########################################
 
 Stage_Download() {
-    Log="Downloading and extracting Stage3 release..."
-    Logger
+    Log="Downloading and extracting Stage3 release..." && Logger
 
     S3_ARCH="amd64"
     S3_DATE="20170727"
@@ -254,8 +227,7 @@ Stage_Download() {
 }
 
 Stage_Mounts() {
-    Log="Mounting hardware..."
-    Logger
+    Log="Mounting hardware..." && Logger
 
     mount -t proc /proc /mnt/gentoo/proc && \
         mount --rbind /sys /mnt/gentoo/sys && \
@@ -265,11 +237,9 @@ Stage_Mounts() {
 }
 
 Stage_Swap() {
-    Log="Setting up temporary swapfile..."
-    Logger
+    Log="Setting up temporary swapfile..." && Logger
 
     SwapFile="/mnt/gentoo/swapfile"
-
     fallocate -l 2048M $SwapFile && \
         mkswap $SwapFile && \
         chmod 0600 $SwapFile && \
@@ -280,29 +250,20 @@ Stage_Swap() {
 ## Time ##########################################
 
 Time_Date() {
-    Log="Setting current time via 'date'..."
-    Logger
+    Log="Setting current time via 'date'..." && Logger
 
-    Ye=""
-    Mo=""
-    Da=""
-    Ho=""
-    Mi=""
-    Se=""
-
-    date ${YY}${MM}${DD}${HH}${SS}
+    Ye=""; Mo=""; Da=""; Ho=""; Mi=""; Se=""
+    date ${Ye}${Mo}${Da}${Ho}${Mi}${Se}
 }
 
 Time_Ntpd() {
-    Log="Setting current time via 'ntpd'..."
-    Logger
+    Log="Setting current time via 'ntpd'..." && Logger
 
     ntpd -q -g
 }
 
 Time_Zone() {
-    Log="Setting timezone..."
-    Logger
+    Log="Setting timezone..." && Logger
 
     ls /usr/share/zoneinfo && \
         read -ep "Target region: " Target_Region && \
@@ -317,8 +278,7 @@ Time_Zone() {
 ## User ##########################################
 
 User_Make() {
-    Log="Creating user account..."
-    Logger
+    Log="Creating user account..." && Logger
 
     read -ep "Setup a standard user? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^y"; then
@@ -331,8 +291,7 @@ User_Make() {
 }
 
 User_Root() {
-    Log="Setting root password..."
-    Logger
+    Log="Setting root password..." && Logger
 
     passwd
 }
@@ -347,8 +306,7 @@ Utils_Base() {
 }
 
 Utils_Desktop() {
-    Log="Installing desktop utilities..."
-    Logger
+    Log="Installing desktop utilities..." && Logger
 
     USE="-minimal" emerge --ask --verbose x11-base/xorg-drivers && \
     emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
@@ -379,16 +337,14 @@ Utils_Desktop() {
 }
 
 Utils_Laptop() {
-    Log="Installing laptop utilities..."
-    Logger
+    Log="Installing laptop utilities..." && Logger
 
     USE="acpi bluetooth" emerge --ask app-laptop/laptop-mode-tools && \
         rc-update add laptop_mode default
 }
 
 Utils_Server() {
-    Log="Installing server utilities..."
-    Logger
+    Log="Installing server utilities..." && Logger
 }
 
 
