@@ -373,6 +373,7 @@ case $1 in
         Disk_Fstab
         HostName
         Network_Wired
+        Network_Wireless
         HostsFile
         User_Root
         Boot_Config
@@ -381,7 +382,7 @@ case $1 in
         User_Make
         ;;
 
-    desktop|-d)
+    desktop|-d)        
         Utils_Desktop
         ;;
 
