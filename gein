@@ -344,39 +344,27 @@ Utils_Desktop() {
     Log="Installing desktop utilities..."
     Logger
 
-    # Display
-    emerge --ask x11-drivers/xf86-video-intel
-    emerge --ask x11-drivers/xf86-video-amdgpu
-    emerge --ask x11-drivers/xf86-video-nouveau
-    USE="-*" emerge --ask --verbose x11-base/xorg-drivers
-    emerge --ask x11-base/xorg-server
-
-    # Input
-    emerge --ask x11-misc/xdotool x11-misc/wmctrl
-
-    # Media
-    emerge --ask media-gfx/scrot
-    emerge --ask media-sound/cmus
-    emerge --ask media-video/ffmpeg
-    USE="opengl vaapi vdpau" emerge --ask media-video/mpv
-    emerge --ask net-misc/youtube-dl
-    emerge --ask sys-firmware/alsa-firmware
-    emerge --ask media-sound/alsa-utils
-
-    # Utilities
-    USE="X" emerge --ask app-editors/vim
-    emerge --ask app-misc/ranger
-    emerge --ask app-misc/tmux
-    emerge --ask dev-vcs/git
-    emerge --ask net-misc/curl
-    emerge --ask www-client/elinks
-    emerge --ask x11-terms/st
-
-    # Window Manager
-    emerge --ask x11-wm/i3
-    emerge --ask x11-misc/dmenu
-    emerge --ask x11-misc/i3lock
-    emerge --ask x11-misc/i3status
+    USE="-minimal" emerge --ask --verbose x11-base/xorg-drivers && \
+    emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
+    USE="opengl vaapi vdpau" emerge --ask media-video/mpv && \
+    USE="X" emerge --ask app-editors/vim && \
+    emerge --ask \
+      media-gfx/scrot \
+      media-sound/cmus \
+      media-video/ffmpeg \
+      net-misc/youtube-dl \
+      sys-firmware/alsa-firmware \
+      media-sound/alsa-utils \
+      app-misc/ranger \
+      app-misc/tmux \
+      dev-vcs/git \
+      net-misc/curl \
+      www-client/elinks \
+      x11-terms/st \
+      x11-wm/i3 \
+      x11-misc/dmenu \
+      x11-misc/i3lock \
+      x11-misc/i3status
 }
 
 Utils_Laptop() {
