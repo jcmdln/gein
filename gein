@@ -354,6 +354,8 @@ Utils_Desktop() {
     emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
     USE="opengl vaapi vdpau" emerge --ask media-video/mpv && \
     USE="X" emerge --ask app-editors/vim && \
+    USE="gtk3 hangouts proprietary-codecs widevine" emerge --ask www-client/chromium && \
+    USE="ppapi" emerge --ask www-plugins/adobe-flash && \
     emerge --ask \
       media-gfx/scrot \
       media-sound/cmus \
@@ -370,7 +372,10 @@ Utils_Desktop() {
       x11-wm/i3 \
       x11-misc/dmenu \
       x11-misc/i3lock \
-      x11-misc/i3status
+      x11-misc/i3status \
+      kde-frameworks/breeze-icons \
+      kde-plasma/breeze \
+      kde-plasma/breeze-gtk
 }
 
 Utils_Laptop() {
