@@ -373,7 +373,6 @@ case $1 in
         Disk_Fstab
         HostName
         Network_Wired
-        Network_Wireless
         HostsFile
         User_Root
         Boot_Config
@@ -387,6 +386,7 @@ case $1 in
         ;;
 
     laptop|-l)
+        Network_Wireless
         Utils_Laptop
         ;;
 
