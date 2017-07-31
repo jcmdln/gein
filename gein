@@ -187,7 +187,7 @@ INPUT_DEVICES="libinput"
 VIDEO_CARDS="intel nouveau amdgpu"
 
 USE_Allow="bindist deblob minimal"
-USE_Block="-multilib -doc -systemd -pulseaudio -avahi"
+USE_Block="-multilib -doc -systemd -pulseaudio -avahi -llvm"
 USE="${USE_Block} ${USE_Allow}"' \
          > /mnt/gentoo/etc/portage/make.conf
 }
@@ -314,7 +314,6 @@ Utils_Desktop() {
     USE="X" emerge --ask app-editors/vim && \
     USE="gtk3 hangouts proprietary-codecs widevine" emerge --ask www-client/chromium && \
     USE="ppapi" emerge --ask www-plugins/adobe-flash && \
-    MAKEOPTS="-j1" emerge --ask dev-util/cmake && \
     emerge --ask \
       media-gfx/scrot \
       media-sound/cmus \
