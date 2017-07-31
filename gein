@@ -172,6 +172,28 @@ Network_Wireless() {
 Portage_MakeConf() {
     Log="Downloading portage 'make.conf'..." && Logger
 
+    echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)"
+    read -ep "Which GPU's do you have?: " Target_GPU && \
+        case $Target_GPU in
+            amd|AMD)
+                export Active_GPU="amdgpu radeonsi radeon" 
+            ;;
+
+            intel|intel)
+                export Active_GPU="intel" 
+            ;;
+
+            nouveau|Nouveau)
+                export Active_GPU="nouveau" 
+            ;;
+
+            virt|Virt)
+                export Active_GPU="virtualbox vmware" 
+            ;;
+
+        *) echo "You must select one of the available options!" ;;
+    esac
+
     echo '# /etc/portage/make.conf
 CHOST="x86_64-pc-linux-gnu"
 PORTDIR="/usr/portage"
@@ -184,7 +206,8 @@ CFLAGS="-march=native -O3 -pipe"
 CXXFLAGS="${CFLAGS}"
 CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
 INPUT_DEVICES="libinput"
-VIDEO_CARDS="intel nouveau amdgpu"
+
+VIDEO_CARDS="$Active_GPU"
 
 USE_Allow="bindist deblob minimal"
 USE_Block="-multilib -doc -systemd -pulseaudio -avahi -llvm"
@@ -310,8 +333,10 @@ Utils_Desktop() {
 
     USE="-minimal" emerge --ask --verbose x11-base/xorg-drivers && \
     emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
+    Env_Update && \
     USE="opengl vaapi vdpau" emerge --ask media-video/mpv && \
     USE="X" emerge --ask app-editors/vim && \
+    MAKEOPTS="-j1" emerge --ask dev-util/cmake && \
     USE="gtk3 hangouts proprietary-codecs widevine" emerge --ask www-client/chromium && \
     USE="ppapi" emerge --ask www-plugins/adobe-flash && \
     emerge --ask \
