@@ -26,8 +26,8 @@ Clean_Source() {
        /var/tmp/portage/* \
        /stage3*.tar.bz2
 
-    cd /usr/src/linux && \
-        find . ! -name 'vmlinux' -exec 'rm -rf' {} \;
+    #cd /usr/src/linux && \
+    #    find . ! -name 'vmlinux' -exec 'rm -rf' {} \;
 }
 
 Detect_Cores() {
