@@ -51,8 +51,8 @@ Boot_Config() {
 Boot_Grub() {
     Log="Installing Grub..." && Logger
 
-    read -ep "Where to install Grub: " Grub_Target && \
     emerge --ask --verbose sys-boot/grub:2 && \
+    read -ep "Where to install Grub: " Grub_Target && \
     grub-install $Grub_Target && \
     grub-mkconfig -o /boot/grub/grub.cfg
 }
@@ -173,6 +173,8 @@ Network_Wireless() {
 Portage_MakeConf() {
     Log="Downloading portage 'make.conf'..." && Logger
 
+    Target_CPU_Flags=$(cpuinfo2cpuflags-x86)
+
     echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)"
     read -ep "Which GPU's do you have?: " Target_GPU && \
     case $Target_GPU in
@@ -208,13 +210,17 @@ MAKEOPTS="-j${CPU_CORES}"
 EMERGE_DEFAULT_OPTS="--jobs=2"
 CFLAGS="-march=native -O3 -pipe"
 CXXFLAGS="${CFLAGS}"
-CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
-INPUT_DEVICES="libinput"
 
+#CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
+$Target_CPU_Flags
+INPUT_DEVICES="libinput"
 VIDEO_CARDS="$Active_GPU"
 
-USE_Allow="bindist deblob minimal"
-USE_Block="-avahi -doc -llvm -multilib -systemd"
+LINGUAS="en_US"
+L10N="en-US"
+
+USE_Allow="deblob minimal"
+USE_Block="-avahi -bindist -doc -multilib -systemd"
 USE="${USE_Block} ${USE_Allow}"' \
     > /mnt/gentoo/etc/portage/make.conf
 }
@@ -340,10 +346,7 @@ Utils_Desktop() {
     USE="-minimal" emerge --ask --verbose x11-base/xorg-drivers && \
     emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
     Env_Update && \
-    USE="opengl vdpau" emerge --ask media-video/mpv && \
-    USE="X" emerge --ask app-editors/vim && \
     MAKEOPTS="-j1" emerge --ask dev-util/cmake && \
-    USE="-bindist" emerge --ask net-misc/openssh && \
     USE="minizip" emerge --ask sys-libs/zlib && \
     USE="text" emerge --ask app-text/xmlto && \
     USE="X xcb" emerge --ask x11-libs/cairo && \
@@ -369,6 +372,8 @@ Utils_Desktop() {
       x11-misc/dmenu \
       x11-misc/i3lock \
       x11-misc/i3status && \
+    USE="opengl vdpau" emerge --ask media-video/mpv && \
+    USE="X" emerge --ask app-editors/vim && \
     USE="system-ffmpeg" L10N="en-us" emerge --ask www-client/chromium && \
     USE="ppapi" emerge --ask www-plugins/adobe-flash
 }
