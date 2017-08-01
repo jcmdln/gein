@@ -12,8 +12,8 @@ Clean_Packages() {
     Log="Removing packages that are no longer needed..." && Logger
 
     emerge -uDN @world && \
-        emerge -av --depclean && \
-        emerge --update --changed-use --deep @world
+    emerge -av --depclean && \
+    emerge --update --changed-use --deep @world
 }
 
 Clean_Source() {
@@ -52,9 +52,9 @@ Boot_Grub() {
     Log="Installing Grub..." && Logger
 
     read -ep "Where to install Grub: " Grub_Target && \
-        emerge --ask --verbose sys-boot/grub:2 && \
-            grub-install $Grub_Target && \
-            grub-mkconfig -o /boot/grub/grub.cfg
+    emerge --ask --verbose sys-boot/grub:2 && \
+    grub-install $Grub_Target && \
+    grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 
@@ -71,9 +71,9 @@ Disk_Setup() {
     Log="Please setup partitions and mount them before proceeding!" && Logger
 
     read -ep "Proceed with installation? [Y/N]: " Proceed && \
-        if echo $Proceed | grep -iq "^n" ; then
-            exit
-        fi
+    if echo $Proceed | grep -iq "^n" ; then
+        exit
+    fi
 }
 
 
@@ -83,21 +83,21 @@ Env_Chroot() {
     Log="Chrooting into the environment..." && Logger
 
     cd /mnt/gentoo && \
-        chroot /mnt/gentoo /bin/bash
+    chroot /mnt/gentoo /bin/bash
 }
 
 Env_Reload() {
     Log="Reloading the environment..." && Logger
 
     source /etc/profile && \
-        export PS1="(chroot) $PS1"
+    export PS1="(chroot) $PS1"
 }
 
 Env_Update() {
     Log="Updating the environment..." && Logger
 
     env-update && \
-        Env_Reload
+    Env_Reload
 }
 
 
@@ -113,8 +113,8 @@ HostName() {
     Log="Setting hostname..." && Logger
 
     read -ep "Hostname: " Target_Hostname && \
-        echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
-        nano /etc/conf.d/hostname
+    echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
+    nano /etc/conf.d/hostname
 }
 
 
@@ -123,17 +123,18 @@ HostName() {
 Kernel_Install() {
     Log="Downloading, building, and installing kernel..." && Logger
 
-    emerge --ask sys-kernel/gentoo-sources \
-           sys-kernel/linux-firmware \
-           sys-apps/pciutils \
-           sys-kernel/genkernel &&
-        cd /usr/src/linux && \
-            make -j${CPU_CORES} defconfig && \
-            make -j${CPU_CORES} menuconfig && \
-            make -j${CPU_CORES} && \
-            make -j${CPU_CORES} modules_install && \
-            make -j${CPU_CORES} install && \
-            genkernel --install initramfs
+    emerge --ask \
+        sys-kernel/gentoo-sources \
+        sys-kernel/linux-firmware \
+        sys-apps/pciutils \
+        sys-kernel/genkernel &&
+    cd /usr/src/linux && \
+    make -j${CPU_CORES} defconfig && \
+    make -j${CPU_CORES} menuconfig && \
+    make -j${CPU_CORES} && \
+    make -j${CPU_CORES} modules_install && \
+    make -j${CPU_CORES} install && \
+    genkernel --install initramfs
 }
 
 
@@ -143,10 +144,10 @@ Locales() {
     Log="Setting desired locales..." && Logger
 
     nano /etc/locale.gen && \
-        locale-gen && locale -a && \
-        eselect locale list && \
-        read -ep "Target locale: " Target_Locale && \
-        eselect locale set ${Target_Locale}
+    locale-gen && locale -a && \
+    eselect locale list && \
+    read -ep "Target locale: " Target_Locale && \
+    eselect locale set ${Target_Locale}
 }
 
 
@@ -156,14 +157,14 @@ Network_Wired() {
     Log="Configuring wired networking..." && Logger
 
     USE="ipv6" emerge --ask --noreplace net-misc/netifrc && \
-        emerge --ask net-misc/dhcpcd
+    emerge --ask net-misc/dhcpcd
 }
 
 Network_Wireless() {
     Log="Configuring wireless networking..." && Logger
 
     USE="dbus" emerge --ask net-wireless/wpa_supplicant && \
-        USE="ethernet openvpn wifi" emerge --ask net-misc/connman
+    USE="ethernet openvpn wifi" emerge --ask net-misc/connman
 }
 
 
@@ -174,27 +175,30 @@ Portage_MakeConf() {
 
     echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)"
     read -ep "Which GPU's do you have?: " Target_GPU && \
-        case $Target_GPU in
-            amd|AMD)
-                export Active_GPU="amdgpu radeonsi radeon" 
-            ;;
+    case $Target_GPU in
+        amd|AMD)
+            export Active_GPU="amdgpu radeonsi radeon" 
+        ;;
 
-            intel|intel)
-                export Active_GPU="intel" 
-            ;;
+        intel|intel)
+            export Active_GPU="intel" 
+        ;;
 
-            nouveau|Nouveau)
-                export Active_GPU="nouveau" 
-            ;;
+        nouveau|Nouveau)
+            export Active_GPU="nouveau" 
+        ;;
 
-            virt|Virt)
-                export Active_GPU="virtualbox vmware" 
-            ;;
+        virt|Virt)
+            export Active_GPU="virtualbox vmware" 
+        ;;
 
-        *) echo "You must select one of the available options!" ;;
+        *) 
+            echo "You must select one of the available options!"
+        ;;
     esac
 
     echo '# /etc/portage/make.conf
+
 CHOST="x86_64-pc-linux-gnu"
 PORTDIR="/usr/portage"
 DISTDIR="${PORTDIR}/distfiles"
@@ -210,29 +214,29 @@ INPUT_DEVICES="libinput"
 VIDEO_CARDS="$Active_GPU"
 
 USE_Allow="bindist deblob minimal"
-USE_Block="-multilib -doc -systemd -pulseaudio -avahi -llvm"
+USE_Block="-avahi -doc -llvm -multilib -systemd"
 USE="${USE_Block} ${USE_Allow}"' \
-         > /mnt/gentoo/etc/portage/make.conf
+    > /mnt/gentoo/etc/portage/make.conf
 }
 
 Portage_Mirrors() {
     Log="Setting up portage mirrors..." && Logger
 
     mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf && \
-        mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
-        cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
-           /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
-        cp -vL /etc/resolv.conf /mnt/gentoo/etc/
+    mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
+    cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
+        /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
+    cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 }
 
 Portage_Sync() {
     Log="Syncing emerge and setting profile..." && Logger
 
     emerge-webrsync && \
-        eselect profile list && \
-        read -ep "Which profile?: " Target_Profile && \
-        eselect profile set $Target_Profile && \
-        emerge --ask --update --deep --newuse @world
+    eselect profile list && \
+    read -ep "Which profile?: " Target_Profile && \
+    eselect profile set $Target_Profile && \
+    emerge --ask --update --deep --newuse @world
 }
 
 
@@ -253,20 +257,20 @@ Stage_Mounts() {
     Log="Mounting hardware..." && Logger
 
     mount -t proc /proc /mnt/gentoo/proc && \
-        mount --rbind /sys /mnt/gentoo/sys && \
-        mount --make-rslave /mnt/gentoo/sys && \
-        mount --rbind /dev /mnt/gentoo/dev && \
-        mount --make-rslave /mnt/gentoo/dev
+    mount --rbind /sys /mnt/gentoo/sys && \
+    mount --make-rslave /mnt/gentoo/sys && \
+    mount --rbind /dev /mnt/gentoo/dev && \
+    mount --make-rslave /mnt/gentoo/dev
 }
 
 Stage_Swap() {
     Log="Setting up temporary swapfile..." && Logger
 
     SwapFile="/mnt/gentoo/swapfile"
-    fallocate -l 2048M $SwapFile && \
-        mkswap $SwapFile && \
-        chmod 0600 $SwapFile && \
-        swapon $SwapFile
+    fallocate -l 4096M $SwapFile && \
+    mkswap $SwapFile && \
+    chmod 0600 $SwapFile && \
+    swapon $SwapFile
 }
 
 
@@ -289,12 +293,12 @@ Time_Zone() {
     Log="Setting timezone..." && Logger
 
     ls /usr/share/zoneinfo && \
-        read -ep "Target region: " Target_Region && \
-        ls /usr/share/zoneinfo/${Target_Region} && \
-        read -ep "Target city: " Target_City && \
-        TimeZone=${Target_Region}"/"${Target_City} && \
-        echo "${TimeZone}" > /etc/timezone && \
-        emerge --config sys-libs/timezone-data
+    read -ep "Target region: " Target_Region && \
+    ls /usr/share/zoneinfo/${Target_Region} && \
+    read -ep "Target city: " Target_City && \
+    TimeZone=${Target_Region}"/"${Target_City} && \
+    echo "${TimeZone}" > /etc/timezone && \
+    emerge --config sys-libs/timezone-data
 }
 
 
@@ -306,10 +310,8 @@ User_Make() {
     read -ep "Setup a standard user? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^y"; then
         read -ep "Username: " Target_User && \
-            useradd -m -G wheel $Target_User && \
-            passwd $Target_User
-    else
-        exit
+        useradd -m -G wheel $Target_User && \
+        passwd $Target_User
     fi
 }
 
@@ -366,16 +368,16 @@ Utils_Desktop() {
       x11-wm/i3 \
       x11-misc/dmenu \
       x11-misc/i3lock \
-      x11-misc/i3status
-    #USE="system-ffmpeg" L10N="en-us" emerge --ask www-client/chromium && \
-    #USE="ppapi" emerge --ask www-plugins/adobe-flash
+      x11-misc/i3status && \
+    USE="system-ffmpeg" L10N="en-us" emerge --ask www-client/chromium && \
+    USE="ppapi" emerge --ask www-plugins/adobe-flash
 }
 
 Utils_Laptop() {
     Log="Installing laptop utilities..." && Logger
 
     USE="acpi bluetooth" emerge --ask app-laptop/laptop-mode-tools && \
-        rc-update add laptop_mode default
+    rc-update add laptop_mode default
 }
 
 Utils_Server() {
