@@ -323,6 +323,10 @@ User_Root() {
 ## Utilities #####################################
 
 Utils_Base() {
+    Log="Adding Base utilities..." && Logger
+
+    emerge --ask sudo
+
     if grep -Rqi 'intel' /proc/cpuinfo; then
         emerge --ask intel-microcode
     fi
@@ -334,31 +338,37 @@ Utils_Desktop() {
     USE="-minimal" emerge --ask --verbose x11-base/xorg-drivers && \
     emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
     Env_Update && \
-    USE="opengl vaapi vdpau" emerge --ask media-video/mpv && \
+    USE="opengl vdpau" emerge --ask media-video/mpv && \
     USE="X" emerge --ask app-editors/vim && \
     MAKEOPTS="-j1" emerge --ask dev-util/cmake && \
-    USE="gtk3 hangouts proprietary-codecs widevine" emerge --ask www-client/chromium && \
-    USE="ppapi" emerge --ask www-plugins/adobe-flash && \
+    USE="-bindist" emerge --ask net-misc/openssh && \
+    USE="minizip" emerge --ask sys-libs/zlib && \
+    USE="text" emerge --ask app-text/xmlto && \
+    USE="X xcb" emerge --ask x11-libs/cairo && \
+    USE="icu" emerge --ask media-libs/harfbuzz && \
+    USE="X" emerge --ask media-libs/imlib2 && \
+    USE="xkb" emerge --ask x11-libs/libxcb && \
+    USE="X" emerge --ask x11-libs/libxkbcommon && \
+    USE="X" emerge --ask x11-libs/pango && \
     emerge --ask \
+      media-fonts/dejavu \
       media-gfx/scrot \
       media-sound/cmus \
       media-video/ffmpeg \
       net-misc/youtube-dl \
-      sys-firmware/alsa-firmware \
       media-sound/alsa-utils \
       app-misc/ranger \
       app-misc/tmux \
       dev-vcs/git \
       net-misc/curl \
       www-client/elinks \
-      x11-terms/st \
+      x11-terms/rxvt-unicode \
       x11-wm/i3 \
       x11-misc/dmenu \
       x11-misc/i3lock \
-      x11-misc/i3status \
-      kde-frameworks/breeze-icons \
-      kde-plasma/breeze \
-      kde-plasma/breeze-gtk
+      x11-misc/i3status
+    #USE="system-ffmpeg" L10N="en-us" emerge --ask www-client/chromium && \
+    #USE="ppapi" emerge --ask www-plugins/adobe-flash
 }
 
 Utils_Laptop() {
@@ -370,6 +380,8 @@ Utils_Laptop() {
 
 Utils_Server() {
     Log="Installing server utilities..." && Logger
+
+    # WIP
 }
 
 
@@ -402,11 +414,11 @@ case $1 in
         User_Root
         Boot_Config
         Boot_Grub
-        Utils_base
+        Utils_Base
         User_Make
         ;;
 
-    desktop|-d)        
+    desktop|-d)
         Utils_Desktop
         ;;
 
