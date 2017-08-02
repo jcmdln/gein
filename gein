@@ -51,6 +51,7 @@ Bootstrap() {
 
 Minimal() {
     # Automate counting available cores and other hardware tasks
+    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)
     echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
 
     # Reload profile and update PS1
