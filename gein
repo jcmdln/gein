@@ -75,15 +75,12 @@ Minimal() {
 
     # Set desired locales
     nano /etc/locale.gen && \
-    locale-gen && locale -a && \
-    eselect locale list && \
+    locale-gen && locale -a && eselect locale list && \
     read -ep "Target locale: " Target_Locale && \
     eselect locale set ${Target_Locale}
 
     # Update environment
-    env-update && \
-    source /etc/profile && \
-    export PS1="(chroot) $PS1"
+    env-update && source /etc/profile && export PS1="(chroot) $PS1"
 
     # Emerge and install Linux kernel
     emerge --ask --verbose \
@@ -143,7 +140,7 @@ Desktop() {
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
     emerge --ask --verbose \
-      app-editors/vim
+      app-editors/vim \
       app-misc/ranger \
       app-misc/tmux \
       app-text/xmlto \
