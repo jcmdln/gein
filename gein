@@ -3,8 +3,8 @@
 Bootstrap() {
     # Confirm the user has setup their disks
     read -ep "Proceed with installation? [Y/N]: " Proceed && \
-    if echo $Proceed | grep -iq "^n" ; then exit fi
-    
+    if echo $Proceed | grep -iq "^n" ; then exit; fi
+
     # Set time via ntpd
     ntpd -q -g
 
@@ -20,7 +20,7 @@ Bootstrap() {
     mount --make-rslave /mnt/gentoo/sys && \
     mount --rbind /dev /mnt/gentoo/dev && \
     mount --make-rslave /mnt/gentoo/dev
-    
+
     # Setup '/swapfile'
     SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e $SwapFile ]; then
@@ -29,18 +29,15 @@ Bootstrap() {
         chmod 0600 $SwapFile && \
         swapon $SwapFile
     fi
-    
-    # Configure system defaults
-    # TODO: download config files from tilde for use as globals
-    
+
     # Configure Portage
     wget -O /mnt/gentoo/etc/portage/make.conf \
       https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf
-    wget -0 /mnt/gentoo/etc/portage/package.use \
+    wget -O /mnt/gentoo/etc/portage/package.use \
       https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use
-    #wget -0 /mnt/gentoo/etc/portage/package.env
+    #wget -0 /mnt/gentoo/etc/portage/package.env \
     #  https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env
-    
+
     # Setup Portage mirrors
     mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf && \
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
@@ -58,7 +55,7 @@ Minimal() {
 
     # Reload profile and update PS1
     source /etc/profile && export PS1="(chroot) $PS1"
-    
+
     # Sync Portage and select profile
     emerge-webrsync && \
     eselect profile list && \
@@ -74,19 +71,19 @@ Minimal() {
     TimeZone=${Target_Region}"/"${Target_City} && \
     echo "${TimeZone}" > /etc/timezone && \
     emerge --config sys-libs/timezone-data
-    
-    # Set desired locales 
+
+    # Set desired locales
     nano /etc/locale.gen && \
     locale-gen && locale -a && \
     eselect locale list && \
     read -ep "Target locale: " Target_Locale && \
     eselect locale set ${Target_Locale}
-    
+
     # Update environment
     env-update && \
     source /etc/profile && \
     export PS1="(chroot) $PS1"
-    
+
     # Emerge and install Linux kernel
     emerge --ask --verbose \
       sys-kernel/gentoo-sources \
@@ -100,12 +97,12 @@ Minimal() {
     make -j${CPU_CORES} modules_install && \
     make -j${CPU_CORES} install && \
     genkernel --install initramfs
-    
+
     # Configure '/etc/fstab/'
     echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
       nano /etc/fstab
 
-    # Install neworking packages & 
+    # Install neworking packages &
     emerge --ask --verbose --noreplace net-misc/netifrc && \
     emerge --ask --verbose net-misc/dhcpcd
 
@@ -124,7 +121,7 @@ Minimal() {
     if grep -Rqi 'intel' /proc/cpuinfo; then
         emerge --ask --verbose intel-microcode
     fi
-    
+
     # Set root password and optionally setup user
     passwd
     read -ep "Setup a standard user? [Y/N]: " Proceed
@@ -144,7 +141,7 @@ Desktop() {
     env-update && \
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
-    emerge --ask --verbose \      
+    emerge --ask --verbose \
       app-editors/vim
       app-misc/ranger \
       app-misc/tmux \
@@ -183,8 +180,8 @@ Laptop() {
     rc-update add laptop_mode default
 }
 
-Server() {}
-Virtual() {}
+#Server() {}
+#Virtual() {}
 
 Cleanup() {
     rm -rf /usr/portage/packages/* \
