@@ -185,10 +185,11 @@ Laptop() {
 #Virtual() {}
 
 Cleanup() {
-    rm -rf /usr/portage/packages/* \
-      /usr/portage/distfiles/* \
-      /var/tmp/portage/* \
-      /stage3*.tar.bz2
+    rm -rf /stage3*.tar.bz2
+
+    emerge --ask app-portage/gentoolkit && \
+    eclean distfiles && \
+    eclean packages
 
     emerge -uDN @world && \
     emerge -av --depclean && \
