@@ -1,7 +1,7 @@
 # /etc/portage/package.use
 
 ## Global
-*/* -avahi -bindist -doc -llvm -multilib -systemd deblob ipv6 minimal
+*/* -avahi -bindist -doc -llvm -multilib -sslv3 -systemd -tls-heartbeat deblob ipv6 minimal
 
 ## Local
 app-admin/sudo
