@@ -185,10 +185,11 @@ Laptop() {
 #Virtual() {}
 
 Cleanup() {
-    rm -rf /stage3*.tar.bz2
+    rm -rf /stage3*.tar.bz2 \
+      /var/tmp/portage/
 
-    emerge --ask app-portage/gentoolkit && \
-    eclean distfiles && \
+    emerge --ask app-portage/gentoolkit app-admin/eclean-kernel && \
+    eclean-dist --deep --fetch-restricted && \
     eclean packages
 
     emerge -uDN @world && \
