@@ -201,11 +201,11 @@ case $1 in
     bootstrap | -b) Bootstrap;;
     minimal   | -m) Minimal && Cleanup;;
     desktop   | -d) Minimal && Desktop && Cleanup;;
-	laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
+    laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
     server    | -s) Minimal && Server && Cleanup;;
-	virtual   | -v) Minimal && Virtual && Cleanup;;
+    virtual   | -v) Minimal && Virtual && Cleanup;;
 
     *) echo "Available options:"
-	   printf "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
-	;;
+       printf "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
+       ;;
 esac
