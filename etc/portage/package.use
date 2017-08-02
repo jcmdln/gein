@@ -1,0 +1,52 @@
+# /etc/portage/package.use
+
+## Global
+*/* -avahi -bindist -doc -llvm -multilib -systemd deblob ipv6 minimal
+
+## Local
+app-admin/sudo
+app-editors/vim X -minimal -perl -python -racket -tcl
+app-emulation/qemu sdl usb
+app-laptop/laptop-mode-tools acpi bluetooth
+app-misc/ranger
+app-misc/screenfetch
+app-misc/tmux
+app-text/xmlto text
+dev-util/cmake
+dev-vcs/git
+media-fonts/dejavu
+media-gfx/scrot
+media-libs/harfbuzz icu
+media-libs/imlib2 X
+media-libs/libpng apng
+media-sound/alsa-utils
+media-sound/cmus
+media-video/ffmpeg X aac hevc libass mp3 network ogg openssl opus rtmp sdl theora vorbis vpx x264 x265 xvid wavpack
+net-misc/connman bluetooth ethernet openvpn wifi
+net-misc/curl
+net-misc/dhcpcd
+net-misc/netifrc
+net-misc/youtube-dl
+net-wireless/wpa_supplicant dbus
+sys-apps/pciutils
+sys-boot/grub:2
+sys-firmware/intel-microcode
+sys-kernel/genkernel
+sys-kernel/gentoo-sources
+sys-kernel/linux-firmware
+sys-libs/zlib minizip
+www-client/chromium system-ffmpeg -proprietary-codecs
+www-client/elinks
+www-plugins/adobe-flash ppapi
+x11-base/xorg-drivers
+x11-libs/cairo X xcb
+x11-libs/libxcb xkb
+x11-libs/libxkbcommon X
+x11-libs/pango X
+x11-misc/dmenu
+x11-misc/i3lock
+x11-misc/i3status
+x11-misc/wmctrl
+x11-misc/xdotool
+x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3 xft
+x11-wm/i3
