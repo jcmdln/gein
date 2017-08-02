@@ -13,6 +13,7 @@ app-text/xmlto text
 media-libs/harfbuzz icu
 media-libs/imlib2 X
 media-libs/libpng apng
+media-libs/mesa -llvm dri3 opencl vaapi vdpau vulkan
 media-sound/alsa-utils
 media-sound/cmus aac alsa ffmpeg flac libsamplerate mad mp4 opus oss unicode vorbis wavpack
 media-video/ffmpeg X aac hevc libass mp3 network ogg openssl opus rtmp sdl theora vorbis vpx x264 x265 xvid wavpack
@@ -21,6 +22,10 @@ net-wireless/wpa_supplicant dbus
 sys-libs/zlib minizip
 www-client/chromium proprietary-codecs system-ffmpeg system-icu
 www-plugins/adobe-flash ppapi
+x11-drivers/xf86-video-amdgpu glamor
+x11-drivers/xf86-video-ati glamor
+x11-drivers/xf86-video-intel dri3 sna
+x11-drivers/xf86-video-virtualbox dri
 x11-libs/cairo X xcb
 x11-libs/libxcb xkb
 x11-libs/libxkbcommon X
