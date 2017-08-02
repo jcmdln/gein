@@ -356,6 +356,8 @@ Utils_Desktop() {
       x11-libs/libxkbcommon \
       media-libs/imlib2 \
       x11-libs/pango && \
+    USE="256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3 xft" emerge --ask rxvt-unicode
+    USE="X -minimal -perl -python -racket -ruby" emerge --ask app-editors/vim
     emerge --ask \
       media-fonts/dejavu \
       media-gfx/scrot \
@@ -368,12 +370,10 @@ Utils_Desktop() {
       dev-vcs/git \
       net-misc/curl \
       www-client/elinks \
-      x11-terms/xfce4-terminal \
       x11-wm/i3 \
       x11-misc/dmenu \
       x11-misc/i3lock \
       x11-misc/i3status && \
-    USE="X -minimal" emerge --ask app-editors/vim
 }
 
 Utils_Extras() {
@@ -381,7 +381,7 @@ Utils_Extras() {
     USE="minizip" emerge --ask sys-libs/zlib && \
     USE="text" emerge --ask app-text/xmlto && \
     USE="icu" emerge --ask media-libs/harfbuzz && \
-    USE="system-ffmpeg" L10N="en-us" emerge --ask www-client/chromium && \
+    USE="system-ffmpeg" emerge --ask www-client/chromium && \
     USE="ppapi" emerge --ask www-plugins/adobe-flash
 }
 
