@@ -3,6 +3,8 @@ The installation process is almost entirely automated, though will
 require user input for many sections to simplify the script as well as
 make it more versatile.
 
+### Note: There has been a rather drastic rewrite and this file has not been updated to reflect this.
+
 0) Read the entire script, I may do things you won't like or want.
 1) Download and boot the Gentoo livecd of your choosing.
 2) Configure and mount your partitions.
