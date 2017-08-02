@@ -43,9 +43,9 @@ Setup_Ssh() {
 Boot_Config() {
     Log="Editing system defaults..." && Logger
 
-    nano /etc/rc.conf
-    nano /etc/conf.d/keymaps
-    nano /etc/conf.d/hwclock
+    #nano /etc/rc.conf && \
+    #nano /etc/conf.d/keymaps && \
+    #nano /etc/conf.d/hwclock
 }
 
 Boot_Grub() {
@@ -113,8 +113,8 @@ HostName() {
     Log="Setting hostname..." && Logger
 
     read -ep "Hostname: " Target_Hostname && \
-    echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
-    nano /etc/conf.d/hostname
+    echo hostname="$Target_Hostname" > /etc/conf.d/hostname #&& \
+    #nano /etc/conf.d/hostname
 }
 
 
@@ -164,7 +164,7 @@ Network_Wireless() {
     Log="Configuring wireless networking..." && Logger
 
     USE="dbus" emerge --ask net-wireless/wpa_supplicant && \
-    USE="ethernet openvpn wifi" emerge --ask net-misc/connman
+    USE="bluetooth ethernet openvpn wifi" emerge --ask net-misc/connman
 }
 
 
@@ -173,7 +173,7 @@ Network_Wireless() {
 Portage_MakeConf() {
     Log="Downloading portage 'make.conf'..." && Logger
 
-    Target_CPU_Flags=$(cpuinfo2cpuflags-x86)
+    #Target_CPU_Flags=$(cpuinfo2cpuflags-x86)
 
     echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)"
     read -ep "Which GPU's do you have?: " Target_GPU && \
@@ -211,8 +211,7 @@ EMERGE_DEFAULT_OPTS="--jobs=2"
 CFLAGS="-march=native -O3 -pipe"
 CXXFLAGS="${CFLAGS}"
 
-#CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
-$Target_CPU_Flags
+CPU_FLAGS_X86="mmx mmxext sse sse2 sse3"
 INPUT_DEVICES="libinput"
 VIDEO_CARDS="$Active_GPU"
 
@@ -273,10 +272,12 @@ Stage_Swap() {
     Log="Setting up temporary swapfile..." && Logger
 
     SwapFile="/mnt/gentoo/swapfile"
-    fallocate -l 4096M $SwapFile && \
-    mkswap $SwapFile && \
-    chmod 0600 $SwapFile && \
-    swapon $SwapFile
+    if [ ! -e $SwapFile ]; then
+        fallocate -l 4096M $SwapFile && \
+        mkswap $SwapFile && \
+        chmod 0600 $SwapFile && \
+        swapon $SwapFile
+    fi
 }
 
 
@@ -343,18 +344,18 @@ Utils_Base() {
 Utils_Desktop() {
     Log="Installing desktop utilities..." && Logger
 
-    USE="-minimal" emerge --ask --verbose x11-base/xorg-drivers && \
-    emerge --ask x11-misc/xdotool x11-misc/wmctrl && \
+    emerge --ask --verbose \
+      x11-base/xorg-drivers \
+      x11-misc/xdotool \
+      x11-misc/wmctrl && \
     Env_Update && \
     MAKEOPTS="-j1" emerge --ask dev-util/cmake && \
-    USE="minizip" emerge --ask sys-libs/zlib && \
-    USE="text" emerge --ask app-text/xmlto && \
     USE="X xcb" emerge --ask x11-libs/cairo && \
-    USE="icu" emerge --ask media-libs/harfbuzz && \
-    USE="X" emerge --ask media-libs/imlib2 && \
     USE="xkb" emerge --ask x11-libs/libxcb && \
-    USE="X" emerge --ask x11-libs/libxkbcommon && \
-    USE="X" emerge --ask x11-libs/pango && \
+    USE="X" emerge --ask \
+      x11-libs/libxkbcommon \
+      media-libs/imlib2 \
+      x11-libs/pango && \
     emerge --ask \
       media-fonts/dejavu \
       media-gfx/scrot \
@@ -367,13 +368,19 @@ Utils_Desktop() {
       dev-vcs/git \
       net-misc/curl \
       www-client/elinks \
-      x11-terms/rxvt-unicode \
+      x11-terms/xfce4-terminal \
       x11-wm/i3 \
       x11-misc/dmenu \
       x11-misc/i3lock \
       x11-misc/i3status && \
-    USE="opengl vdpau" emerge --ask media-video/mpv && \
-    USE="X" emerge --ask app-editors/vim && \
+    USE="X -minimal" emerge --ask app-editors/vim
+}
+
+Utils_Extras() {
+    #USE="bindist opengl vdpau" emerge --ask media-video/mpv && \
+    USE="minizip" emerge --ask sys-libs/zlib && \
+    USE="text" emerge --ask app-text/xmlto && \
+    USE="icu" emerge --ask media-libs/harfbuzz && \
     USE="system-ffmpeg" L10N="en-us" emerge --ask www-client/chromium && \
     USE="ppapi" emerge --ask www-plugins/adobe-flash
 }
@@ -396,32 +403,32 @@ Utils_Server() {
 
 case $1 in
     init|-i)
-        Disk_Setup
-        Time_Ntpd
-        Stage_Download
-        Stage_Mounts
-        Stage_Swap
-        Portage_MakeConf
-        Portage_Mirrors
+        Disk_Setup && \
+        Time_Ntpd && \
+        Stage_Download && \
+        Stage_Mounts && \
+        Stage_Swap && \
+        Portage_MakeConf && \
+        Portage_Mirrors && \
         Env_Chroot
         ;;
 
     base|-b)
-        Env_Reload
-        Detect_Cores
-        Portage_Sync
-        Time_Zone
-        Locales
-        Env_Update
-        Kernel_Install
-        Disk_Fstab
-        HostName
-        Network_Wired
-        HostsFile
-        User_Root
-        Boot_Config
-        Boot_Grub
-        Utils_Base
+        Env_Reload && \
+        Detect_Cores && \
+        Portage_Sync && \
+        Time_Zone && \
+        Locales && \
+        Env_Update && \
+        Kernel_Install && \
+        Disk_Fstab && \
+        HostName && \
+        Network_Wired && \
+        HostsFile && \
+        User_Root && \
+        Boot_Config && \
+        Boot_Grub && \
+        Utils_Base && \
         User_Make
         ;;
 
@@ -429,8 +436,12 @@ case $1 in
         Utils_Desktop
         ;;
 
+    extras|-e)
+        Utils_Extra
+        ;;
+
     laptop|-l)
-        Network_Wireless
+        Network_Wireless && \
         Utils_Laptop
         ;;
 
@@ -439,8 +450,8 @@ case $1 in
         ;;
 
     clean|-c)
+        Clean_Source && \
         Clean_Packages
-        Clean_Source
         ;;
 
     *)
