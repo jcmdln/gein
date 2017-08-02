@@ -206,6 +206,6 @@ case $1 in
     virtual   | -v) Minimal && Virtual && Cleanup;;
 
     *) echo "Available options:"
-       printf "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
+       echo "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
        ;;
 esac
