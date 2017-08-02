@@ -30,6 +30,9 @@ Bootstrap() {
         swapon $SwapFile
     fi
     
+    # Configure system defaults
+    # TODO: download config files from tilde for use as globals
+    
     # Configure Portage
     wget -O /mnt/gentoo/etc/portage/make.conf \
       https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf
