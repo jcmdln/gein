@@ -126,7 +126,7 @@ Minimal() {
     read -ep "Setup a standard user? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^y"; then
         read -ep "Username: " Target_User && \
-        useradd -m -G wheel $Target_User && \
+        useradd -m -G audio wheel $Target_User && \
         passwd $Target_User
         wget -qO- https://github.com/jcmdln/tilde/archive/master.zip | \
         tar xvz -C /home/$Target_user
