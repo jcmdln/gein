@@ -1,9 +1,5 @@
 # /etc/portage/package.use
 
-## Global
-*/* -avahi -bindist -doc -llvm -multilib -offensive -sslv3 -systemd -tls-heartbeat deblob ipv6 minimal
-
-## Local
 app-admin/sudo -gcrypt -openssl sendmail
 app-editors/vim X -minimal -perl -python -racket -tcl
 app-emulation/qemu sdl2 usb
@@ -15,7 +11,6 @@ media-libs/harfbuzz icu
 media-libs/imlib2 X
 media-libs/libpng apng
 media-libs/mesa -llvm dri3 vaapi vdpau
-media-sound/alsa-utils
 media-sound/cmus aac alsa ffmpeg flac libsamplerate mad mp4 opus oss unicode vorbis wavpack
 media-video/ffmpeg X aac hevc libass mp3 network ogg openssl opus rtmp sdl theora vorbis vpx x264 x265 xvid wavpack
 net-misc/connman bluetooth ethernet openvpn wifi
