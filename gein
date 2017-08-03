@@ -2,6 +2,7 @@
 
 Bootstrap() {
     # Confirm the user has setup their disks
+    echo "Please partition and mount your disks before continuing!"
     read -ep "Proceed with installation? [Y/N]: " Proceed && \
     if echo $Proceed | grep -iq "^n" ; then exit; fi
 
@@ -24,7 +25,7 @@ Bootstrap() {
     # Setup '/swapfile'
     SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e $SwapFile ]; then
-        fallocate -l 4096M $SwapFile && \
+        fallocate -l 2G $SwapFile && \
         mkswap $SwapFile && \
         chmod 0600 $SwapFile && \
         swapon $SwapFile
@@ -33,6 +34,7 @@ Bootstrap() {
     # Configure Portage
     wget -O /mnt/gentoo/etc/portage/make.conf \
       https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf
+    rm -rf /mnt/gentoo/etc/portage/package.use && \
     wget -O /mnt/gentoo/etc/portage/package.use \
       https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use
     #wget -0 /mnt/gentoo/etc/portage/package.env \
@@ -58,11 +60,10 @@ Minimal() {
     source /etc/profile && export PS1="(chroot) $PS1"
 
     # Sync Portage and select profile
-    emerge-webrsync && \
-    eselect profile list && \
+    emerge-webrsync && eselect profile list && \
     read -ep "Which profile?: " Target_Profile && \
     eselect profile set $Target_Profile && \
-    emerge --ask --verbose --update --deep --newuse @world
+    emerge -av --update --deep --newuse @world
 
     # Set desired timezone
     ls /usr/share/zoneinfo && \
@@ -83,7 +84,7 @@ Minimal() {
     env-update && source /etc/profile && export PS1="(chroot) $PS1"
 
     # Emerge and install Linux kernel
-    emerge --ask --verbose \
+    emerge -av \
       sys-kernel/gentoo-sources \
       sys-kernel/linux-firmware \
       sys-apps/pciutils \
@@ -101,23 +102,23 @@ Minimal() {
       nano /etc/fstab
 
     # Install neworking packages &
-    emerge --ask --verbose --noreplace net-misc/netifrc && \
-    emerge --ask --verbose net-misc/dhcpcd
+    emerge -av --noreplace net-misc/netifrc && \
+    emerge -av net-misc/dhcpcd
 
     # Set desired hostname and update '/etc/hosts'
     read -ep "Hostname: " Target_Hostname && \
     echo hostname="$Target_Hostname" > /etc/conf.d/hostname
 
     # Configure and install Grub
-    emerge --ask --verbose sys-boot/grub:2 && \
+    emerge -av sys-boot/grub:2 && \
     read -ep "Where to install Grub: " Grub_Target && \
     grub-install $Grub_Target && \
     grub-mkconfig -o /boot/grub/grub.cfg
 
     # Install 'sudo' and if CPU is Intel, install microcode
-    emerge --ask --verbose sudo
+    emerge -av sudo
     if grep -Rqi 'intel' /proc/cpuinfo; then
-        emerge --ask --verbose intel-microcode
+        emerge -av intel-microcode
     fi
 
     # Set root password and optionally setup user
@@ -131,47 +132,40 @@ Minimal() {
 }
 
 Desktop() {
-    MAKEOPTS="-j1" emerge --ask dev-util/cmake
-    emerge --ask --verbose \
-      x11-base/xorg-drivers \
+    MAKEOPTS="-j1" emerge -av dev-util/cmake && \
+    emerge -av x11-base/xorg-drivers && \
+    emerge -av \
       x11-misc/xdotool \
       x11-misc/wmctrl && \
     env-update && \
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
-    emerge --ask --verbose \
+    emerge -av \
       app-editors/vim \
       app-misc/ranger \
       app-misc/tmux \
-      app-text/xmlto \
       dev-vcs/git \
       media-fonts/dejavu \
       media-gfx/scrot \
-      media-libs/harfbuzz \
-      media-libs/imlib2 \
       media-sound/alsa-utils \
       media-sound/cmus \
       media-video/ffmpeg \
-      media-video/mpv \
-      net-misc/curl \
       net-misc/youtube-dl \
-      sys-libs/zlib \
-      www-client/chromium \
       www-client/elinks \
-      www-plugins/adobe-flash
-      x11-libs/cairo \
-      x11-libs/libxcb \
-      x11-libs/libxkbcommon \
-      x11-libs/pango \
       x11-misc/dmenu \
       x11-misc/i3lock \
       x11-misc/i3status \
-      x11-term/rxvt-unicode \
+      x11-terms/rxvt-unicode \
       x11-wm/i3
+
+    emacs -av \
+      media-video/mpv \
+      www-client/chromium \
+      www-client/firefox
 }
 
 Laptop() {
-    emerge --ask --verbose \
+    emerge -av \
       app-laptop/laptop-mode-tools \
       net-wireless/wpa_supplicant \
       net-misc/connman && \
@@ -185,11 +179,13 @@ Cleanup() {
     rm -rf /stage3*.tar.bz2 \
       /var/tmp/portage/
 
-    emerge --ask app-portage/gentoolkit app-admin/eclean-kernel && \
+    emerge -av \
+      app-portage/gentoolkit \
+      app-admin/eclean-kernel && \
     eclean-dist --deep --fetch-restricted && \
     eclean packages
 
-    emerge -uDN @world && \
+    emerge -v -uDN @world && \
     emerge -av --depclean && \
     emerge --update --changed-use --deep @world
 
@@ -201,14 +197,43 @@ Cleanup() {
 ## Execution #####################################
 
 case $1 in
-    bootstrap | -b) Bootstrap;;
-    minimal   | -m) Minimal && Cleanup;;
-    desktop   | -d) Minimal && Desktop && Cleanup;;
-    laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
-    server    | -s) Minimal && Server && Cleanup;;
-    virtual   | -v) Minimal && Virtual && Cleanup;;
+    bootstrap|-b)
+        Bootstrap
+    ;;
 
-    *) echo "Available options:"
+    minimal|-m)
+        Minimal && \
+        Cleanup
+    ;;
+
+    desktop|-d)
+        Minimal && \
+        Desktop && \
+        Cleanup
+    ;;
+
+    laptop|-l)
+        Minimal && \
+        Desktop && \
+        Laptop && \
+        Cleanup
+    ;;
+
+    server|-s)
+        echo "WIP"
+        #Minimal && \
+        #Server && \
+        #Cleanup
+    ;;
+
+    virtual|-v)
+        echo "WIP"
+        #Minimal && \
+        #Virtual && \
+        #Cleanup
+    ;;
+
+    *) echo "Available options for gein:"
        echo "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
-       ;;
+    ;;
 esac
