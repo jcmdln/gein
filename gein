@@ -137,6 +137,33 @@ Minimal() {
 }
 
 Desktop() {
+    # Pick which GPU driver to use
+    echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)"
+    read -ep "Which GPU's do you have?: " Target_GPU && \
+    case $Target_GPU in
+        amd|AMD)
+            export Active_GPU="amdgpu radeonsi radeon" 
+        ;;
+
+        intel|intel)
+            export Active_GPU="intel" 
+        ;;
+
+        nouveau|Nouveau)
+            export Active_GPU="nouveau" 
+        ;;
+
+        virt|Virt)
+            export Active_GPU="virtualbox vmware" 
+        ;;
+
+        *) 
+            echo "You must select one of the available options!"
+        ;;
+    esac && \
+    echo "Active_GPU=$Active_GPU" >> /etc/profile
+
+    # Install Desktop drivers and packages
     MAKEOPTS="-j1" emerge -av dev-util/cmake && \
     emerge -av x11-base/xorg-drivers && \
     emerge -av \
@@ -161,9 +188,9 @@ Desktop() {
       x11-misc/i3lock \
       x11-misc/i3status \
       x11-terms/rxvt-unicode \
-      x11-wm/i3
+      x11-wm/i3 
 
-    emacs -av \
+    emerge -av \
       media-video/mpv \
       www-client/chromium \
       www-client/firefox
