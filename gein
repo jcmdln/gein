@@ -161,7 +161,7 @@ Desktop() {
             echo "You must select one of the available options!"
         ;;
     esac && \
-    echo "Active_GPU=$Active_GPU" >> /etc/profile
+    echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile
 
     # Install Desktop drivers and packages
     MAKEOPTS="-j1" emerge -av dev-util/cmake && \
