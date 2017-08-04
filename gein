@@ -130,8 +130,9 @@ Minimal() {
         passwd $Target_User
         wget -O /home/$Target_User/master.zip \
           https://github.com/jcmdln/gein/archive/master.zip && \
-        unzip -j /home/$Target_User/master.zip -d /home/$Target_User && \
-        rm -rf /home/$Target_User/master.zip
+        unzip /home/$Target_User/master.zip -d /home/$Target_User && \
+        mv tilde-master/.* /home/$Target_User && \
+        rm -rf /home/$Target_User/master.zip /home/$Target_User/tilde-master
     fi
 }
 
