@@ -128,8 +128,10 @@ Minimal() {
         read -ep "Username: " Target_User && \
         useradd -m -G audio,wheel $Target_User && \
         passwd $Target_User
-        wget -qO- https://github.com/jcmdln/tilde/archive/master.zip | \
-        tar xvz -C /home/$Target_user
+        wget -O /home/$Target_User/master.zip \
+          https://github.com/jcmdln/gein/archive/master.zip && \
+        unzip -j /home/$Target_User/master.zip -d /home/$Target_User && \
+        rm -rf /home/$Target_User/master.zip
     fi
 }
 
