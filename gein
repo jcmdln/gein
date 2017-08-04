@@ -89,7 +89,8 @@ Minimal() {
       sys-apps/pciutils \
       sys-kernel/genkernel &&
     cd /usr/src/linux && \
-    make -j${CPU_CORES} defconfig && \
+    wget -O /mnt/gentoo/usr/src/linux/.config \
+      https://raw.githubusercontent.com/jcmdln/gein/master/usr/src/linux/.config && \
     make -j${CPU_CORES} menuconfig && \
     make -j${CPU_CORES} && \
     make -j${CPU_CORES} modules_install && \
