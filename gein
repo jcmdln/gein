@@ -87,7 +87,10 @@ Minimal() {
       sys-kernel/gentoo-sources \
       sys-kernel/linux-firmware \
       sys-apps/pciutils \
-      sys-kernel/genkernel &&
+      sys-kernel/genkernel && \
+    if grep -Rqi 'intel' /proc/cpuinfo; then
+        emerge -av intel-microcode
+    fi && \
     cd /usr/src/linux && \
     wget -O /mnt/gentoo/usr/src/linux/.config \
       https://raw.githubusercontent.com/jcmdln/gein/master/usr/src/linux/.config && \
@@ -99,7 +102,7 @@ Minimal() {
 
     # Configure '/etc/fstab/'
     echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
-      nano /etc/fstab
+    nano /etc/fstab
 
     # Install neworking packages &
     emerge -av --noreplace net-misc/netifrc && \
@@ -115,12 +118,6 @@ Minimal() {
     grub-install $Grub_Target && \
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    # Install 'sudo' and if CPU is Intel, install microcode
-    emerge -av sudo
-    if grep -Rqi 'intel' /proc/cpuinfo; then
-        emerge -av intel-microcode
-    fi
-
     # Set root password and optionally setup user
     passwd
     read -ep "Setup a standard user? [Y/N]: " Proceed
@@ -134,32 +131,27 @@ Minimal() {
         mv tilde-master/.* /home/$Target_User && \
         rm -rf /home/$Target_User/master.zip /home/$Target_User/tilde-master
     fi
+
+    # Install minimal packages
+    emerge -av \
+      app-admin/sudo \
+      app-editors/vim \
+      app-misc/ranger \
+      app-misc/tmux \
+      dev-vcs/git \
+      www-client/elinks
 }
 
 Desktop() {
     # Pick which GPU driver to use
-    echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)"
+    echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)" && \
     read -ep "Which GPU's do you have?: " Target_GPU && \
     case $Target_GPU in
-        amd|AMD)
-            export Active_GPU="amdgpu radeonsi radeon" 
-        ;;
-
-        intel|intel)
-            export Active_GPU="intel" 
-        ;;
-
-        nouveau|Nouveau)
-            export Active_GPU="nouveau" 
-        ;;
-
-        virt|Virt)
-            export Active_GPU="virtualbox vmware" 
-        ;;
-
-        *) 
-            echo "You must select one of the available options!"
-        ;;
+        amd     | AMD     ) export Active_GPU="amdgpu radeonsi radeon";;
+        intel   | intel   ) export Active_GPU="intel";;
+        nouveau | Nouveau ) export Active_GPU="nouveau";;
+        virt    | Virt    ) export Active_GPU="virtualbox vmware";;
+        *) echo "You must select one of the available options!";;
     esac && \
     echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile
 
@@ -173,27 +165,20 @@ Desktop() {
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
     emerge -av \
-      app-editors/vim \
-      app-misc/ranger \
-      app-misc/tmux \
-      dev-vcs/git \
       media-fonts/dejavu \
       media-gfx/scrot \
       media-sound/alsa-utils \
       media-sound/cmus \
       media-video/ffmpeg \
+      media-video/mpv \
       net-misc/youtube-dl \
-      www-client/elinks \
+      www-client/chromium \
+      www-client/firefox \
       x11-misc/dmenu \
       x11-misc/i3lock \
       x11-misc/i3status \
       x11-terms/rxvt-unicode \
-      x11-wm/i3 
-
-    emerge -av \
-      media-video/mpv \
-      www-client/chromium \
-      www-client/firefox
+      x11-wm/i3
 }
 
 Laptop() {
@@ -205,24 +190,36 @@ Laptop() {
     rc-update add laptop_mode default
 }
 
-#Server() {}
+Server() {
+    emerge -av \
+      app-emulation/qemu
+      app-emulation/rkt
+      net-vpn/openvpn
+      sys-cluster/kubectl
+}
+
 #Virtual() {}
 
 Cleanup() {
+    # Install eclean
     emerge -av \
       app-portage/gentoolkit \
-      app-admin/eclean-kernel && \
-    eclean-dist --deep --fetch-restricted && \
-    eclean packages
+      app-admin/eclean-kernel
 
+    # Update @world, remove unused packages, and clean
     emerge -v -uDN @world && \
     emerge -av --depclean && \
-    emerge --update --changed-use --deep @world
+    emerge --update --changed-use --deep @world && \
+    eclean packages && \
+    eclean-dist --deep --fetch-restricted
 
+    # Remove other junk
     rm -rf /stage3*.tar.bz2 \
       /var/tmp/portage/
 
-    cd /usr/src && tar -Jcvf linux-backup.tar.gz /usr/src/linux-* && \
+    # Compress kernel source
+    cd /usr/src && \
+    tar -Jcvf linux-backup.tar.gz /usr/src/linux-* && \
     cd /usr/src/linux && rm -rf */
 }
 
