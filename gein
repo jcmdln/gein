@@ -41,7 +41,6 @@ Bootstrap() {
     #  https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env
 
     # Setup Portage mirrors
-    mirrorselect -i -o >> /mnt/gentoo/etc/portage/make.conf && \
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
     cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
       /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
