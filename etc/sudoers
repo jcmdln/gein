@@ -1,0 +1,6 @@
+# /etc/sudoers
+
+root ALL=(ALL) ALL
+
+%wheel ALL=(ALL) ALL
+%wheel ALL=(ALL) NOPASSWD: /sbin/poweroff,/sbin/restart,/sbin/shutdown
