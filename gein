@@ -4,23 +4,23 @@ Bootstrap() {
     # Confirm the user has setup their disks
     echo "Please partition and mount your disks before continuing!"
     read -ep "Proceed with installation? [Y/N]: " Proceed && \
-    if echo $Proceed | grep -iq "^n" ; then exit; fi
+    if echo $Proceed | grep -iq "^n" ; then exit; fi && \
 
     # Set time via ntpd
-    ntpd -q -g
+    ntpd -q -g && \
 
     # Download and extract stage3 tarball
-    cd /mnt/gentoo
-    S3_ARCH="amd64" && S3_DATE="20170727"
+    cd /mnt/gentoo && \
+    S3_ARCH="amd64" && S3_DATE="20170907"
     wget http://distfiles.gentoo.org/releases/${S3_ARCH}/autobuilds/${S3_DATE}/stage3-${S3_ARCH}-nomultilib-${S3_DATE}.tar.bz2 && \
-      tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+      tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner && \
 
     # Mount hardware devices
     mount -t proc /proc /mnt/gentoo/proc && \
     mount --rbind /sys /mnt/gentoo/sys && \
     mount --make-rslave /mnt/gentoo/sys && \
     mount --rbind /dev /mnt/gentoo/dev && \
-    mount --make-rslave /mnt/gentoo/dev
+    mount --make-rslave /mnt/gentoo/dev && \
 
     # Setup '/swapfile'
     SwapFile="/mnt/gentoo/swapfile"
@@ -29,14 +29,14 @@ Bootstrap() {
         mkswap $SwapFile && \
         chmod 0600 $SwapFile && \
         swapon $SwapFile
-    fi
+    fi && \
 
     # Configure Portage
     wget -O /mnt/gentoo/etc/portage/make.conf \
-      https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf
+      https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf && \
     rm -rf /mnt/gentoo/etc/portage/package.use && \
     wget -O /mnt/gentoo/etc/portage/package.use \
-      https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use
+      https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use && \
     #wget -0 /mnt/gentoo/etc/portage/package.env \
     #  https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env
 
@@ -44,7 +44,7 @@ Bootstrap() {
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
     cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
       /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
-    cp -vL /etc/resolv.conf /mnt/gentoo/etc/
+    cp -vL /etc/resolv.conf /mnt/gentoo/etc/ && \
 
     # Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && chroot /mnt/gentoo /bin/bash
@@ -52,17 +52,17 @@ Bootstrap() {
 
 Base() {
     # Automate counting available cores and other hardware tasks
-    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)
-    echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
+    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)  && \
+    echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile && \
 
     # Reload profile and update PS1
-    source /etc/profile && export PS1="(chroot) $PS1"
+    source /etc/profile && export PS1="(chroot) $PS1" && \
 
     # Sync Portage and select profile
     emerge-webrsync && eselect profile list && \
     read -ep "Which profile?: " Target_Profile && \
     eselect profile set $Target_Profile && \
-    emerge -av --update --deep --newuse @world
+    emerge -av --update --deep --newuse @world && \
 
     # Set desired timezone
     ls /usr/share/zoneinfo && \
@@ -71,16 +71,16 @@ Base() {
     read -ep "Target city: " Target_City && \
     TimeZone=${Target_Region}"/"${Target_City} && \
     echo "${TimeZone}" > /etc/timezone && \
-    emerge --config sys-libs/timezone-data
+    emerge --config sys-libs/timezone-data && \
 
     # Set desired locales
     nano /etc/locale.gen && \
     locale-gen && locale -a && eselect locale list && \
     read -ep "Target locale: " Target_Locale && \
-    eselect locale set ${Target_Locale}
+    eselect locale set ${Target_Locale} && \
 
     # Update environment
-    env-update && source /etc/profile && export PS1="(chroot) $PS1"
+    env-update && source /etc/profile && export PS1="(chroot) $PS1" && \
 
     # Emerge and install Linux kernel
     emerge -av \
@@ -98,33 +98,33 @@ Base() {
     make -j${CPU_CORES} && \
     make -j${CPU_CORES} modules_install && \
     make -j${CPU_CORES} install && \
-    genkernel --install initramfs
+    genkernel --install initramfs && \
 
     # Configure '/etc/fstab/'
     echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
-    nano /etc/fstab
+    nano /etc/fstab && \
 
     # Install neworking packages &
     emerge -av --noreplace net-misc/netifrc && \
-    emerge -av net-misc/dhcpcd
+    emerge -av net-misc/dhcpcd && \
 
     # Set desired hostname and update '/etc/hosts'
     read -ep "Hostname: " Target_Hostname && \
-    echo hostname="$Target_Hostname" > /etc/conf.d/hostname
+    echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
 
     # Configure and install Grub
     emerge -av sys-boot/grub:2 && \
     read -ep "Where to install Grub: " Grub_Target && \
     grub-install $Grub_Target && \
-    grub-mkconfig -o /boot/grub/grub.cfg
+    grub-mkconfig -o /boot/grub/grub.cfg && \
 
     # Set root password and optionally setup user
-    passwd
-    read -ep "Setup a standard user? [Y/N]: " Proceed
+    passwd && \
+    read -ep "Setup a standard user? [Y/N]: " Proceed && \
     if echo $Proceed | grep -iq "^y"; then
         read -ep "Username: " Target_User && \
         useradd -m -G audio,wheel $Target_User && \
-        passwd $Target_User
+        passwd $Target_User && \
         wget -O /home/$Target_User/master.zip \
           https://github.com/jcmdln/gein/archive/master.zip && \
         unzip /home/$Target_User/master.zip -d /home/$Target_User && \
@@ -155,7 +155,7 @@ Desktop() {
         virt    | Virt    ) export Active_GPU="virtualbox vmware";;
         *) echo "You must select one of the available options!";;
     esac && \
-    echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile
+    echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile && \
 
     # Install Desktop drivers and packages
     MAKEOPTS="-j1" emerge -av dev-util/cmake && \
@@ -207,18 +207,18 @@ Cleanup() {
     # Install eclean
     emerge -av \
       app-portage/gentoolkit \
-      app-admin/eclean-kernel
+      app-admin/eclean-kernel && \
 
     # Update @world, remove unused packages, and clean
     emerge -v -uDN @world && \
     emerge -av --depclean && \
     emerge --update --changed-use --deep @world && \
     eclean packages && \
-    eclean-dist --deep --fetch-restricted
+    eclean-dist --deep --fetch-restricted && \
 
     # Remove other junk
     rm -rf /stage3*.tar.bz2 \
-      /var/tmp/portage/
+      /var/tmp/portage/ && \
 
     # Compress kernel source
     cd /usr/src && \
