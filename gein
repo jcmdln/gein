@@ -50,7 +50,7 @@ Bootstrap() {
     cd /mnt/gentoo && chroot /mnt/gentoo /bin/bash
 }
 
-Minimal() {
+Base() {
     # Automate counting available cores and other hardware tasks
     export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)
     echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
@@ -131,7 +131,9 @@ Minimal() {
         mv tilde-master/.* /home/$Target_User && \
         rm -rf /home/$Target_User/master.zip /home/$Target_User/tilde-master
     fi
+}
 
+Minimal() {
     # Install minimal packages
     emerge -av \
       app-admin/sudo \
@@ -232,18 +234,27 @@ case $1 in
         Bootstrap
     ;;
 
+    base|-B)
+        Base && \
+        Minimal && \
+        Cleanup
+    ;;
+
     minimal|-m)
+        Base && \
         Minimal && \
         Cleanup
     ;;
 
     desktop|-d)
+        Base && \
         Minimal && \
         Desktop && \
         Cleanup
     ;;
 
     laptop|-l)
+        Base && \
         Minimal && \
         Desktop && \
         Laptop && \
@@ -252,6 +263,7 @@ case $1 in
 
     server|-s)
         echo "WIP"
+        #Base && \
         #Minimal && \
         #Server && \
         #Cleanup
@@ -259,12 +271,13 @@ case $1 in
 
     virtual|-v)
         echo "WIP"
+        #Base && \
         #Minimal && \
         #Virtual && \
         #Cleanup
     ;;
 
     *) echo "Available options for gein:"
-       echo "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
+       echo "  bootstrap (-b), base (-B) minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
     ;;
 esac
