@@ -1,6 +1,7 @@
 # /etc/portage/package.use
 
 app-admin/sudo -gcrypt -openssl sendmail
+app-editors/emacs X acl alsa gof gtk3 gzip-el imagemagick inotify jpeg png sound ssl svg threads tiff xpm xwidgets zlib -aqua -athena -games -gtk
 app-editors/vim X -minimal -perl -python -racket -tcl
 app-emulation/qemu sdl2 usb
 app-laptop/laptop-mode-tools acpi bluetooth
