@@ -119,8 +119,8 @@ Base() {
 	    sys-kernel/genkernel && \
     if grep -Rqi 'intel' /proc/cpuinfo; then $Emerge intel-microcode; fi && \
     cd /usr/src/linux && \
-    $MAKE defconfig && $MAKE menuconfig && $MAKE && \
-    $MAKE modules_install && $MAKE install && genkernel --install initramfs
+    $Make defconfig && $Make menuconfig && $Make && \
+    $Make modules_install && $Make install && genkernel --install initramfs
 
     ## Configure '/etc/fstab/'
     echo "/swapfile none swap sw 0 0" >> /etc/fstab && nano /etc/fstab
