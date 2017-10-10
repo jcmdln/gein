@@ -17,7 +17,7 @@ media-video/ffmpeg X aac hevc libass mp3 network ogg openssl opus rtmp sdl theor
 net-misc/connman bluetooth ethernet openvpn wifi
 net-wireless/wpa_supplicant dbus
 sys-libs/zlib minizip
-www-client/chromium system-ffmpeg system-icu
+www-client/chromium -hangouts -pic system-ffmpeg system-icu system-libvpx
 x11-base/xorg-drivers libinput
 x11-base/xorg-server -minimal
 x11-drivers/xf86-video-amdgpu glamor
