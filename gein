@@ -1,283 +1,235 @@
 #!/usr/bin/env sh
 
+#
+# gein is a script to simplify the process of installing Gentoo while still
+# allowing users to customize their options. Like any installation script, this
+# process is invasive and may interfere with your desired setup though attempts
+# have been made to make this less painful.
+#
+# There have been a few updates to this file, and you may now adjust the
+# settings the script will use though this needs additional work. Some tasks
+# such as partitioning disks or selecting the GPU really should be automated
+# though this is something that will likely be attempted later.
+#
+
+
+### Settings #####################################
+
+## Settings
+SwapSize=4G
+
+## Commands
+Emerge=emerge -v
+Make=make -j${CPU_CORES}
+
+## Stage3
+S3URL=http://distfiles.gentoo.org/releases
+S3Arch=amd64
+S3Date=20170907
+
+## Portage
+Make_Conf=https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf
+Package_Env=https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env
+Package_Use=https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use
+
+
+### Bootstrap ####################################
+
 Bootstrap() {
-    # Confirm the user has setup their disks
-    echo "Please partition and mount your disks before continuing!"
+    ## Confirm the user has setup their disks
+    echo "Please partition and mount your disks before continuing!" && \
     read -ep "Proceed with installation? [Y/N]: " Proceed && \
-    if echo $Proceed | grep -iq "^n" ; then exit; fi && \
+    if echo $Proceed | grep -iq "^n" ; then exit; fi
 
-    # Set time via ntpd
-    ntpd -q -g && \
+    ## Set time via ntpd
+    ntpd -q -g
 
-    # Download and extract stage3 tarball
+    ## Download and extract stage3 tarball
     cd /mnt/gentoo && \
-    S3_ARCH="amd64" && S3_DATE="20170907"
-    wget http://distfiles.gentoo.org/releases/${S3_ARCH}/autobuilds/${S3_DATE}/stage3-${S3_ARCH}-nomultilib-${S3_DATE}.tar.bz2 && \
-      tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner && \
+    wget ${$S3URL}/${S3_Arch}/autobuilds/${S3Date}/stage3-${S3Arch}-nomultilib-${S3Date}.tar.bz2 && \
+    tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
 
-    # Mount hardware devices
+    ## Mount hardware devices
     mount -t proc /proc /mnt/gentoo/proc && \
-    mount --rbind /sys /mnt/gentoo/sys && \
+    mount --rbind /sys  /mnt/gentoo/sys && \
     mount --make-rslave /mnt/gentoo/sys && \
-    mount --rbind /dev /mnt/gentoo/dev && \
-    mount --make-rslave /mnt/gentoo/dev && \
+    mount --rbind /dev  /mnt/gentoo/dev && \
+    mount --make-rslave /mnt/gentoo/dev
 
-    # Setup '/swapfile'
-    SwapFile="/mnt/gentoo/swapfile"
-    if [ ! -e $SwapFile ]; then
-        fallocate -l 2G $SwapFile && \
-        mkswap $SwapFile && \
-        chmod 0600 $SwapFile && \
-        swapon $SwapFile
-    fi && \
+    ## Setup '/swapfile'
+    Swap_File="/mnt/gentoo/swapfile" && \
+    if [ ! -e $Swap_File ]; then
+        fallocate -l $Swap_Size $Swap_File && \
+	mkswap $Swap_File && chmod 0600 $Swap_File && swapon $Swap_File
+    fi
 
-    # Configure Portage
-    wget -O /mnt/gentoo/etc/portage/make.conf \
-      https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf && \
-    rm -rf /mnt/gentoo/etc/portage/package.use && \
-    wget -O /mnt/gentoo/etc/portage/package.use \
-      https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use && \
-    #wget -0 /mnt/gentoo/etc/portage/package.env \
-    #  https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env
+    ## Configure Portage
+    wget -Oc /mnt/gentoo/etc/portage/make.conf $Make_Conf && \
+    wget -Oc /mnt/gentoo/etc/portage/package.use $Package_Use && \
+    if [ -z $Package_Env ]; then
+	wget -Oc /mnt/gentoo/etc/portage/package.env $Package_Env
+    fi
 
-    # Setup Portage mirrors
+    ## Setup Portage mirrors
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
     cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
       /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
-    cp -vL /etc/resolv.conf /mnt/gentoo/etc/ && \
+    cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
-    # Chroot into '/mnt/gentoo'
+    ## Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && chroot /mnt/gentoo /bin/bash
 }
 
 Base() {
-    # Automate counting available cores and other hardware tasks
-    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo)  && \
-    echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile && \
+    ## Automate counting available cores and other hardware tasks
+    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo) && \
+    echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
 
-    # Reload profile and update PS1
-    source /etc/profile && export PS1="(chroot) $PS1" && \
+    ## Reload profile and update PS1
+    source /etc/profile && export PS1="(chroot) $PS1"
 
-    # Sync Portage and select profile
+    ## Sync Portage and select profile
     emerge-webrsync && eselect profile list && \
-    read -ep "Which profile?: " Target_Profile && \
+    read -ep "Which profile?: " TargetProfile && \
     eselect profile set $Target_Profile && \
-    emerge -av --update --deep --newuse @world && \
+    $Emerge --update --deep --newuse @world
 
-    # Set desired timezone
+    ## Set desired timezone
     ls /usr/share/zoneinfo && \
     read -ep "Target region: " Target_Region && \
     ls /usr/share/zoneinfo/${Target_Region} && \
     read -ep "Target city: " Target_City && \
     TimeZone=${Target_Region}"/"${Target_City} && \
     echo "${TimeZone}" > /etc/timezone && \
-    emerge --config sys-libs/timezone-data && \
+    emerge --config sys-libs/timezone-data
 
-    # Set desired locales
+    ## Set desired locales
     nano /etc/locale.gen && \
     locale-gen && locale -a && eselect locale list && \
     read -ep "Target locale: " Target_Locale && \
-    eselect locale set ${Target_Locale} && \
+    eselect locale set ${Target_Locale}
 
-    # Update environment
-    env-update && source /etc/profile && export PS1="(chroot) $PS1" && \
+    ## Update environment
+    env-update && source /etc/profile && export PS1="(chroot) $PS1"
 
-    # Emerge and install Linux kernel
-    emerge -av \
-      sys-kernel/gentoo-sources \
-      sys-kernel/linux-firmware \
-      sys-apps/pciutils \
-      sys-kernel/genkernel && \
-    if grep -Rqi 'intel' /proc/cpuinfo; then
-        emerge -av intel-microcode
-    fi && \
+    ## Emerge/install Linux kernel and modules
+    $Emerge sys-kernel/gentoo-sources \
+	    sys-kernel/linux-firmware \
+	    sys-apps/pciutils \
+	    sys-kernel/genkernel && \
+    if grep -Rqi 'intel' /proc/cpuinfo; then $Emerge intel-microcode; fi && \
     cd /usr/src/linux && \
-    wget -O /mnt/gentoo/usr/src/linux/.config \
-      https://raw.githubusercontent.com/jcmdln/gein/master/usr/src/linux/.config && \
-    make -j${CPU_CORES} menuconfig && \
-    make -j${CPU_CORES} && \
-    make -j${CPU_CORES} modules_install && \
-    make -j${CPU_CORES} install && \
-    genkernel --install initramfs && \
+    $MAKE defconfig && $MAKE menuconfig && $MAKE && \
+    $MAKE modules_install && $MAKE install && genkernel --install initramfs
 
-    # Configure '/etc/fstab/'
-    echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
-    nano /etc/fstab && \
+    ## Configure '/etc/fstab/'
+    echo "/swapfile none swap sw 0 0" >> /etc/fstab && nano /etc/fstab
 
-    # Install neworking packages &
-    emerge -av --noreplace net-misc/netifrc && \
-    emerge -av net-misc/dhcpcd && \
+    ## Install neworking packages &
+    $Emerge --noreplace net-misc/netifrc && \
+    $Emerge net-misc/dhcpcd
 
-    # Set desired hostname and update '/etc/hosts'
+    ## Set desired hostname and update '/etc/hosts'
     read -ep "Hostname: " Target_Hostname && \
-    echo hostname="$Target_Hostname" > /etc/conf.d/hostname && \
+    echo hostname="$Target_Hostname" > /etc/conf.d/hostname
 
-    # Configure and install Grub
-    emerge -av sys-boot/grub:2 && \
+    ## Configure and install Grub
+    $Emerge sys-boot/grub:2 && \
     read -ep "Where to install Grub: " Grub_Target && \
     grub-install $Grub_Target && \
-    grub-mkconfig -o /boot/grub/grub.cfg && \
+    grub-mkconfig -o /boot/grub/grub.cfg
 
-    # Set root password and optionally setup user
-    passwd && \
+    ## Set root password
+    passwd
+
+    ## Optionally setup user
     read -ep "Setup a standard user? [Y/N]: " Proceed && \
     if echo $Proceed | grep -iq "^y"; then
         read -ep "Username: " Target_User && \
         useradd -m -G audio,wheel $Target_User && \
-        passwd $Target_User && \
-        wget -O /home/$Target_User/master.zip \
-          https://github.com/jcmdln/gein/archive/master.zip && \
-        unzip /home/$Target_User/master.zip -d /home/$Target_User && \
-        mv tilde-master/.* /home/$Target_User && \
-        rm -rf /home/$Target_User/master.zip /home/$Target_User/tilde-master
+        passwd $Target_User
     fi
 }
 
-Minimal() {
-    # Install minimal packages
-    emerge -av \
-      app-admin/sudo \
-      app-editors/vim \
-      app-misc/ranger \
-      app-misc/tmux \
-      dev-vcs/git \
-      www-client/elinks
-}
-
 Desktop() {
-    # Pick which GPU driver to use
+    ## Pick which GPU driver to use
     echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)" && \
     read -ep "Which GPU's do you have?: " Target_GPU && \
+    shopt -s nocasematch && \
     case $Target_GPU in
-        amd     | AMD     ) export Active_GPU="amdgpu radeonsi radeon";;
-        intel   | intel   ) export Active_GPU="intel";;
-        nouveau | Nouveau ) export Active_GPU="nouveau";;
-        virt    | Virt    ) export Active_GPU="virtualbox vmware";;
+        amd    ) export Active_GPU="amdgpu radeonsi radeon";;
+        intel  ) export Active_GPU="intel";;
+        nouveau) export Active_GPU="nouveau";;
+	#nvidia) export Active_GPU="nvidia";;
+        virt   ) export Active_GPU="virtualbox vmware";;
         *) echo "You must select one of the available options!";;
-    esac && \
-    echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile && \
+    esac && shopt -u nocasematch && \
+    echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile
 
-    # Install Desktop drivers and packages
-    MAKEOPTS="-j1" emerge -av dev-util/cmake && \
-    emerge -av x11-base/xorg-drivers && \
-    emerge -av \
-      x11-misc/wmctrl \
-      x11-misc/xdotool && \
+    ## Install Desktop drivers and packages
+    MAKEOPTS="-j1" $Emerge dev-util/cmake && \
+    $Emerge x11-base/xorg-drivers \
+	    x11-misc/wmctrl \
+	    x11-misc/xdotool && \
     env-update && \
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
-    emerge -av \
-      media-fonts/dejavu \
-      media-gfx/scrot \
-      media-sound/alsa-utils \
-      media-sound/cmus \
-      media-video/ffmpeg \
-      media-video/mpv \
-      net-misc/youtube-dl \
-      www-client/chromium \
-      www-client/firefox \
-      x11-misc/dmenu \
-      x11-misc/i3lock \
-      x11-misc/i3status \
-      x11-misc/xclip \
-      x11-terms/rxvt-unicode \
-      x11-wm/i3
+    $Emerge media-fonts/dejavu \
+	    media-gfx/scrot \
+	    media-sound/alsa-utils \
+	    media-sound/cmus \
+	    media-video/ffmpeg \
+	    media-video/mpv \
+	    net-misc/youtube-dl \
+	    www-client/chromium \
+	    www-client/firefox \
+	    x11-misc/dmenu \
+	    x11-misc/i3lock \
+	    x11-misc/i3status \
+	    x11-misc/xclip \
+	    x11-terms/rxvt-unicode \
+	    x11-wm/i3
 }
 
 Laptop() {
-    emerge -av \
-      app-laptop/laptop-mode-tools \
-      net-misc/connman \
-      net-wireless/wpa_supplicant \
-      x11-apps/xbacklight && \
+    $Emerge app-laptop/laptop-mode-tools \
+	    net-misc/connman \
+	    net-wireless/wpa_supplicant \
+	    x11-apps/xbacklight && \
     rc-update add laptop_mode default
 }
 
-Server() {
-    emerge -av \
-      app-emulation/qemu
-      app-emulation/rkt
-      net-vpn/openvpn
-      sys-cluster/kubectl
-}
-
+#Server() {}
 #Virtual() {}
 
 Cleanup() {
-    # Install eclean
-    emerge -av \
-      app-portage/gentoolkit \
-      app-admin/eclean-kernel && \
+    ## Install eclean
+    $Emerge app-portage/gentoolkit \
+	    app-admin/eclean-kernel && \
 
-    # Update @world, remove unused packages, and clean
-    emerge -v -uDN @world && \
-    emerge -av --depclean && \
-    emerge --update --changed-use --deep @world && \
+    ## Update @world, remove unused packages, and clean
+    $Emerge -uDN @world && \
+    $Emerge --depclean && \
+    $Emerge --update --changed-use --deep @world && \
     eclean packages && \
     eclean-dist --deep --fetch-restricted && \
 
-    # Remove other junk
+    ## Remove junk created during installation
     rm -rf /stage3*.tar.bz2 \
-      /var/tmp/portage/ && \
-
-    # Compress kernel source
-    cd /usr/src && \
-    tar -Jcvf linux-backup.tar.gz /usr/src/linux-* && \
-    cd /usr/src/linux && rm -rf */
+      /var/tmp/portage/
 }
 
 
-## Execution #####################################
+### Execution ####################################
 
+shopt -s nocasematch && \
 case $1 in
-    bootstrap|-b)
-        Bootstrap
-    ;;
-
-    base|-B)
-        Base && \
-        Minimal && \
-        Cleanup
-    ;;
-
-    minimal|-m)
-        Base && \
-        Minimal && \
-        Cleanup
-    ;;
-
-    desktop|-d)
-        Base && \
-        Minimal && \
-        Desktop && \
-        Cleanup
-    ;;
-
-    laptop|-l)
-        Base && \
-        Minimal && \
-        Desktop && \
-        Laptop && \
-        Cleanup
-    ;;
-
-    server|-s)
-        echo "WIP"
-        #Base && \
-        #Minimal && \
-        #Server && \
-        #Cleanup
-    ;;
-
-    virtual|-v)
-        echo "WIP"
-        #Base && \
-        #Minimal && \
-        #Virtual && \
-        #Cleanup
-    ;;
+    bootstrap | -b) Bootstrap;;
+    minimal   | -m) Minimal && Cleanup;;
+    desktop   | -d) Minimal && Desktop && Cleanup;;
+    laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
 
     *) echo "Available options for gein:"
-       echo "  bootstrap (-b), base (-B) minimal (-m), desktop (-d), laptop (-l), server (-s), virtual (-v)"
+       echo "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l)"
     ;;
-esac
+esac && shopt -u nocasematch
