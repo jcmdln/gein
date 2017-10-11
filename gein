@@ -1,39 +1,18 @@
 #!/usr/bin/env sh
 
-#
-# gein is a script to simplify the process of installing Gentoo while still
-# allowing users to customize their options. Like any installation script, this
-# process is invasive and may interfere with your desired setup though attempts
-# have been made to make this less painful.
-#
-# There have been a few updates to this file, and you may now adjust the
-# settings the script will use though this needs additional work. Some tasks
-# such as partitioning disks or selecting the GPU really should be automated
-# though this is something that will likely be attempted later.
-#
-
-
-### Settings #####################################
-
-## Settings
-Swap_Size="4G"
-
 ## Commands
 Emerge="emerge"
 Make="make -j${CPU_CORES}"
 
-## Stage3
-S3URL="http://distfiles.gentoo.org/releases"
-S3Arch="amd64"
-S3Date="20171005"
-
-## Portage
+## Settings
+#Kernel_Config=""
 Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
 Package_Env="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env"
 Package_Use="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use"
-
-## Kernel
-#Kernel_Config=""
+Stage3_Arch="amd64"
+Stage3_Date="20171005"
+Stage3_Url="http://distfiles.gentoo.org/releases"
+Swap_Size="4G"
 
 
 ### Bootstrap ####################################
@@ -49,7 +28,7 @@ Bootstrap() {
 
     ## Download and extract stage3 tarball
     cd /mnt/gentoo && \
-    wget ${S3URL}/${S3Arch}/autobuilds/${S3Date}/stage3-${S3Arch}-${S3Date}.tar.bz2 && \
+    wget ${Stage3_Url}/${Stage3_Arch}/autobuilds/${Stage3_Date}/stage3-${Stage3_Arch}-${Stage3_Date}.tar.bz2 && \
     tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
 
     ## Mount hardware devices
