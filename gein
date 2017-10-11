@@ -25,7 +25,7 @@ Make="make -j${CPU_CORES}"
 ## Stage3
 S3URL="http://distfiles.gentoo.org/releases"
 S3Arch="amd64"
-S3Date="20170907"
+S3Date="20171005"
 
 ## Portage
 Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
