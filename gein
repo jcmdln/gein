@@ -3,6 +3,7 @@
 ## Commands
 Emerge="emerge"
 Make="make -j${CPU_CORES}"
+Read="$Read"
 
 ## Settings
 #Kernel_Config=""
@@ -13,6 +14,7 @@ Stage3_Arch="amd64"
 Stage3_Date="20171005"
 Stage3_Url="http://distfiles.gentoo.org/releases"
 Swap_Size="4G"
+Time_Zone="America/New_York"
 
 
 ### Bootstrap ####################################
@@ -20,7 +22,7 @@ Swap_Size="4G"
 Bootstrap() {
     ## Confirm the user has setup their disks
     echo "Please partition and mount your disks before continuing!" && \
-    read -ep "Proceed with installation? [Y/N]: " Proceed && \
+    $Read "Proceed with installation? [Y/N]: " Proceed && \
     if echo $Proceed | grep -iq "^n" ; then exit; fi
 
     ## Set time via ntpd
@@ -76,20 +78,17 @@ Minimal() {
 
     ## Sync Portage and select profile
     emerge-webrsync && eselect profile list && \
-    read -ep "Which profile?: " TargetProfile && \
+    $Read "Which profile?: " TargetProfile && \
     eselect profile set $Target_Profile && \
     $Emerge --update --deep --newuse @world
 
     ## Set desired timezone
-    ls /usr/share/zoneinfo && read -ep "Target region: " Target_Region && \
-    ls /usr/share/zoneinfo/${Target_Region} && read -ep "Target city: " Target_City && \
-    TimeZone=${Target_Region}"/"${Target_City} && echo "${TimeZone}" > /etc/timezone && \
-    emerge --config sys-libs/timezone-data
+    echo "${Time_Zone}" > /etc/timezone && emerge --config sys-libs/timezone-data
 
     ## Set desired locales
     nano /etc/locale.gen && \
     locale-gen && locale -a && eselect locale list && \
-    read -ep "Target locale: " Target_Locale && \
+    $Read "Target locale: " Target_Locale && \
     eselect locale set ${Target_Locale}
 
     ## Update environment
@@ -117,12 +116,12 @@ Minimal() {
     $Emerge net-misc/dhcpcd
 
     ## Set desired hostname and update '/etc/hosts'
-    read -ep "Hostname: " Target_Hostname && \
+    $Read "Hostname: " Target_Hostname && \
     echo hostname="$Target_Hostname" > /etc/conf.d/hostname
 
     ## Configure and install Grub
     $Emerge sys-boot/grub:2 && \
-    read -ep "Where to install Grub: " Grub_Target && \
+    $Read "Where to install Grub: " Grub_Target && \
     grub-install $Grub_Target && \
     grub-mkconfig -o /boot/grub/grub.cfg
 
@@ -130,9 +129,9 @@ Minimal() {
     passwd
 
     ## Optionally setup user
-    read -ep "Setup a standard user? [Y/N]: " Proceed && \
+    $Read "Setup a standard user? [Y/N]: " Proceed && \
     if echo $Proceed | grep -iq "^y"; then
-        read -ep "Username: " Target_User && \
+        $Read "Username: " Target_User && \
         useradd -m -G audio,wheel $Target_User && \
         passwd $Target_User
     fi
@@ -144,7 +143,7 @@ Minimal() {
 Desktop() {
     ## Pick which GPU driver to use
     echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)" && \
-    read -ep "Which GPU's do you have?: " Target_GPU && \
+    $Read "Which GPU's do you have?: " Target_GPU && \
     shopt -s nocasematch && \
     case $Target_GPU in
         amd     ) export Active_GPU="amdgpu radeonsi radeon";;
@@ -208,7 +207,7 @@ Cleanup() {
     $Emerge --depclean && \
     $Emerge --update --changed-use --deep @world && \
     eclean packages && \
-    eclean-dist --deep --fetch-restricted && \
+    eclean-dist --deep --fetch-restricted
 
     ## Remove junk created during installation
     rm -rf /stage3*.tar.bz2 \
