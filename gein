@@ -64,10 +64,11 @@ Bootstrap() {
     fi
 
     ## Configure Portage
-    wget -Oc /mnt/gentoo/etc/portage/make.conf $Make_Conf && \
-    wget -Oc /mnt/gentoo/etc/portage/package.use $Package_Use && \
+    wget $Make_Conf   -O /mnt/gentoo/etc/portage/make.conf && \
+    rm -rf /mnt/gentoo/etc/portage/package.use && \
+    wget $Package_Use -O /mnt/gentoo/etc/portage/package.use && \
     if [ -z $Package_Env ]; then
-	wget -Oc /mnt/gentoo/etc/portage/package.env $Package_Env
+	wget $Package_Env -O /mnt/gentoo/etc/portage/package.env
     fi
 
     ## Setup Portage mirrors
