@@ -32,6 +32,9 @@ Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make
 Package_Env="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env"
 Package_Use="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use"
 
+## Kernel
+#Kernel_Config=""
+
 
 ### Bootstrap ####################################
 
@@ -123,7 +126,13 @@ Minimal() {
 	    sys-kernel/genkernel && \
     if grep -Rqi 'intel' /proc/cpuinfo; then $Emerge intel-microcode; fi && \
     cd /usr/src/linux && \
-    $Make defconfig && $Make menuconfig && $Make && \
+    if [ -z $Kernel_Config ]; then
+    	$Make defconfig
+    else
+        wget $Kernel_config -O /usr/src/linux/.config && \
+	$Make
+    fi && \
+    $Make menuconfig && $Make && \
     $Make modules_install && $Make install && genkernel --install initramfs
 
     ## Configure '/etc/fstab/'
