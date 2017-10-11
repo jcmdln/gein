@@ -81,7 +81,10 @@ Bootstrap() {
     cd /mnt/gentoo && chroot /mnt/gentoo /bin/bash
 }
 
-Base() {
+
+### Minimal ######################################
+
+Minimal() {
     ## Automate counting available cores and other hardware tasks
     export CPU_CORES=$(grep -c ^processor /proc/cpuinfo) && \
     echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
@@ -152,6 +155,9 @@ Base() {
     fi
 }
 
+
+### Desktop ######################################
+
 Desktop() {
     ## Pick which GPU driver to use
     echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)" && \
@@ -192,6 +198,9 @@ Desktop() {
 	    x11-wm/i3
 }
 
+
+### Laptop #######################################
+
 Laptop() {
     $Emerge app-laptop/laptop-mode-tools \
 	    net-misc/connman \
@@ -202,6 +211,9 @@ Laptop() {
 
 #Server() {}
 #Virtual() {}
+
+
+### Cleanup ######################################
 
 Cleanup() {
     ## Install eclean
