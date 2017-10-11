@@ -63,7 +63,7 @@ Bootstrap() {
     Swap_File="/mnt/gentoo/swapfile" && \
     if [ ! -e $Swap_File ]; then
         fallocate -l $Swap_Size $Swap_File && \
-	mkswap $Swap_File && chmod 0600 $Swap_File && swapon $Swap_File
+        mkswap $Swap_File && chmod 0600 $Swap_File && swapon $Swap_File
     fi
 
     ## Configure Portage
@@ -71,7 +71,7 @@ Bootstrap() {
     rm -rf /mnt/gentoo/etc/portage/package.use && \
     wget $Package_Use -O /mnt/gentoo/etc/portage/package.use && \
     if [ -z $Package_Env ]; then
-	wget $Package_Env -O /mnt/gentoo/etc/portage/package.env
+        wget $Package_Env -O /mnt/gentoo/etc/portage/package.env
     fi
 
     ## Setup Portage mirrors
@@ -102,12 +102,9 @@ Minimal() {
     $Emerge --update --deep --newuse @world
 
     ## Set desired timezone
-    ls /usr/share/zoneinfo && \
-    read -ep "Target region: " Target_Region && \
-    ls /usr/share/zoneinfo/${Target_Region} && \
-    read -ep "Target city: " Target_City && \
-    TimeZone=${Target_Region}"/"${Target_City} && \
-    echo "${TimeZone}" > /etc/timezone && \
+    ls /usr/share/zoneinfo && read -ep "Target region: " Target_Region && \
+    ls /usr/share/zoneinfo/${Target_Region} && read -ep "Target city: " Target_City && \
+    TimeZone=${Target_Region}"/"${Target_City} && echo "${TimeZone}" > /etc/timezone && \
     emerge --config sys-libs/timezone-data
 
     ## Set desired locales
@@ -121,17 +118,16 @@ Minimal() {
 
     ## Emerge/install Linux kernel and modules
     $Emerge sys-kernel/gentoo-sources \
-	    sys-kernel/linux-firmware \
-	    sys-apps/pciutils \
-	    sys-kernel/genkernel && \
+            sys-kernel/linux-firmware \
+            sys-apps/pciutils \
+            sys-kernel/genkernel && \
     if grep -Rqi 'intel' /proc/cpuinfo; then $Emerge intel-microcode; fi && \
     cd /usr/src/linux && \
     if [ -z $Kernel_Config ]; then
         $Make defconfig
     else
-        wget $Kernel_config -O /usr/src/linux/.config && \
-    fi && \
-    $Make && \
+        wget $Kernel_config -O /usr/src/linux/.config
+    fi && $Make && \
     $Make modules_install && $Make install && genkernel --install initramfs
 
     ## Configure '/etc/fstab/'
@@ -172,38 +168,38 @@ Desktop() {
     read -ep "Which GPU's do you have?: " Target_GPU && \
     shopt -s nocasematch && \
     case $Target_GPU in
-        amd    ) export Active_GPU="amdgpu radeonsi radeon";;
-        intel  ) export Active_GPU="intel";;
-        nouveau) export Active_GPU="nouveau";;
-	#nvidia) export Active_GPU="nvidia";;
-        virt   ) export Active_GPU="virtualbox vmware";;
+        amd     ) export Active_GPU="amdgpu radeonsi radeon";;
+        intel   ) export Active_GPU="intel";;
+        nouveau ) export Active_GPU="nouveau";;
+        nvidia  ) export Active_GPU="nvidia";;
+        virt    ) export Active_GPU="virtualbox vmware";;
         *) echo "You must select one of the available options!";;
     esac && shopt -u nocasematch && \
     echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile
 
     ## Install Desktop drivers and packages
-    MAKEOPTS="-j1" $Emerge dev-util/cmake && \
-    $Emerge x11-base/xorg-drivers \
-	    x11-misc/wmctrl \
-	    x11-misc/xdotool && \
+    $Emerge dev-util/cmake \
+            x11-base/xorg-drivers \
+            x11-misc/wmctrl \
+            x11-misc/xdotool && \
     env-update && \
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
     $Emerge media-fonts/dejavu \
-	    media-gfx/scrot \
-	    media-sound/alsa-utils \
-	    media-sound/cmus \
-	    media-video/ffmpeg \
-	    media-video/mpv \
-	    net-misc/youtube-dl \
-	    www-client/chromium \
-	    www-client/firefox \
-	    x11-misc/dmenu \
-	    x11-misc/i3lock \
-	    x11-misc/i3status \
-	    x11-misc/xclip \
-	    x11-terms/rxvt-unicode \
-	    x11-wm/i3
+            media-gfx/scrot \
+            media-sound/alsa-utils \
+            media-sound/cmus \
+            media-video/ffmpeg \
+            media-video/mpv \
+            net-misc/youtube-dl \
+            www-client/chromium \
+            www-client/firefox \
+            x11-misc/dmenu \
+            x11-misc/i3lock \
+            x11-misc/i3status \
+            x11-misc/xclip \
+            x11-terms/rxvt-unicode \
+            x11-wm/i3
 }
 
 
@@ -211,9 +207,9 @@ Desktop() {
 
 Laptop() {
     $Emerge app-laptop/laptop-mode-tools \
-	    net-misc/connman \
-	    net-wireless/wpa_supplicant \
-	    x11-apps/xbacklight && \
+            net-misc/connman \
+            net-wireless/wpa_supplicant \
+            x11-apps/xbacklight && \
     rc-update add laptop_mode default
 }
 
@@ -226,7 +222,7 @@ Laptop() {
 Cleanup() {
     ## Install eclean
     $Emerge app-portage/gentoolkit \
-	    app-admin/eclean-kernel && \
+            app-admin/eclean-kernel && \
 
     ## Update @world, remove unused packages, and clean
     $Emerge -uDN @world && \
