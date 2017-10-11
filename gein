@@ -46,7 +46,7 @@ Bootstrap() {
 
     ## Download and extract stage3 tarball
     cd /mnt/gentoo && \
-    wget ${$S3URL}/${S3_Arch}/autobuilds/${S3Date}/stage3-${S3Arch}-${S3Date}.tar.bz2 && \
+    wget ${S3URL}/${S3Arch}/autobuilds/${S3Date}/stage3-${S3Arch}-${S3Date}.tar.bz2 && \
     tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
 
     ## Mount hardware devices
