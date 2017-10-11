@@ -19,7 +19,7 @@
 SwapSize="4G"
 
 ## Commands
-Emerge="emerge -v"
+Emerge="emerge"
 Make="make -j${CPU_CORES}"
 
 ## Stage3
