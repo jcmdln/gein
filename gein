@@ -3,9 +3,13 @@
 ## Commands
 Emerge="emerge"
 Make="make -j${CPU_CORES}"
-Read="$Read"
+Read="read -ep"
+
 
 ## Settings
+Active_GPU="intel"
+Grub_Target="/dev/sda1"
+Hostname="gein"
 #Kernel_Config=""
 Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
 Package_Env="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env"
@@ -17,13 +21,13 @@ Swap_Size="4G"
 Time_Zone="America/New_York"
 
 
-### Bootstrap ####################################
-
 Bootstrap() {
     ## Confirm the user has setup their disks
-    echo "Please partition and mount your disks before continuing!" && \
+    echo "Please ensure that you have performed the following: " && \
+    echo "  - Edited the environment variables at the top of this script."
+    echo "  - Partitioned and mounted your disks." && \
     $Read "Proceed with installation? [Y/N]: " Proceed && \
-    if echo $Proceed | grep -iq "^n" ; then exit; fi
+    if echo $Proceed | grep -iq "^n"; then exit; fi
 
     ## Set time via ntpd
     ntpd -q -g
@@ -44,7 +48,9 @@ Bootstrap() {
     Swap_File="/mnt/gentoo/swapfile" && \
     if [ ! -e $Swap_File ]; then
         fallocate -l $Swap_Size $Swap_File && \
-        mkswap $Swap_File && chmod 0600 $Swap_File && swapon $Swap_File
+        mkswap $Swap_File && \
+        chmod 0600 $Swap_File && \
+        swapon $Swap_File
     fi
 
     ## Configure Portage
@@ -62,11 +68,10 @@ Bootstrap() {
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     ## Chroot into '/mnt/gentoo'
-    cd /mnt/gentoo && chroot /mnt/gentoo /bin/bash
+    cd /mnt/gentoo && \
+    chroot /mnt/gentoo /bin/bash
 }
 
-
-### Minimal ######################################
 
 Minimal() {
     ## Automate counting available cores and other hardware tasks
@@ -74,86 +79,77 @@ Minimal() {
     echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
 
     ## Reload profile and update PS1
-    source /etc/profile && export PS1="(chroot) $PS1"
+    source /etc/profile && \
+    export PS1="(chroot) $PS1"
 
     ## Sync Portage and select profile
-    emerge-webrsync && eselect profile list && \
-    $Read "Which profile?: " TargetProfile && \
+    emerge-webrsync && \
+    eselect profile list && \
+    $Read "Which profile?: " Target_Profile && \
     eselect profile set $Target_Profile && \
     $Emerge --update --deep --newuse @world
 
     ## Set desired timezone
-    echo "${Time_Zone}" > /etc/timezone && emerge --config sys-libs/timezone-data
+    echo "${Time_Zone}" > /etc/timezone && \
+    emerge --config sys-libs/timezone-data
 
     ## Set desired locales
     nano /etc/locale.gen && \
-    locale-gen && locale -a && eselect locale list && \
+    locale-gen && \
+    locale -a && \
+    eselect locale list && \
     $Read "Target locale: " Target_Locale && \
     eselect locale set ${Target_Locale}
 
     ## Update environment
-    env-update && source /etc/profile && export PS1="(chroot) $PS1"
+    env-update && \
+    source /etc/profile && \
+    export PS1="(chroot) $PS1"
 
     ## Emerge/install Linux kernel and modules
     $Emerge sys-kernel/gentoo-sources \
             sys-kernel/linux-firmware \
             sys-apps/pciutils \
             sys-kernel/genkernel && \
-    if grep -Rqi 'intel' /proc/cpuinfo; then $Emerge intel-microcode; fi && \
+    if grep -Rqi 'intel' /proc/cpuinfo; then 
+        $Emerge intel-microcode
+    fi && \
     cd /usr/src/linux && \
     if [ -z $Kernel_Config ]; then
-        $Make defconfig
+        $Make defconfig && \
+        $Make menuconfig
     else
         wget $Kernel_config -O /usr/src/linux/.config
-    fi && $Make && \
-    $Make modules_install && $Make install && genkernel --install initramfs
+    fi && \
+    $Make && \
+    $Make modules_install && \
+    $Make install && \
+    genkernel --install initramfs
 
     ## Configure '/etc/fstab/'
-    echo "/swapfile none swap sw 0 0" >> /etc/fstab && nano /etc/fstab
+    echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
+    nano /etc/fstab
 
     ## Install neworking packages &
     $Emerge --noreplace net-misc/netifrc && \
     $Emerge net-misc/dhcpcd
 
     ## Set desired hostname and update '/etc/hosts'
-    $Read "Hostname: " Target_Hostname && \
-    echo hostname="$Target_Hostname" > /etc/conf.d/hostname
+    echo hostname="${Hostname}" > /etc/conf.d/hostname
 
     ## Configure and install Grub
     $Emerge sys-boot/grub:2 && \
-    $Read "Where to install Grub: " Grub_Target && \
     grub-install $Grub_Target && \
     grub-mkconfig -o /boot/grub/grub.cfg
 
     ## Set root password
     passwd
-
-    ## Optionally setup user
-    $Read "Setup a standard user? [Y/N]: " Proceed && \
-    if echo $Proceed | grep -iq "^y"; then
-        $Read "Username: " Target_User && \
-        useradd -m -G audio,wheel $Target_User && \
-        passwd $Target_User
-    fi
 }
 
 
-### Desktop ######################################
-
 Desktop() {
     ## Pick which GPU driver to use
-    echo "Available GPU drivers: AMD, Intel, Nouveau, Virt (vbox & vmware)" && \
-    $Read "Which GPU's do you have?: " Target_GPU && \
-    shopt -s nocasematch && \
-    case $Target_GPU in
-        amd     ) export Active_GPU="amdgpu radeonsi radeon";;
-        intel   ) export Active_GPU="intel";;
-        nouveau ) export Active_GPU="nouveau";;
-        nvidia  ) export Active_GPU="nvidia";;
-        virt    ) export Active_GPU="virtualbox vmware";;
-        *) echo "You must select one of the available options!";;
-    esac && shopt -u nocasematch && \
-    echo "Active_GPU=\"$Active_GPU\"" >> /etc/profile
+    echo "Active_GPU=${Active_GPU}" >> /etc/profile
 
     ## Install Desktop drivers and packages
     $Emerge dev-util/cmake \
@@ -181,8 +177,6 @@ Desktop() {
 }
 
 
-### Laptop #######################################
-
 Laptop() {
     $Emerge app-laptop/laptop-mode-tools \
             net-misc/connman \
@@ -191,11 +185,6 @@ Laptop() {
     rc-update add laptop_mode default
 }
 
-#Server() {}
-#Virtual() {}
-
-
-### Cleanup ######################################
 
 Cleanup() {
     ## Install eclean
@@ -210,8 +199,7 @@ Cleanup() {
     eclean-dist --deep --fetch-restricted
 
     ## Remove junk created during installation
-    rm -rf /stage3*.tar.bz2 \
-      /var/tmp/portage/
+    rm -rf /stage3*.tar.bz2
 }
 
 
