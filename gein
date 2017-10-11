@@ -16,7 +16,7 @@
 ### Settings #####################################
 
 ## Settings
-SwapSize="4G"
+Swap_Size="4G"
 
 ## Commands
 Emerge="emerge"
