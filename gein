@@ -57,7 +57,7 @@ Bootstrap() {
 
     ## Configure Portage
     if [ ! -z $Make_Conf ]; then
-	wget $Make_Conf   -O /mnt/gentoo/etc/portage/make.conf
+        wget $Make_Conf   -O /mnt/gentoo/etc/portage/make.conf
     fi && \
     if [ ! -z $Package_Use ]; then
         rm -rf /mnt/gentoo/etc/portage/package.use && \
@@ -213,9 +213,17 @@ case $1 in
     desktop   | -d) Minimal && Desktop && Cleanup;;
     laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
 
-    *) echo "Available options for gein:"
-       echo "  -b bootstrap  Bootstrap the stage3 tarball (required first step)"
-       echo "  -m minimal    Install only required gentoo packages"
+    help | --help | -h)
+        echo "Try reading the script along with the Gentoo documentation:"
+        echo "https://www.gentoo.org/support/documentation/"
+    ;;
+
+    *) printf "gein - GEntoo INstaller\n\n"
+       echo "  -h help       Suggests to read the script and Gentoo documentation"
+       printf "\nRequired first step:\n"
+       echo "  -b bootstrap  Bootstrap the stage3 tarball"
+       printf "\nPost-bootstrap options:\n"
+       echo "  -m minimal    Only install required gentoo packages"
        echo "  -d desktop    Install required and desktop packages"
        echo "  -l laptop     Install required, desktop, and laptop packages"
     ;;
