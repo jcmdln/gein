@@ -1,24 +1,26 @@
 #!/usr/bin/env sh
 
 ## Commands
-Emerge="emerge"
+Emerge="emerge -q"
 Make="make -j${CPU_CORES}"
 Read="read -ep"
 
-
-## Settings
+## Gein Defaults
 Active_GPU="intel"
 Grub_Target="/dev/sda"
 Hostname="gein"
+Locale="en_US.UTF-8"
+Swap_Size="4G"
+Time_Zone="America/New_York"
+
+## Gentoo Defaults
 #Kernel_Config=""
-Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
-Package_Env="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env"
-Package_Use="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use"
+#Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
+#Package_Env="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env"
+#Package_Use="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use"
 Stage3_Arch="amd64"
 Stage3_Date="20171005"
 Stage3_Url="http://distfiles.gentoo.org/releases"
-Swap_Size="4G"
-Time_Zone="America/New_York"
 
 
 Bootstrap() {
@@ -54,10 +56,14 @@ Bootstrap() {
     fi
 
     ## Configure Portage
-    wget $Make_Conf   -O /mnt/gentoo/etc/portage/make.conf && \
-    rm -rf /mnt/gentoo/etc/portage/package.use && \
-    wget $Package_Use -O /mnt/gentoo/etc/portage/package.use && \
-    if [ -z $Package_Env ]; then
+    if [ ! -z $Make_Conf ]; then
+	wget $Make_Conf   -O /mnt/gentoo/etc/portage/make.conf
+    fi && \
+    if [ ! -z $Package_Use ]; then
+        rm -rf /mnt/gentoo/etc/portage/package.use && \
+        wget $Package_Use -O /mnt/gentoo/etc/portage/package.use
+    fi && \
+    if [ ! -z $Package_Env ]; then
         wget $Package_Env -O /mnt/gentoo/etc/portage/package.env
     fi
 
@@ -76,8 +82,8 @@ Bootstrap() {
 
 Minimal() {
     ## Automate counting available cores and other hardware tasks
-    export CPU_CORES=$(grep -c ^processor /proc/cpuinfo) && \
-    echo "CPU_CORES=$(grep -c ^processor /proc/cpuinfo)" >> /etc/profile
+    export CPU_CORES="$(($(grep -c ^processor /proc/cpuinfo) - 1))" && \
+    echo "CPU_CORES=${CPU_CORES}" >> /etc/profile
 
     ## Reload profile and update PS1
     source /etc/profile && \
@@ -95,7 +101,7 @@ Minimal() {
     emerge --config sys-libs/timezone-data
 
     ## Set desired locales
-    nano /etc/locale.gen && \
+    echo "${Locale}" > /etc/locale.gen && \
     locale-gen && \
     locale -a && \
     eselect locale list && \
@@ -112,7 +118,7 @@ Minimal() {
             sys-kernel/linux-firmware \
             sys-apps/pciutils \
             sys-kernel/genkernel && \
-    if grep -Rqi 'intel' /proc/cpuinfo; then 
+    if grep -Rqi 'intel' /proc/cpuinfo; then
         $Emerge intel-microcode
     fi && \
     cd /usr/src/linux && \
@@ -208,9 +214,9 @@ case $1 in
     laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
 
     *) echo "Available options for gein:"
-       echo "  -b bootstrap  Bootstrap the stage3 tarball (required)"
+       echo "  -b bootstrap  Bootstrap the stage3 tarball (required first step)"
        echo "  -m minimal    Install only required gentoo packages"
-       echo "  -d desktop    Install required and desktop packages" 
+       echo "  -d desktop    Install required and desktop packages"
        echo "  -l laptop     Install required, desktop, and laptop packages"
     ;;
 esac && shopt -u nocasematch
