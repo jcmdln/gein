@@ -25,7 +25,7 @@ Bootstrap() {
     ## Confirm the user has setup their disks
     echo "Please ensure that you have performed the following: " && \
     echo "  - Edited the environment variables at the top of this script."
-    echo "  - Partitioned and mounted your disks." && \
+    echo "  - Partitioned and mounted your disk(s)." && \
     $Read "Proceed with installation? [Y/N]: " Proceed && \
     if echo $Proceed | grep -iq "^n"; then exit; fi
 
@@ -162,12 +162,6 @@ Desktop() {
     $Emerge media-fonts/dejavu \
             media-gfx/scrot \
             media-sound/alsa-utils \
-            media-sound/cmus \
-            media-video/ffmpeg \
-            media-video/mpv \
-            net-misc/youtube-dl \
-            www-client/chromium \
-            www-client/firefox \
             x11-misc/dmenu \
             x11-misc/i3lock \
             x11-misc/i3status \
@@ -213,6 +207,9 @@ case $1 in
     laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
 
     *) echo "Available options for gein:"
-       echo "  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l)"
+       echo "  -b bootstrap  Bootstrap the stage3 tarball (required)"
+       echo "  -m minimal    Install only required gentoo packages"
+       echo "  -d desktop    Install required and desktop packages" 
+       echo "  -l laptop     Install required, desktop, and laptop packages"
     ;;
 esac && shopt -u nocasematch
