@@ -8,7 +8,7 @@ Read="read -ep"
 
 ## Settings
 Active_GPU="intel"
-Grub_Target="/dev/sda1"
+Grub_Target="/dev/sda"
 Hostname="gein"
 #Kernel_Config=""
 Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
