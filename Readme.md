@@ -1,12 +1,18 @@
-## Installing Gentoo using `gein`
-The installation process is almost entirely automated, though will
-require user input for many sections to simplify the script as well as
-make it more versatile.
+# gein - GEntoo INstaller
 
 ```
-$ sh ./gein 
-Available options for gein:
-  bootstrap (-b), minimal (-m), desktop (-d), laptop (-l)
+$ sh gein
+gein - GEntoo INstaller
+
+  -h help       Suggests to read the script and Gentoo documentation
+
+Required first step:
+  -b bootstrap  Bootstrap the stage3 tarball
+
+Post-bootstrap options:
+  -m minimal    Only install required gentoo packages
+  -d desktop    Install required and desktop packages
+  -l laptop     Install required, desktop, and laptop packages
 ```
 
 0) Read the entire script, I may do things you won't like or want.
