@@ -69,6 +69,7 @@ Bootstrap() {
 
     ## Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && \
+    echo "chroot'ing into /mnt/gentoo..."
     chroot /mnt/gentoo /bin/bash
 }
 
