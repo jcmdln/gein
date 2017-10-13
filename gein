@@ -164,6 +164,9 @@ Desktop() {
     export PS1="(chroot) $PS1" && \
     $Emerge app-admin/sudo \
             app-editors/vim \
+            app-misc/tmux \
+            app-shells/zsh \
+            app-shells/zsh-completions \
             media-fonts/dejavu \
             media-gfx/scrot \
             media-sound/alsa-utils \
