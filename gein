@@ -7,7 +7,7 @@ Read="read -ep"
 ## Gein Defaults
 Grub_Target="/dev/sda"
 Hostname="gein"
-Locale="en_US.UTF-8"
+Locale="en_US.UTF-8 UTF-8"
 Swap_Size="4G"
 Time_Zone="America/New_York"
 Video_Cards="intel"
@@ -81,7 +81,7 @@ Bootstrap() {
 
 Minimal() {
     ## Adjust make.conf to store the specified video card and # of CPU cores
-    sed -e "s/Video_Cards/${Video_Cards}/g;
+    sed -i "s/Video_Cards/${Video_Cards}/g;
             s/Make_Opts/-j$(grep -c ^processor /proc/cpuinfo)/g" /etc/portage/make.conf
 
     ## Reload profile and update PS1
@@ -91,7 +91,10 @@ Minimal() {
     ## Sync Portage and select profile
     emerge-webrsync && \
     eselect profile list && \
-    $Read "Which profile?: " Target_Profile && \
+    $Read "Which profile? [Default is 1]: " Target_Profile && \
+    if [ -z $Target_Profile ]; then
+        Target_Profile="1"
+    fi
     eselect profile set $Target_Profile && \
     $Emerge --update --deep --newuse @world
 
