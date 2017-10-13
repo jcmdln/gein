@@ -7,6 +7,7 @@ app-emacs/emacs-common-gentoo X -games
 app-emulation/qemu sdl2 usb
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
+app-shells/zsh unicode
 app-text/xmlto text
 dev-lang/python:2.7 sqlite
 media-libs/harfbuzz icu
