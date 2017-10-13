@@ -82,7 +82,7 @@ Bootstrap() {
 Minimal() {
     ## Adjust make.conf to store the specified video card and # of CPU cores
     sed -e "s/Video_Cards/${Video_Cards}/g;
-            s/Make_Opts/-j$(grep -c ^processor /proc/cpuinfo)/g" /etc/profile/make.conf
+            s/Make_Opts/-j$(grep -c ^processor /proc/cpuinfo)/g" /etc/portage/make.conf
 
     ## Reload profile and update PS1
     source /etc/profile && \
