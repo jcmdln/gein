@@ -2,16 +2,15 @@
 
 ## Commands
 Emerge="emerge -q"
-Make="make -j${CPU_CORES}"
 Read="read -ep"
 
 ## Gein Defaults
-Active_GPU="intel"
 Grub_Target="/dev/sda"
 Hostname="gein"
 Locale="en_US.UTF-8"
 Swap_Size="4G"
 Time_Zone="America/New_York"
+Video_Cards="intel"
 
 ## Gentoo Defaults
 #Kernel_Config=""
@@ -56,8 +55,8 @@ Bootstrap() {
     fi
 
     ## Configure Portage
-    if [ ! -z $Make_Conf ]; then
-        wget $Make_Conf   -O /mnt/gentoo/etc/portage/make.conf
+    if [ ! -z make_Conf ]; then
+        wget make_Conf   -O /mnt/gentoo/etc/portage/make.conf
     fi && \
     if [ ! -z $Package_Use ]; then
         rm -rf /mnt/gentoo/etc/portage/package.use && \
@@ -81,9 +80,9 @@ Bootstrap() {
 
 
 Minimal() {
-    ## Automate counting available cores and other hardware tasks
-    export CPU_CORES="$(($(grep -c ^processor /proc/cpuinfo) - 1))" && \
-    echo "CPU_CORES=${CPU_CORES}" >> /etc/profile
+    ## Adjust make.conf to store the specified video card and # of CPU cores
+    sed -e "s/Video_Cards/${Video_Cards}/g;
+            s/Make_Opts/-j$(grep -c ^processor /proc/cpuinfo)/g" /etc/profile/make.conf
 
     ## Reload profile and update PS1
     source /etc/profile && \
@@ -123,14 +122,14 @@ Minimal() {
     fi && \
     cd /usr/src/linux && \
     if [ -z $Kernel_Config ]; then
-        $Make defconfig && \
-        $Make menuconfig
+        make defconfig && \
+        make menuconfig
     else
         wget $Kernel_config -O /usr/src/linux/.config
     fi && \
-    $Make && \
-    $Make modules_install && \
-    $Make install && \
+    make && \
+    make modules_install && \
+    make install && \
     genkernel --install initramfs
 
     ## Configure '/etc/fstab/'
@@ -155,9 +154,6 @@ Minimal() {
 
 
 Desktop() {
-    ## Pick which GPU driver to use
-    echo "Active_GPU=${Active_GPU}" >> /etc/profile
-
     ## Install Desktop drivers and packages
     $Emerge dev-util/cmake \
             x11-base/xorg-drivers \
