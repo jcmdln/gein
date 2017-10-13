@@ -55,8 +55,8 @@ Bootstrap() {
     fi
 
     ## Configure Portage
-    if [ ! -z make_Conf ]; then
-        wget make_Conf   -O /mnt/gentoo/etc/portage/make.conf
+    if [ ! -z $Make_Conf ]; then
+        wget $Make_Conf -O /mnt/gentoo/etc/portage/make.conf
     fi && \
     if [ ! -z $Package_Use ]; then
         rm -rf /mnt/gentoo/etc/portage/package.use && \
