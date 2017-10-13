@@ -171,6 +171,7 @@ Desktop() {
             media-fonts/dejavu \
             media-gfx/feh \
             media-gfx/scrot \
+            media-libs/alsa-lib \
             media-sound/alsa-utils \
             media-video/mpv \
             net-misc/youtube-dl \
