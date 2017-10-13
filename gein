@@ -162,9 +162,14 @@ Desktop() {
     env-update && \
     source /etc/profile && \
     export PS1="(chroot) $PS1" && \
-    $Emerge media-fonts/dejavu \
+    $Emerge app-admin/sudo \
+            app-editors/vim \
+            media-fonts/dejavu \
             media-gfx/scrot \
             media-sound/alsa-utils \
+            media-video/mpv \
+            net-misc/youtube-dl \
+            www-client/chromium \
             x11-misc/dmenu \
             x11-misc/i3lock \
             x11-misc/i3status \
