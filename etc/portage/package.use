@@ -8,9 +8,13 @@ app-emulation/qemu sdl2 usb
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
 app-shells/zsh unicode
+app-text/poppler cairo
 app-text/xmlto text
+dev-cpp/cairomm aqua X
 dev-lang/python:2.7 sqlite
 media-gfx/feh curl exif cinerma
+media-gfx/inkscape imagemagick jpeg latex
+media-gfx/pstoedit plotutils
 media-libs/harfbuzz icu
 media-libs/imlib2 X
 media-libs/libpng apng
