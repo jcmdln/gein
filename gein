@@ -13,10 +13,11 @@ Time_Zone="America/New_York"
 Video_Cards="intel"
 
 ## Gentoo Defaults
-#Kernel_Config=""
-#Make_Conf="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/make.conf"
-#Package_Env="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.env"
-#Package_Use="https://raw.githubusercontent.com/jcmdln/gein/master/etc/portage/package.use"
+#Base_Url="https://raw.githubusercontent.com/jcmdln/gein/master"
+#Kernel_Config="$Base_Url/usr/src/linux/4.12-config"
+#Make_Conf="$Base_Url/etc/portage/make.conf"
+#Package_Env="$Base_Url/etc/portage/package.env"
+#Package_Use="$Base_Url/etc/portage/package.use"
 Stage3_Arch="amd64"
 Stage3_Date="20171005"
 Stage3_Url="http://distfiles.gentoo.org/releases"
@@ -71,6 +72,10 @@ Bootstrap() {
     cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
       /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
+
+    ## Add 'gein-extras' script
+    mkdir -vp /mnt/gentoo/usr/local/sbin && \
+    wget $Base_URL/usr/local/sbin/gein-extras -O /usr/local/sbin/gein-extras
 
     ## Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && \
