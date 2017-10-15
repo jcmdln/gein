@@ -52,9 +52,10 @@ sys-apps/attr abi_x86_32
 sys-apps/util-linux abi_x86_32
 sys-devel/gettext abi_x86_32
 sys-devel/llvm abi_x86_32 clang
-sys-fs/udev abi_x86_32
+sys-fs/udev abi_x86_32 x32
 sys-libs/binutils-libs abi_x86_32
 sys-libs/gpm abi_x86_32
+sys-libs/libcap abi_x86_32
 sys-libs/ncurses abi_x86_32
 sys-libs/readline abi_x86_32
 sys-libs/zlib abi_x86_32
@@ -62,7 +63,7 @@ sys-libs/zlib minizip
 virtual/libffi abi_x86_32
 virtual/libiconv abi_x86_32
 virtual/libintl abi_x86_32
-virtual/libudev abi_x86_32
+virtual/libudev abi_x86_32 x32
 virtual/pkgconfig abi_x86_32
 www-client/chromium system-ffmpeg system-icu
 x11-base/xorg-drivers libinput
@@ -72,7 +73,7 @@ x11-drivers/xf86-video-ati glamor
 x11-drivers/xf86-video-intel dri3 sna
 x11-drivers/xf86-video-virtualbox dri
 x11-libs/cairo X xcb abi_x86_32
-x11-libs/gdk-pixbuf abi_x86_32
+x11-libs/gdk-pixbuf X abi_x86_32
 x11-libs/gtk+:2 abi_x86_32
 x11-libs/libX11 abi_x86_32
 x11-libs/libXScrnSaver abi_x86_32
@@ -90,6 +91,9 @@ x11-libs/libXrender abi_x86_32
 x11-libs/libXxf86vm abi_x86_32
 x11-libs/libdrm abi_x86_32
 x11-libs/libpciaccess abi_x86_32
+x11-libs/libva abi_x86_32
+x11-libs/libva-intel-driver abi_x86_32
+x11-libs/libvdpau abi_x86_32
 x11-libs/libxcb xkb abi_x86_32
 x11-libs/libxkbcommon X
 x11-libs/libxshmfence abi_x86_32
