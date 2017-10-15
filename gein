@@ -5,6 +5,7 @@ Emerge="emerge -q"
 Read="read -ep"
 
 ## Gein Defaults
+Gein_Extras="enable"
 Grub_Target="/dev/sda"
 Hostname="gein"
 Locale="en_US.UTF-8 UTF-8"
@@ -74,8 +75,12 @@ Bootstrap() {
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     ## Add 'gein-extras' script
-    mkdir -vp /mnt/gentoo/usr/local/sbin && \
-    wget $Base_URL/usr/local/sbin/gein-extras -O /usr/local/sbin/gein-extras
+    if [ ! -z $Gein_Extras ]; then
+	mkdir -vp /mnt/gentoo/usr/local/sbin && \
+	wget $Base_URL/usr/local/sbin/gein-extras \
+	     -O /mnt/gentoo/usr/local/sbin/gein-extras
+	chmod +x /mnt/gentoo/usr/local/sbin/gein-extras
+    fi
 
     ## Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && \
