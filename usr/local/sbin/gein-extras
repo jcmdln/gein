@@ -1,0 +1,16 @@
+#!/bin/env sh
+#
+# /usr/local/sbin/gein-extras
+#
+
+
+read -ep "Install gein-extras? [Yes/No]: " Install && \
+if $Install | grep -iq "^n"; then exit; fi
+
+Base_URL="https://raw.githubusercontent.com/jcmdln/gein/master"
+wget $Base_URL/etc/emacs/default.el -O /etc/emacs/default.el
+wget $Base_URL/etc/profile   -O /etc/sudoers
+wget $Base_URL/etc/profile.d/alias -O /etc/profile.d/alias
+wget $Base_URL/etc/sudoers   -O /etc/sudoers
+wget $Base_URL/etc/tmux.conf -O /etc/tmux.conf
+wget $Base_URL/etc/vimrc     -O /etc/vimrc
