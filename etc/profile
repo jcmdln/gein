@@ -1,1 +1,45 @@
 # /etc/profile
+
+##
+umask 022
+
+## Load 'env-update' settings
+if [ -e /etc/profile.env ]; then
+    source /etc/profile.env
+fi
+
+## Load scripts in '/etc/profile.d/'
+for sh in /etc/profile.d/*.sh ; do
+    [ -r "$sh" ] && . "$sh"
+done
+
+## Give root a separate PATH including sbin
+if [ "${EUID-}" = "0" ] || [ "${USER-}" = "root" ]; then
+    PATH="${ROOTPATH}:/usr/share/bcc/tools/"
+    MANPATH="${MANPATH}:/usr/share/bcc/man/man8"
+fi
+
+## Bash settings
+if [ -n "${BASH_VERSION-}" ]; then
+    [ -f /etc/bash/bashrc ] && source /etc/bash/bashrc
+    PS1="[\u@\h \w]\$"
+fi
+
+## Zsh settings
+if [ -n "${ZSH_VERSION-}"]; then
+    [ -f /etc/zsh/zprofile ] && source /etc/zsh/zprofile
+    PS1="[%n@%M %/]$ "
+fi
+
+## Exports
+export EDITOR=vim|emacsclient
+export HISTTIMEFORMAT="(%m/%d/%y) %T "
+export MANPATH
+export PAGER="${PAGER:-/usr/bin/less}"
+export PATH
+export PROMPT_COMMAND="history -a"
+export TERM="xterm"
+
+## Unsets
+unset ROOTPATH
+unset sh
