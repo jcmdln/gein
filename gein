@@ -248,7 +248,7 @@ case $1 in
     laptop    | -l) Laptop;;
     media     | -M) Media;;
     steam     | -s) Steam;;
-    bloat     | -B) Minimal && Desktop && Laptop && Media && Steam
+    bloat     | -B) Minimal && Desktop && Laptop && Media && Steam && Cleanup;;
 
     help | --help | -h)
         echo "Try reading the script along with the Gentoo documentation:"
