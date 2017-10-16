@@ -179,12 +179,7 @@ Desktop() {
             app-editors/vim \
             app-misc/ranger \
             app-misc/tmux \
-            app-shells/zsh \
-            app-shells/zsh-completions \
             media-fonts/dejavu \
-            media-gfx/scrot \
-            media-libs/alsa-lib \
-            media-sound/alsa-utils \
             x11-apps/xrandr \
             x11-misc/dmenu \
             x11-misc/i3lock \
@@ -196,10 +191,20 @@ Desktop() {
 
 
 Media() {
-    $Emerge media-gfx/feh \
+    $Emerge app-shells/zsh \
+            app-shells/zsh-completions \
+	    media-gfx/feh \
+	    media-gfx/scrot \
+            media-libs/alsa-lib \
+            media-sound/alsa-utils \
 	    media-video/mpv \
 	    net-misc/youtube-dl \
-            www-client/chromium
+	    www-client/chromium
+}
+
+
+Office() {
+    $Emerge app-office/libreoffice
 }
 
 
@@ -223,7 +228,7 @@ Laptop() {
 Cleanup() {
     ## Install eclean
     $Emerge app-portage/gentoolkit \
-            app-admin/eclean-kernel && \
+            app-admin/eclean-kernel
 
     ## Update @world, remove unused packages, and clean
     $Emerge -uDN @world && \
@@ -240,15 +245,19 @@ Cleanup() {
 ### Execution ####################################
 
 shopt -s nocasematch && \
-case $1 in
-    bootstrap | -b) Bootstrap;;
-    cleanup   | -c) Cleanup;;
-    minimal   | -m) Minimal;;
-    desktop   | -d) Desktop;;
-    laptop    | -l) Laptop;;
-    media     | -M) Media;;
-    steam     | -s) Steam;;
-    bloat     | -B) Minimal && Desktop && Laptop && Media && Steam && Cleanup;;
+    case $1 in
+	bootstrap | -b) Bootstrap;;
+	cleanup   | -c) Cleanup;;
+	minimal   | -m) Minimal;;
+	desktop   | -d) Desktop;;
+	laptop    | -l) Laptop;;
+	media     | -M) Media;;
+	steam     | -s) Steam;;
+	bloat     | -B) Minimal && \
+			      Desktop && Laptop && \
+			      Media && Office && Steam && \
+			      Cleanup
+			;;
 
     help | --help | -h)
         echo "Try reading the script along with the Gentoo documentation:"
@@ -261,7 +270,10 @@ case $1 in
        echo "  -b bootstrap  Bootstrap the stage3 tarball"
        printf "\nPost-bootstrap options:\n"
        echo "  -m minimal    Only install required gentoo packages"
-       echo "  -d desktop    Install required and desktop packages"
-       echo "  -l laptop     Install required, desktop, and laptop packages"
+       echo "  -d desktop    i3-based desktop"
+       echo "  -l laptop     install laptop, wifi, and backlight packages"
+       echo "  -M media      Install alsa, mpv, chromium, etc"
+       echo "  -s steam      Install Steam"
+       echo "  -b bloat      Install everything mentioned above"
     ;;
 esac && shopt -u nocasematch
