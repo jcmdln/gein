@@ -182,13 +182,9 @@ Desktop() {
             app-shells/zsh \
             app-shells/zsh-completions \
             media-fonts/dejavu \
-            media-gfx/feh \
             media-gfx/scrot \
             media-libs/alsa-lib \
             media-sound/alsa-utils \
-            media-video/mpv \
-            net-misc/youtube-dl \
-            www-client/chromium \
             x11-apps/xrandr \
             x11-misc/dmenu \
             x11-misc/i3lock \
@@ -196,6 +192,22 @@ Desktop() {
             x11-misc/xclip \
             x11-terms/rxvt-unicode \
             x11-wm/i3
+}
+
+
+Media() {
+    $Emerge media-gfx/feh \
+	    media-video/mpv \
+	    net-misc/youtube-dl \
+            www-client/chromium
+}
+
+
+Steam() {
+    $Emerge layman && \
+    layman -a steam-overlay && \
+    $Emerge steam-meta \
+	    steam-launcher-meta
 }
 
 
@@ -230,9 +242,13 @@ Cleanup() {
 shopt -s nocasematch && \
 case $1 in
     bootstrap | -b) Bootstrap;;
-    minimal   | -m) Minimal && Cleanup;;
-    desktop   | -d) Minimal && Desktop && Cleanup;;
-    laptop    | -l) Minimal && Desktop && Laptop && Cleanup;;
+    cleanup   | -c) Cleanup;;
+    minimal   | -m) Minimal;;
+    desktop   | -d) Desktop;;
+    laptop    | -l) Laptop;;
+    media     | -M) Media;;
+    steam     | -s) Steam;;
+    bloat     | -B) Minimal && Desktop && Laptop && Media && Steam
 
     help | --help | -h)
         echo "Try reading the script along with the Gentoo documentation:"
