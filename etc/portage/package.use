@@ -14,6 +14,8 @@ app-text/poppler cairo
 app-text/xmlto text
 dev-cpp/cairomm aqua X
 dev-db/sqlite abi_x86_32
+dev-games/ogre threads examples ois
+dev-games/openscenegraph qt5 jpeg ffmpeg svg sdl truetype png
 dev-lang/python:2.7 sqlite
 dev-libs/atk abi_x86_32
 dev-libs/expat abi_x86_32
@@ -21,7 +23,7 @@ dev-libs/glib dbus abi_x86_32
 dev-libs/icu abi_x86_32
 dev-libs/libcroco abi_x86_32
 dev-libs/libffi abi_x86_32
-dev-libs/libpcre abi_x86_32
+dev-libs/libpcre abi_x86_32 pcre16
 dev-libs/libpthread-stubs abi_x86_32
 dev-libs/libxml2 abi_x86_32
 dev-libs/lzo abi_x86_32
@@ -41,6 +43,7 @@ media-libs/harfbuzz abi_x86_32 icu
 media-libs/imlib2 X
 media-libs/libpng abi_x86_32 apng
 media-libs/libsndfile abi_x86_32
+media-libs/libsdl2 X opengl 
 media-libs/libtxc_dxtn abi_x86_32
 media-libs/mesa -llvm abi_x86_32 dri3 vaapi vdpau
 media-libs/openal abi_x86_32
@@ -57,6 +60,7 @@ sys-apps/tcp-wrappers abi_x86_32
 sys-apps/util-linux abi_x86_32
 sys-devel/gettext abi_x86_32
 sys-devel/llvm abi_x86_32 clang
+sys-fs/eudev abi_x86_32
 sys-fs/udev abi_x86_32
 sys-libs/binutils-libs abi_x86_32
 sys-libs/gpm abi_x86_32
@@ -68,7 +72,7 @@ sys-libs/zlib minizip
 virtual/libffi abi_x86_32
 virtual/libiconv abi_x86_32
 virtual/libintl abi_x86_32
-virtual/libudev abi_x86_32
+virtual/libudev abi_x86_32 x32
 virtual/pkgconfig abi_x86_32
 www-client/chromium system-ffmpeg system-icu
 x11-base/xorg-drivers libinput
