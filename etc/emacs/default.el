@@ -1,72 +1,93 @@
 ;; /etc/emacs/default.el
 
+;; Encoding
+(setq prefer-coding-system 'utf-8
+      set-default-coding-systems 'utf-8
+      set-language-environment "UTF-8"
+      set-locale-environment "en_US.UTF-8")
+
 ;; Disable menubar, scrollbar, and toolbar before they initialize
 (when (fboundp 'menu-bar-mode)   (menu-bar-mode   -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode   -1))
 
-(load-theme 'tango-dark)                          ; Set theme to 'tango-dark'
-(set-face-attribute                               ; Set font as 9pt normal monospace
+;; Startup
+(setq initial-scratch-message nil
+      inhibit-splash-screen t
+      inhibit-startup-buffer-menu t
+      column-number-mode t
+      visible-bell t)
+
+;; Set theme to 'tango-dark'
+(load-theme 'tango-dark)
+
+;; Set font as 9pt normal monospace
+(set-face-attribute
  'default nil
  :family "Monospace" :weight 'normal
  :width 'normal      :height 96)
 
-(add-hook 'lisp-mode-hook 'linum-mode)            ; Startup Hooks
+;; Startup Hooks
+(add-hook 'lisp-mode-hook 'linum-mode)
 (add-hook 'prog-mode-hook 'linum-mode)
 (add-hook 'text-mode-hook 'linum-mode)
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; Setings
-(setq auto-save-default                           nil
-      auto-save-file-name-transforms              `((".*" "~/.emacs.d/backup/" t))
-      auto-window-vscroll                         nil
-      backup-directory-alist                      `((".*" . "~/.emacs.d/backup/"))
-      browse-url-browser-function                 'eww-browse-url
-      c-basic-offset                              4
-      column-number-mode                          t
-      cperl-indent-level                          4
-      create-lockfiles                            nil
-      custom-file                                 "~/.emacs.d/custom.el"
-      delete-by-moving-to-trash                   t
-      delete-old-versions                         t
-      delete-selection-mode                       t
-      indent-tabs-mode                            nil
-      inhibit-splash-screen                       t
-      inhibit-startup-buffer-menu                 t
-      initial-scratch-message                     nil
-      js-indent-level                             4
-      kept-new-versions                           2
-      kept-new-versions                           2
-      mouse-wheel-follow-mouse                    't
-      mouse-wheel-progressive-speed               nil
-      mouse-wheel-scroll-amount                   '(3 ((shift) . 3))
-      mouse-yank-at-point                         t
-      prefer-coding-system                        'utf-8
-      prefer-coding-system                        'utf-8
-      require-final-newline                       t
-      save-interprogram-paste-before-kill         t
-      scroll-conservatively                       101
-      scroll-down-aggressively                    0.0
-      scroll-margin                               0
-      scroll-preserve-screen-position             1
-      scroll-step                                 1
-      scroll-up-aggressively                      0.0
-      select-enable-primary                       nil
-      set-default-coding-systems                  'utf-8
-      set-language-environment                    "UTF-8"
-      set-locale-environment                      "en_US.UTF-8"
-      shr-blocked-images                          ""
-      tab-width                                   4
-      vc-follow-symlinks                          t
-      vc-make-backup-files                        t
-      version-control                             t
-      visible-bell                                t)
+;; Autosave/Backups
+(setq auto-save-default nil
+      auto-save-file-name-transforms `((".*" "~/.emacs.d/backup/" t))
+      backup-directory-alist `((".*" . "~/.emacs.d/backup/"))
+      create-lockfiles nil
+      delete-by-moving-to-trash t
+      delete-old-versions t
+      delete-selection-mode t
+      kept-new-versions 2
+      vc-follow-symlinks t
+      vc-make-backup-files t
+      version-control t)
 
-(fset 'yes-or-no-p 'y-or-n-p)                     ; Shorter y/n prompts
-(global-visual-line-mode t)                       ; Globally enable word-wrap
-(show-paren-mode t)                               ; Highlight matching parenthesis
-(xterm-mouse-mode t)                              ; Enable Emacs mouse commands
-(if (file-exists-p custom-file)                   ; Autoload custom file on start
+;; Cut/Paste
+(setq require-final-newline t
+      save-interprogram-paste-before-kill t
+      select-enable-primary nil)
+
+;; Indentation
+(setq c-basic-offset 2
+      cperl-indent-level 2
+      js-indent-level 2
+      indent-tabs-mode nil
+      tab-width 2)
+
+;; Mouse
+(setq mouse-wheel-follow-mouse 't
+      mouse-wheel-progressive-speed nil
+      mouse-wheel-scroll-amount '(3 ((shift) . 3))
+      mouse-yank-at-point t)
+
+;; Scrolling
+(setq auto-window-vscroll nil
+      scroll-conservatively 101
+      scroll-down-aggressively 0.0
+      scroll-margin 0
+      scroll-preserve-screen-position 1
+      scroll-step 1
+      scroll-up-aggressively 0.0)
+
+;; Shorter y/n prompts
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Globally enable word-wrap
+(global-visual-line-mode t)
+
+;; Highlight matching parenthesis
+(show-paren-mode t)
+
+;; Enable Emacs mouse commands
+(xterm-mouse-mode t)
+
+;; Autoload custom file on start
+(setq custom-file "~/.emacs.d/custom.el")
+(if (file-exists-p custom-file)
     (load custom-file)
   (write-region "" nil custom-file))
 
@@ -106,18 +127,19 @@
 ;;; Package Manager ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (require 'package)
-(setq package-user-dir                            ; Set package dir to ~/.emacs.d/pkg/
-      "~/.emacs.d/pkg/"
-      package-archives                            ; Set repositories to use
+
+(setq package-user-dir "~/.emacs.d/pkg/"
+      package-archives
       '(("GNU ELPA"     . "http://elpa.gnu.org/packages/")
         ("MELPA Stable" . "https://stable.melpa.org/packages/")
         ("MELPA"        . "https://melpa.org/packages/"))
-      package-archive-priorities                  ; Set order to choose packages (higher = preferred)
+      package-archive-priorities
       '(("MELPA Stable" . 3)
         ("GNU ELPA"     . 2)
         ("MELPA"        . 1)))
 (package-initialize)
 
+;; Install 'use-package' if not present
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
@@ -127,8 +149,6 @@
 
 ;;; Built-in Packages ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package auto-dictionary)
-
 (use-package async
   :config (async-bytecomp-package-mode  '(all)))
 
@@ -136,6 +156,8 @@
   :config
   (auto-compile-on-load-mode)
   (auto-compile-on-save-mode))
+
+(use-package auto-dictionary)
 
 (use-package elfeed
   :bind ("C-x w" . elfeed)
@@ -147,6 +169,23 @@
 
 (use-package eshell
   :config
+  (setq eshell-cmpl-cycle-completions nil
+        eshell-error-if-no-glob t
+        eshell-hist-ignoredups t
+        eshell-history-size 4096
+        eshell-prefer-lisp-functions t
+        eshell-save-history-on-exit t
+        eshell-scroll-to-bottom-on-input 'all)
+
+  (setq eshell-prompt-function
+        (lambda nil
+          (concat
+           "[" (user-login-name) "@" (system-name) " "
+           (if (= (length (eshell/pwd)) (length (getenv "HOME")))
+               "~" (eshell/basename (eshell/pwd))) "]"
+               (if (= (user-uid) 0) "# " "$ ")))
+        eshell-prompt-regexp "^[^#$\n]*[#$] ")
+
   (defun append-to-list (list-var elements)       "Append ELEMENTS to the end of LIST-VAR"
          (set list-var (append (symbol-value list-var) elements)))
 
@@ -175,72 +214,53 @@
      (eshell/alias "rm" "rm -i $*")
      (eshell/alias "rr" "rm -ir $*")))
 
-  (setq eshell-cmpl-cycle-completions nil
-        eshell-error-if-no-glob t
-        eshell-hist-ignoredups t
-        eshell-history-size 4096
-        eshell-prefer-lisp-functions t
-        eshell-prompt-function
-        (lambda nil
-          (concat
-           "[" (user-login-name) "@" (system-name) " "
-           (if (= (length (eshell/pwd)) (length (getenv "HOME")))
-               "~" (eshell/basename (eshell/pwd))) "]"
-               (if (= (user-uid) 0) "# " "$ ")))
-        eshell-prompt-regexp "^[^#$\n]*[#$] "
-        eshell-save-history-on-exit t
-        eshell-scroll-to-bottom-on-input 'all)
+  (defun eshell-clear()
+    "Clear the eshell buffer"
+    (let ((inhibit-read-only t))
+      (erase-buffer)
+      (eshell-send-input)))
 
-  (defun eshell-clear()                             "Clear the eshell buffer"
-         (let ((inhibit-read-only t))
-           (erase-buffer)
-           (eshell-send-input)))
+  (defun eshell-exports()
+    "Store desired environment variables for eshell."
+    (setenv "EDITOR"         "emacsclient")
+    (setenv "GIT_EDITOR"     "emacsclient")
+    (setenv "MANPATH"        (getenv "MANPATH"))
+    (setenv "PATH"           (getenv "PATH"))
+    (setenv "PROMPT_COMMAND" "")
+    (setenv "SHELL"          (getenv "SHELL"))
+    (setenv "TERM"           (getenv "TERM")))
 
-  (defun eshell-exports()                           "Store desired environment variables for eshell."
-         (setenv "EDITOR" "emacsclient")
-         (setenv "GIT_EDITOR" "emacsclient")
-         (setenv "MANPATH" (getenv "MANPATH"))
-         (setenv "PATH" (getenv "PATH"))
-         (setenv "PROMPT_COMMAND" "")
-         (setenv "SHELL" (getenv "SHELL"))
-         (setenv "TERM" (getenv "TERM")))
-
-  (defun eshell-new()                               "Open a new instance of eshell."
-         (interactive)
-         (eshell 'N)))
+  (defun eshell-new()
+    "Open a new instance of eshell."
+    (interactive)
+    (eshell 'N)))
 
 (use-package eww
   :config
-  (defun eww-disable-images()                     "Block all images from loading in eww."
-         (interactive)
-         (setq shr-blocked-images "")
-         (eww-reload))
+  (defun eww-toggle-images()
+    "Toggle blocking images in eww."
+    (interactive)
+    (if (bound-and-true-p shr-blocked-images)
+        (setq shr-blocked-images nil)
+      (setq shr-blocked-images ""))
+    (eww-reload))
 
-  (defun eww-enable-images()                      "Stop blocking images in eww."
-         (interactive)
-         (setq shr-blocked-images nil)
-         (eww-reload))
+  (defun eww-new()
+    "Open a new instance of eww."
+    (interactive)
+    (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
+      (switch-to-buffer (generate-new-buffer "*eww*"))
+      (eww-mode)
+      (eww url)))
 
-  (defun eww-toggle-images()                      "Toggle blocking images in eww."
-         (interactive)
-         (if (bound-and-true-p shr-blocked-images)
-             (eww-enable-images)
-           (eww-disable-images)))
-
-  (defun eww-new()                                "Open a new instance of eww."
-         (interactive)
-         (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
-           (switch-to-buffer (generate-new-buffer "*eww*"))
-           (eww-mode)
-           (eww url)))
-
-  (defun eww-open-url-in-new()                    "Open link under cursor in new instance of eww"
-         (interactive)
-         (let ((url (get-text-property (point) 'shr-url)))
-           (print url)
-           (switch-to-buffer (generate-new-buffer "*eww*"))
-           (eww-mode)
-           (eww url))))
+  (defun eww-open-url-in-new()
+    "Open link under cursor in new instance of eww"
+    (interactive)
+    (let ((url (get-text-property (point) 'shr-url)))
+      (print url)
+      (switch-to-buffer (generate-new-buffer "*eww*"))
+      (eww-mode)
+      (eww url))))
 
 (use-package gnus
   :config
@@ -266,45 +286,51 @@
 
 (use-package scratch
   :config
-  (defun scratch-new()                            "Open a new scratch buffer."
-         (interactive)
-         (switch-to-buffer (generate-new-buffer "*scratch*"))
-         (lisp-mode)))
+  (defun scratch-new()
+    "Open a new scratch buffer."
+    (interactive)
+    (switch-to-buffer (generate-new-buffer "*scratch*"))
+    (lisp-mode)))
 
 (use-package server
   :config
   (unless (server-running-p)
     (server-start))
 
-  (defun server-reinstall()                       "Remove packages, then run server-reload"
-         (interactive)
-         (if (file-exists-p "~/.emacs.d/pkg")
-             (delete-directory "~/.emacs.d/pkg" t))
-         (server-reload))
+  (defun server-reinstall()
+    "Remove packages, then run server-reload"
+    (interactive)
+    (if (file-exists-p "~/.emacs.d/pkg")
+        (delete-directory "~/.emacs.d/pkg" t))
+    (server-reload))
 
-  (defun server-kill()                            "Delete current Emacs server, then kill Emacs"
-         (interactive)
-         (server-force-delete)
-         (kill-emacs))
+  (defun server-kill()
+    "Delete current Emacs server, then kill Emacs"
+    (interactive)
+    (server-force-delete)
+    (kill-emacs))
 
-  (defun server-reload()                          "Reload init file"
-         (interactive)
-         (if (file-exists-p "~/.emacs.d/init.el")
-             (load-file "~/.emacs.d/init.el")
-           (if (file-exists-p "~/.emacs")
-               (load-file "~/.emacs")))
-         (eshell-exports))
+  (defun server-reload()
+    "Reload init file"
+    (interactive)
+    (if (file-exists-p "~/.emacs.d/init.el")
+        (load-file "~/.emacs.d/init.el")
+      (if (file-exists-p "~/.emacs")
+          (load-file "~/.emacs")))
+    (eshell-exports))
 
-  (defun server-stop()                            "Prompt to save buffers, then kill Emacs."
-         (interactive)
-         (save-buffers-kill-emacs))
+  (defun server-stop()
+    "Prompt to save buffers, then kill Emacs."
+    (interactive)
+    (save-buffers-kill-emacs))
 
-  (defun server-update()                          "Refresh package contents, then update all packages."
-         (interactive)
-         (package-initialize)
-         (unless package-archive-contents
-           (package-refresh-contents))
-         (package-utils-upgrade-all))
+  (defun server-update()
+    "Refresh package contents, then update all packages."
+    (interactive)
+    (package-initialize)
+    (unless package-archive-contents
+      (package-refresh-contents))
+    (package-utils-upgrade-all))
 
   (global-set-key (kbd "C-x C-c")
                   (lambda() (interactive)
@@ -316,6 +342,52 @@
 
 
 ;;; Extras ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package circe
+  :config
+  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
+  (add-hook 'circe-message-option-functions 'my-circe-message-option-chanserv)
+  (add-hook 'lui-mode-hook
+            (lambda()
+              (my-lui-setup)
+              (my-circe-set-margin)))
+
+  (if (file-exists-p "~/.emacs.d/circe.el")
+      (load-file "~/.emacs.d/circe.el"))
+
+  (setq circe-default-part-message ""
+        circe-default-quit-message ""
+        circe-format-server-topic "*** Topic change by {userhost}: {topic-diff}"
+        circe-reduce-lurker-spam t
+        circe-use-cycle-completion t
+        lui-fill-type nil
+        lui-flyspell-alist '((".*" "american"))
+        lui-flyspell-p t
+        lui-time-stamp-format "%H:%M:%S"
+        lui-time-stamp-position 'left-margin)
+
+  (require 'circe-chanop)
+  (enable-circe-color-nicks)
+
+  (defun my-circe-set-margin() (setq left-margin-width 9))
+  (setf (cdr (assoc 'continuation fringe-indicator-alist)) nil)
+
+  (defun my-lui-setup()
+    (setq fringes-outside-margins t
+          left-margin-width 9
+          word-wrap t
+          wrap-prefix ""))
+
+  (defun my-circe-prompt()
+    (lui-set-prompt
+     (concat (propertize
+              (concat (buffer-name) ">")
+              'face 'circe-prompt-face)
+             " ")))
+
+  (defun my-circe-message-option-chanserv (nick user host command args)
+    (when (and (string= "ChanServ" nick) (string-match "^\\[#.+?\\]" (cadr args)))
+      '((dont-display . t)))))
 
 (use-package company
   :config
@@ -358,6 +430,14 @@
   (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'prog-mode-hook 'flyspell-mode)
   (add-hook 'text-mode-hook 'flyspell-mode))
+
+(use-package go-mode
+  :config
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  (add-hook 'go-mode-hook
+            (lambda()
+              (setq tab-width 4
+                    indent-tabs-mode 1))))
 
 (use-package highlight-indent-guides
   :config

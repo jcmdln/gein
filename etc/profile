@@ -50,18 +50,3 @@ fi
 ## Cleanup
 unset ROOTPATH
 unset sh
-
-kernel-rebuild() {
-    printf "\n\n#####\n### Building Kernel\n#####\n\n" && \
-    make "-j$(grep -c ^processor /proc/cpuinfo)" && \
-    printf "\n\n#####\n### Building Kernel Modules\n#####\n\n" && \
-    make modules && \
-    printf "\n\n#####\n### Installing Kernel\n#####\n\n" && \
-    make install && \
-    printf "\n\n#####\n### Installing Kernel Modules\n#####\n\n" && \
-    make modules install && \
-    printf "\n\n#####\n### Generating Grub Config\n#####\n\n" && \
-    grub-mkconfig -o /boot/grub/grub.cfg && \
-    printf "\n\n#####\n### Rebuilding Emerged Kernel Modules\n#####\n\n" && \
-    emerge -aq @module-rebuild
-}

@@ -26,35 +26,35 @@ Stage3_Url="http://distfiles.gentoo.org/releases"
 
 Bootstrap() {
     ## Confirm the user has setup their disks
-    echo "Please ensure that you have performed the following: " && \
+    echo "Please ensure that you have performed the following: "
     echo "  - Edited the environment variables at the top of this script."
-    echo "  - Partitioned and mounted your disk(s)." && \
+    echo "  - Partitioned and mounted your disk(s)."
     $Read "Proceed with installation? [Y/N]: " Proceed && \
-    if echo $Proceed | grep -iq "^n"; then exit; fi
+    if echo $Proceed | grep -iq "^n"; then exit; fi &&
 
     ## Set time via ntpd
-    ntpd -q -g
+    ntpd -q -g &&
 
     ## Download and extract stage3 tarball
     cd /mnt/gentoo && \
     wget ${Stage3_Url}/${Stage3_Arch}/autobuilds/${Stage3_Date}/stage3-${Stage3_Arch}-${Stage3_Date}.tar.bz2 && \
-    tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+    tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner &&
 
     ## Mount hardware devices
     mount -t proc /proc /mnt/gentoo/proc && \
     mount --rbind /sys  /mnt/gentoo/sys && \
     mount --make-rslave /mnt/gentoo/sys && \
     mount --rbind /dev  /mnt/gentoo/dev && \
-    mount --make-rslave /mnt/gentoo/dev
+    mount --make-rslave /mnt/gentoo/dev &&
 
     ## Setup '/swapfile'
-    Swap_File="/mnt/gentoo/swapfile" && \
+    Swap_File="/mnt/gentoo/swapfile"
     if [ ! -e $Swap_File ]; then
         fallocate -l $Swap_Size $Swap_File && \
         mkswap $Swap_File && \
         chmod 0600 $Swap_File && \
         swapon $Swap_File
-    fi
+    fi &&
 
     ## Configure Portage
     if [ ! -z $Make_Conf ]; then
@@ -66,21 +66,21 @@ Bootstrap() {
     fi && \
     if [ ! -z $Package_Env ]; then
         wget $Package_Env -O /mnt/gentoo/etc/portage/package.env
-    fi
+    fi &&
 
     ## Setup Portage mirrors
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf && \
     cp -v /mnt/gentoo/usr/share/portage/config/repos.conf \
       /mnt/gentoo/etc/portage/repos.conf/gentoo.conf && \
-    cp -vL /etc/resolv.conf /mnt/gentoo/etc/
+    cp -vL /etc/resolv.conf /mnt/gentoo/etc/ &&
 
     ## Add 'gein-extras' script
     if [ ! -z $Gein_Extras ]; then
 	mkdir -vp /mnt/gentoo/usr/local/sbin && \
 	wget $Base_URL/usr/local/sbin/gein-extras \
-	     -O /mnt/gentoo/usr/local/sbin/gein-extras
+	     -O /mnt/gentoo/usr/local/sbin/gein-extras && \
 	chmod +x /mnt/gentoo/usr/local/sbin/gein-extras
-    fi
+    fi &&
 
     ## Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && \
@@ -92,7 +92,8 @@ Bootstrap() {
 Minimal() {
     ## Adjust make.conf to store the specified video card and # of CPU cores
     sed -i "s/Video_Cards/${Video_Cards}/g;
-            s/Make_Opts/-j$(grep -c ^processor /proc/cpuinfo)/g" /etc/portage/make.conf
+            s/Make_Opts/-j$(grep -c ^processor /proc/cpuinfo)/g" \
+	    /etc/portage/make.conf &&
 
     ## Reload profile and update PS1
     source /etc/profile && \
@@ -102,15 +103,13 @@ Minimal() {
     emerge-webrsync && \
     eselect profile list && \
     $Read "Which profile? [Default is 1]: " Target_Profile && \
-    if [ -z $Target_Profile ]; then
-        Target_Profile="1"
-    fi
+    [ -z $Target_Profile ] && Target_Profile="1"
     eselect profile set $Target_Profile && \
-    $Emerge --update --deep --newuse @world
+    $Emerge --update --deep --newuse @world &&
 
     ## Set desired timezone
     echo "${Time_Zone}" > /etc/timezone && \
-    emerge --config sys-libs/timezone-data
+    emerge --config sys-libs/timezone-data &&
 
     ## Set desired locales
     echo "${Locale}" > /etc/locale.gen && \
@@ -118,7 +117,7 @@ Minimal() {
     locale -a && \
     eselect locale list && \
     $Read "Target locale: " Target_Locale && \
-    eselect locale set ${Target_Locale}
+    eselect locale set ${Target_Locale} &&
 
     ## Update environment
     env-update && \
@@ -143,23 +142,23 @@ Minimal() {
     make && \
     make modules_install && \
     make install && \
-    genkernel --install initramfs
+    genkernel --install initramfs &&
 
     ## Configure '/etc/fstab/'
     echo "/swapfile none swap sw 0 0" >> /etc/fstab && \
-    nano /etc/fstab
+    nano /etc/fstab &&
 
     ## Install neworking packages &
     $Emerge --noreplace net-misc/netifrc && \
-    $Emerge net-misc/dhcpcd
+    $Emerge net-misc/dhcpcd &&
 
     ## Set desired hostname and update '/etc/hosts'
-    echo hostname="${Hostname}" > /etc/conf.d/hostname
+    echo hostname="${Hostname}" > /etc/conf.d/hostname &&
 
     ## Configure and install Grub
     $Emerge sys-boot/grub:2 && \
     grub-install $Grub_Target && \
-    grub-mkconfig -o /boot/grub/grub.cfg
+    grub-mkconfig -o /boot/grub/grub.cfg &&
 
     ## Set root password
     passwd
@@ -190,6 +189,15 @@ Desktop() {
 }
 
 
+Laptop() {
+    $Emerge app-laptop/laptop-mode-tools \
+            net-misc/connman \
+            net-wireless/wpa_supplicant \
+            x11-apps/xbacklight && \
+    rc-update add laptop_mode default
+}
+
+
 Media() {
     $Emerge app-shells/zsh \
             app-shells/zsh-completions \
@@ -216,26 +224,17 @@ Steam() {
 }
 
 
-Laptop() {
-    $Emerge app-laptop/laptop-mode-tools \
-            net-misc/connman \
-            net-wireless/wpa_supplicant \
-            x11-apps/xbacklight && \
-    rc-update add laptop_mode default
-}
-
-
 Cleanup() {
     ## Install eclean
     $Emerge app-portage/gentoolkit \
-            app-admin/eclean-kernel
+            app-admin/eclean-kernel &&
 
     ## Update @world, remove unused packages, and clean
     $Emerge -uDN @world && \
     $Emerge --depclean && \
     $Emerge --update --changed-use --deep @world && \
     eclean packages && \
-    eclean-dist --deep --fetch-restricted
+    eclean-dist --deep --fetch-restricted &&
 
     ## Remove junk created during installation
     rm -rf /stage3*.tar.bz2
@@ -253,11 +252,9 @@ shopt -s nocasematch && \
 	laptop    | -l) Laptop;;
 	media     | -M) Media;;
 	steam     | -s) Steam;;
-	bloat     | -B) Minimal && \
-			      Desktop && Laptop && \
-			      Media && Office && Steam && \
-			      Cleanup
-			;;
+	bloat     | -B) Minimal && Desktop && Laptop && \
+			Media && Office && Steam && \
+			Cleanup ;;
 
     help | --help | -h)
         echo "Try reading the script along with the Gentoo documentation:"
