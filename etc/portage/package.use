@@ -8,6 +8,7 @@ app-emacs/emacs-common-gentoo X -games
 app-emulation/qemu sdl2 usb
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
+app-office/libreoffice branding collada cups gltf gstreamer gtk mysql pdfimport postgres
 app-shells/zsh unicode
 app-text/ghostscript-gpl cups
 app-text/poppler cairo
