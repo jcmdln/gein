@@ -198,6 +198,14 @@ Laptop() {
 }
 
 
+Server() {
+    $Emerge www-servers/nginx \
+	    sys-cluster/corosync \
+	    sys-cluster/kubectl \
+	    app-emulation/rkt
+}
+
+
 Media() {
     $Emerge app-shells/zsh \
             app-shells/zsh-completions \
