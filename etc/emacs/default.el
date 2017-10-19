@@ -157,7 +157,7 @@
 ;;; Built-in Packages ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (use-package async
-  :config (async-bytecomp-package-mode  '(all)))
+  :config (async-bytecomp-package-mode '(all)))
 
 (use-package auto-compile
   :config
@@ -300,9 +300,7 @@
     (lisp-mode)))
 
 (use-package server
-  :config
-  (unless (server-running-p)
-    (server-start))
+  :config (unless (server-running-p)(server-start))
 
   (defun server-reinstall()
     "Remove packages, then run server-reload"
@@ -396,25 +394,36 @@
     (when (and (string= "ChanServ" nick) (string-match "^\\[#.+?\\]" (cadr args)))
       '((dont-display . t)))))
 
+(use-package cmake-ide
+  :config (cmake-ide-setup))
+
 (use-package company
   :config
   (add-hook 'prog-mode-hook 'company-mode)
   (add-hook 'text-mode-hook 'company-mode))
 
+(use-package company-irony
+  :config (add-to-list 'company-backends 'company-irony))
+
+(use-package company-irony-c-headers
+  :config
+  (add-to-list 'company-backends '(company-irony-c-headers company-irony)))
+
 (use-package counsel
-  :bind (("M-x"     . counsel-M-x)
-         ("C-x C-f" . counsel-find-file)
-         ("<f1> f"  . counsel-describe-function)
-         ("<f1> v"  . counsel-describe-variable)
-         ("<f1> l"  . counsel-find-library)
-         ("<f2> i"  . counsel-info-lookup-symbol)
-         ("<f2> u"  . counsel-unicode-char)
-         ("C-c g"   . counsel-git)
-         ("C-c j"   . counsel-git-grep)
-         ("C-c l"   . counsel-ag)
-         ("C-x l"   . counsel-locate)
-         ("C-S-o"   . counsel-rhythmbox))
-  :config (define-key read-expression-map (kbd "C-r") 'counsel-expression-history))
+  :bind
+  (("<f1> f"  . counsel-describe-function)
+   ("<f1> l"  . counsel-find-library)
+   ("<f1> v"  . counsel-describe-variable)
+   ("<f2> i"  . counsel-info-lookup-symbol)
+   ("<f2> u"  . counsel-unicode-char)
+   ("C-S-o"   . counsel-rhythmbox)
+   ("C-c g"   . counsel-git)
+   ("C-c j"   . counsel-git-grep)
+   ("C-c l"   . counsel-ag)
+   ("C-r"     . counsel-expression-history)
+   ("C-x C-f" . counsel-find-file)
+   ("C-x l"   . counsel-locate)
+   ("M-x"     . counsel-M-x)))
 
 (use-package diff-hl
   :config
@@ -438,17 +447,6 @@
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   (add-hook 'text-mode-hook 'flyspell-mode))
 
-(use-package function-args
-  :defer t
-  :ensure t
-  :config
-  (add-hook 'c-mode-hook 'fa-config-default)
-  (add-hook 'c++-mode-hook 'fa-config-default)
-  (append-to-list 'auto-mode-alist
-                  '(("\\.h\\'" . c-mode)
-                    ("\\.h\\'" . c++-mode)))
-  (setq semantic-case-fold 1))
-
 (use-package go-mode
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -461,6 +459,16 @@
   :config
   (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
   (setq highlight-indent-guides-method 'character))
+
+(use-package irony
+  :config
+  (add-hook 'c++-mode-hook   'irony-mode)
+  (add-hook 'c-mode-hook     'irony-mode)
+  (add-hook 'objc-mode-hook  'irony-mode)
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+  (define-key irony-mode-map [remap completion-at-point] 'counsel-irony)
+  (define-key irony-mode-map [remap complete-symbol]     'counsel-irony)
+  (setq irony-additional-clang-options '("-std=c++14")))
 
 (use-package ivy
   :bind (("C-c C-r" . ivy-resume)
