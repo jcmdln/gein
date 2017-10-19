@@ -439,13 +439,15 @@
   (add-hook 'text-mode-hook 'flyspell-mode))
 
 (use-package function-args
+  :defer t
+  :ensure t
   :config
   (add-hook 'c-mode-hook 'fa-config-default)
   (add-hook 'c++-mode-hook 'fa-config-default)
   (append-to-list 'auto-mode-alist
                   '(("\\.h\\'" . c-mode)
                     ("\\.h\\'" . c++-mode)))
-  (setq semantic-case-fold t))
+  (setq semantic-case-fold 1))
 
 (use-package go-mode
   :config
