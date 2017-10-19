@@ -92,6 +92,13 @@
   (write-region "" nil custom-file))
 
 
+;;; Helper Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun append-to-list (list-var elements)
+  "Append ELEMENTS to the end of LIST-VAR"
+  (set list-var (append (symbol-value list-var) elements)))
+
+
 ;;; Input ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (global-set-key (kbd "C-c c")           'comment-or-uncomment-region)
@@ -186,9 +193,6 @@
                (if (= (user-uid) 0) "# " "$ ")))
         eshell-prompt-regexp "^[^#$\n]*[#$] ")
 
-  (defun append-to-list (list-var elements)       "Append ELEMENTS to the end of LIST-VAR"
-         (set list-var (append (symbol-value list-var) elements)))
-
   (add-hook
    'eshell-mode-hook
    (lambda()
@@ -237,6 +241,9 @@
 
 (use-package eww
   :config
+  (setq browse-url-browser-function 'eww-browse-url
+        shr-blocked-images "")
+
   (defun eww-toggle-images()
     "Toggle blocking images in eww."
     (interactive)
@@ -428,8 +435,17 @@
   :config
   (add-hook 'flyspell-mode-hook (auto-dictionary-mode 1))
   (add-hook 'markdown-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   (add-hook 'text-mode-hook 'flyspell-mode))
+
+(use-package function-args
+  :config
+  (add-hook 'c-mode-hook 'fa-config-default)
+  (add-hook 'c++-mode-hook 'fa-config-default)
+  (append-to-list 'auto-mode-alist
+                  '(("\\.h\\'" . c-mode)
+                    ("\\.h\\'" . c++-mode)))
+  (setq semantic-case-fold t))
 
 (use-package go-mode
   :config
@@ -457,13 +473,13 @@
 (use-package nov
   :config (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 
-(use-package ranger)
-
 (use-package rainbow-delimiters
   :config
   (add-hook 'markdown-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'prog-mode-hook     'rainbow-delimiters-mode)
   (add-hook 'text-mode-hook     'rainbow-delimiters-mode))
+
+(use-package ranger)
 
 (use-package smartparens
   :config
