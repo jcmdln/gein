@@ -4,7 +4,7 @@
 Emerge="emerge -q"
 Read="read -ep"
 
-## Gein Defaults
+## Gein Settings
 Gein_Extras="enable"
 Grub_Target="/dev/sda"
 Hostname="gein"
@@ -13,15 +13,16 @@ Swap_Size="4G"
 Time_Zone="America/New_York"
 Video_Cards="intel"
 
-## Gentoo Defaults
-#Base_Url="https://raw.githubusercontent.com/jcmdln/gein/master"
+## Gentoo Settings
+Base_Url="https://raw.githubusercontent.com/jcmdln/gein/master"
 #Kernel_Config="$Base_Url/usr/src/linux/4.12-config"
-#Make_Conf="$Base_Url/etc/portage/make.conf"
+Make_Conf="$Base_Url/etc/portage/make.conf"
 #Package_Env="$Base_Url/etc/portage/package.env"
-#Package_Use="$Base_Url/etc/portage/package.use"
+Package_Use="$Base_Url/etc/portage/package.use"
 Stage3_Arch="amd64"
-Stage3_Date="20171005"
-Stage3_Url="http://distfiles.gentoo.org/releases"
+Stage3_Date="20171004"
+Stage3_Vers="${Stage3_Arch}-musl-vanilla"
+Stage3_Url="http://distfiles.gentoo.org/experimental/"
 
 
 Bootstrap() {
@@ -37,7 +38,7 @@ Bootstrap() {
 
     ## Download and extract stage3 tarball
     cd /mnt/gentoo && \
-    wget ${Stage3_Url}/${Stage3_Arch}/autobuilds/${Stage3_Date}/stage3-${Stage3_Arch}-${Stage3_Date}.tar.bz2 && \
+    wget ${Stage3_Url}/${Stage3_Arch}/musl/stage3-${Stage3_Vers}-${Stage3_Date}.tar.bz2 && \
     tar xvjpf stage3-*.tar.bz2 --xattrs --numeric-owner &&
 
     ## Mount hardware devices
@@ -84,7 +85,7 @@ Bootstrap() {
 
     ## Chroot into '/mnt/gentoo'
     cd /mnt/gentoo && \
-    echo "chroot'ing into /mnt/gentoo..."
+    printf "#\n# chroot'ing into /mnt/gentoo...\n#\n" && \
     chroot /mnt/gentoo /bin/bash
 }
 
@@ -97,7 +98,7 @@ Minimal() {
 
     ## Reload profile and update PS1
     source /etc/profile && \
-    export PS1="(chroot) $PS1"
+    export PS1="(chroot) $PS1" &&
 
     ## Sync Portage and select profile
     emerge-webrsync && \
@@ -122,7 +123,7 @@ Minimal() {
     ## Update environment
     env-update && \
     source /etc/profile && \
-    export PS1="(chroot) $PS1"
+    export PS1="(chroot) $PS1" &&
 
     ## Emerge/install Linux kernel and modules
     $Emerge sys-kernel/gentoo-sources \
@@ -166,34 +167,37 @@ Minimal() {
 
 
 Desktop() {
-    ## Install Desktop drivers and packages
     $Emerge dev-util/cmake \
             x11-base/xorg-drivers \
             x11-misc/wmctrl \
-            x11-misc/xdotool && \
+            x11-misc/xdotool &&
+
     env-update && \
     source /etc/profile && \
-    export PS1="(chroot) $PS1" && \
+    export PS1="(chroot) $PS1" &&
+
     $Emerge app-admin/sudo \
             app-editors/vim \
-            app-misc/ranger \
+	    app-laptop/laptop-mode-tools \
             app-misc/tmux \
             media-fonts/dejavu \
-            x11-apps/xrandr \
+	    media-gfx/feh \
+	    media-gfx/scrot \
+            media-libs/alsa-lib \
+            media-sound/alsa-utils \
+	    media-video/mpv \
+            net-misc/connman \
+            net-wireless/wpa_supplicant \
+	    net-misc/youtube-dl \
+            x11-apps/xbacklight \
+	    x11-apps/xrandr \
             x11-misc/dmenu \
             x11-misc/i3lock \
             x11-misc/i3status \
             x11-misc/xclip \
             x11-terms/rxvt-unicode \
-            x11-wm/i3
-}
+            x11-wm/i3 &&
 
-
-Laptop() {
-    $Emerge app-laptop/laptop-mode-tools \
-            net-misc/connman \
-            net-wireless/wpa_supplicant \
-            x11-apps/xbacklight && \
     rc-update add laptop_mode default
 }
 
@@ -203,32 +207,6 @@ Server() {
 	    sys-cluster/corosync \
 	    sys-cluster/kubectl \
 	    app-emulation/rkt
-}
-
-
-Media() {
-    $Emerge app-shells/zsh \
-            app-shells/zsh-completions \
-	    media-gfx/feh \
-	    media-gfx/scrot \
-            media-libs/alsa-lib \
-            media-sound/alsa-utils \
-	    media-video/mpv \
-	    net-misc/youtube-dl \
-	    www-client/chromium
-}
-
-
-Office() {
-    $Emerge app-office/libreoffice
-}
-
-
-Steam() {
-    $Emerge layman && \
-    layman -a steam-overlay && \
-    $Emerge steam-meta \
-	    steam-launcher-meta
 }
 
 
@@ -257,9 +235,6 @@ shopt -s nocasematch && \
 	cleanup   | -c) Cleanup;;
 	minimal   | -m) Minimal;;
 	desktop   | -d) Desktop;;
-	laptop    | -l) Laptop;;
-	media     | -M) Media;;
-	steam     | -s) Steam;;
 	bloat     | -B) Minimal && Desktop && Laptop && \
 			Media && Office && Steam && \
 			Cleanup ;;
@@ -276,9 +251,5 @@ shopt -s nocasematch && \
        printf "\nPost-bootstrap options:\n"
        echo "  -m minimal    Only install required gentoo packages"
        echo "  -d desktop    i3-based desktop"
-       echo "  -l laptop     install laptop, wifi, and backlight packages"
-       echo "  -M media      Install alsa, mpv, chromium, etc"
-       echo "  -s steam      Install Steam"
-       echo "  -b bloat      Install everything mentioned above"
     ;;
 esac && shopt -u nocasematch

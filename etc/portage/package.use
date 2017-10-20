@@ -31,8 +31,9 @@ dev-libs/libxml2 abi_x86_32 python
 dev-libs/lzo abi_x86_32
 dev-libs/nspr abi_x86_32
 dev-libs/nss abi_x86_32
-dev-libs/openssl abi_x86_32
+dev-libs/openssl abi_x86_32 zlib
 dev-util/pkgconfig abi_x86_32
+dev-vcs/git -gpg
 gnome-base/librsvg abi_x86_32
 media-gfx/feh curl exif cinerma
 media-gfx/graphite2 abi_x86_32
@@ -67,6 +68,7 @@ sys-fs/udev abi_x86_32
 sys-libs/binutils-libs abi_x86_32
 sys-libs/gpm abi_x86_32
 sys-libs/libcap abi_x86_32
+sys-libs/libcxx libcxxabi
 sys-libs/ncurses abi_x86_32
 sys-libs/readline abi_x86_32
 sys-libs/zlib abi_x86_32
