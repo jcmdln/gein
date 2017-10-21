@@ -102,6 +102,10 @@ Minimal() {
 
     ## Sync Portage and select profile
     emerge-webrsync && \
+    $Emerge --sync && \
+    $Emerge app-portage/layman \
+            dev-vcs/git && \
+    layman -a musl && \
     eselect profile list && \
     $Read "Which profile? [Default is 1]: " Target_Profile && \
     [ -z $Target_Profile ] && Target_Profile="1"
