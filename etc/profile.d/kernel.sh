@@ -1,6 +1,6 @@
 # /etc/profile.d/kernel.sh
 
-KMake="-j$(grep -c ^processor /proc/cpuinfo)"
+KMake="make -j$(grep -c ^processor /proc/cpuinfo)"
 
 kernel-rebuild() {
     printf "\n\n#####\n### Building Kernel\n#####\n\n"
