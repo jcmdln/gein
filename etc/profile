@@ -1,6 +1,6 @@
 # /etc/profile
 
-##
+## Set user file-creation mask
 umask 022
 
 ## Load 'env-update' settings
@@ -21,21 +21,21 @@ fi
 
 ## Exports
 export ARCHFLAGS="-arch x86_64"
-export EDITOR='vim|emacsclient -ca ""'
+export EDITOR='vi'
 export HISTTIMEFORMAT="(%m/%d/%y) %T "
 export MANPATH
 export PAGER="${PAGER:-/usr/bin/less}"
 export PATH
 export PROMPT_COMMAND="history -a"
 export SSH_KEY_PATH="${HOME}/.ssh/rsa_id"
-export TERM="xterm"
+export TERM="xterm-256color"
 export ZSH="${HOME}/.oh-my-zsh"
 export ZSH_THEME="gentoo"
 
 ## Bash settings
 if [ -n "${BASH_VERSION-}" ]; then
     [ -f /etc/bash/bashrc ] && source /etc/bash/bashrc
-    PS1="[\u@\h \w]\$ "
+    export PS1="[\u@\h \w]\$ "
 fi
 
 ## Zsh settings
@@ -44,7 +44,7 @@ if [ -n "${ZSH_VERSION-}" ]; then
     [ ! -e ${ZSH} ] && \
       rawGH="https://raw.githubusercontent.com/robbyrussell/oh-my-zsh" && \
       curl -fsSL $rawGH/master/tools/install.sh | sh
-    PS1="[%n@%m %1d]$ "
+    export PS1="[%n@%m %1d]$ "
 fi
 
 ## Cleanup
