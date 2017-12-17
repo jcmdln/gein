@@ -1,4 +1,5 @@
-# gein - GEntoo INstaller
+#### NOTE: This project has been deprecated by https://github.com/Azryn/AzrynOS
+
 
 ```
 $ sh gein
