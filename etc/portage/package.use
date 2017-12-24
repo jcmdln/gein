@@ -104,7 +104,7 @@ virtual/libintl abi_x86_32
 virtual/libudev abi_x86_32 x32
 virtual/opengl abi_x86_32
 virtual/pkgconfig abi_x86_32
-www-client/chromium -proprietary-codecs cups hangouts system-ffmpeg system-icu system-libvpx
+www-client/chromium cups hangouts proprietary-codecs system-ffmpeg system-icu system-libvpx
 www-plugins/adobe-flash ppapi
 x11-base/xorg-drivers libinput
 x11-base/xorg-server -minimal
