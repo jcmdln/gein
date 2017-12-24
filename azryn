@@ -202,7 +202,9 @@ Complete() {
            media-sound/alsa-utils \
            media-video/mpv \
            net-misc/youtube-dl \
-           www-client/chromium \
+           sys-apps/mlocate \
+	   sys-process/htop \
+	   www-client/chromium \
            x11-apps/xbacklight \
            x11-apps/xrandr \
            x11-apps/xset \
