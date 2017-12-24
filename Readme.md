@@ -1,7 +1,16 @@
-AzrynOS is a Linux distribution that uses Gentoo to provide an i3wm desktop.
-You may install a basic Gentoo system and proceed to installing the complete
-version of AzrynOS if desired:
+`AzrynOS` is a Linux-based distribution using Gentoo and i3wm. The
+primary goal is to automate the installation of my own ideal Gentoo
+setup though the current design allows for others to fork or submit PR's
+should it be desired. Keep in mind that this project is NOT a
+replacement for reading the Gentoo Handbook. Sabayon tries to do this
+and I don't want to repeat this line of thinking.
 
+I'm aware that Gentoo is a highly personal system and much of what I've
+added may be undesired. Despite this I think that this project may serve
+as a subjectively decent example of getting started with Gentoo.
+
+The installation process is handled in four steps as shown in the output
+of the `azryn` script:
 ```
 # Run the following from a Gentoo LiveCD
 $ wget -q http://os.aswl.org -O /mnt/gentoo/azryn
@@ -16,29 +25,26 @@ Run in the order listed:
   cleanup      Remove junk created during install
 ```
 
+If you want to fork this script or start with a basic Gentoo
+installation, simply stop after running the `minimal` pass and do as you
+wish. The `azryn` script is meant to be modular and allow configuration,
+so if you notice any issues please feel free to submit a PR.
+
 
 ## Warnings
 - AzrynOS is not production-ready, proceed with caution.
-- This installation relies on the Gentoo Live CD
-  - In the future, there will be a custom Live CD and/or USB image.
-- There is no automatic partitioning process, you will need to manually
-  partition your disks and mounting them before proceeding.
-  - Later this will be slightly improved by using partition labels.
-- Read the entire script and thumb through the configuration files.
-  - Some environment variables at the top of the script will need to be
-    modified. Read the Gentoo Handbook for your intended architecture if
-    anything is unclear.
+- You must manually partition and mount your disks.
+  - Consult your Gentoo Handbook.
 
 
 ## FAQ
-- How much about Gentoo will I need to know to use AzrynOS?
-  - If you have a little bit of Linux experience and can read shell scripts
-    along with documentation it should be fairly straightforward.
-- How long does this take to install?
-  - About 1-4 hours for the minimal install depending on the hardware it's
-    being installed to, and expect to spend 4-24 hours for the complete
-    installation.
-- I keep getting boot failures after installing in a VirtualBox VM?
-  - Yea... You have to remove the virtual optical drive from the boot order
-    manually in the settings of your VM. Afterwards it should work without
-    issue.
+- "How much about Gentoo will I need to know to use AzrynOS?"
+  - I would suggest reading the Gentoo Handbook and every file in this
+    project before proceeding.
+- "How long does this take to install?"
+  - About 1 to 4 hours for the minimal install.
+    - Most time-consuming packages are GCC 6.4 and Linux.
+  - About 4 to 24 hours for the complete installation.
+    - Most time-consuming packages are Mesa and Chromium.
+- "I keep getting boot failures after installing in a VirtualBox VM?"
+  - Remove the virtual disk drive from the boot order and restart.
