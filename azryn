@@ -49,24 +49,24 @@ Bootstrap() {
     [ ! -e /mnt/gentoo/azryn ] && \
         cp $0 /mnt/gentoo/azryn
 
-    echo "azryn: Ensure we are in /mnt/gentoo"
+    echo "azryn: Ensure we are in /mnt/gentoo..."
     cd /mnt/gentoo
 
-    echo "azryn: Setting system time via ntpd"
+    echo "azryn: Setting system time via ntpd..."
     ntpd -q -g
 
-    echo "azryn: Downloading and extracting Stage3 tarball"
+    echo "azryn: Downloading and extracting Stage3 tarball..."
     wget -q $Stage3
     tar -xjpf stage3-*.tar.bz2 --xattrs --numeric-owner
 
-    echo "azryn: Mounting hardware devices"
+    echo "azryn: Mounting hardware devices..."
     mount -t proc /proc /mnt/gentoo/proc
     mount --rbind /sys  /mnt/gentoo/sys
     mount --make-rslave /mnt/gentoo/sys
     mount --rbind /dev  /mnt/gentoo/dev
     mount --make-rslave /mnt/gentoo/dev
 
-    echo "azryn: Setting up swapfile"
+    echo "azryn: Setting up swapfile..."
     SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e $SwapFile ]; then
         fallocate -l $SwapSize $SwapFile && chmod 0600 $SwapFile
@@ -74,7 +74,7 @@ Bootstrap() {
         echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
-    echo "azryn: Downloading portage configuration files"
+    echo "azryn: Downloading portage configuration files..."
     [ ! -z $MakeConf ] && \
         wget -q $MakeConf -O /mnt/gentoo/etc/portage/make.conf
     [ ! -z $PackageAcceptKeywords ] && \
@@ -88,13 +88,13 @@ Bootstrap() {
         rm -rf /mnt/gentoo/etc/portage/package.use && \
         wget -q $PackageUse -O /mnt/gentoo/etc/portage/package.use
 
-    echo "azryn: Setting up Portage mirrors"
+    echo "azryn: Setting up Portage mirrors..."
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf
     wget -q $BaseUrl/etc/portage/repos.conf/gentoo.conf \
          -O /etc/portage/repos.conf/gentoo.conf
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
-    printf "#\n# chroot'ing into /mnt/gentoo...\n#\n"
+    echo "azryn: Chroot'ing into /mnt/gentoo..."
     cd /mnt/gentoo
     chroot /mnt/gentoo /bin/bash
 }
@@ -103,11 +103,11 @@ Minimal() {
     ## Reload profile and update PS1
     source /etc/profile && export PS1="(chroot) $PS1"
 
-    echo "azryn: Setting CPU cores and GPU type"
+    echo "azryn: Setting CPU cores and GPU type..."
     sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
         /etc/portage/make.conf
 
-    echo "azryn: Syncing Portage and selecting profile"
+    echo "azryn: Syncing Portage and selecting profile..."
     emerge -q --sync
     eselect profile list
     read -ep "Which profile? [Default is 1]: " TargetProfile
@@ -115,11 +115,11 @@ Minimal() {
     eselect profile set $TargetProfile
     emerge -quDN @world
 
-    echo "azryn: Setting timezone"
+    echo "azryn: Setting timezone..."
     echo $TimeZone > /etc/timezone
     emerge -q --config sys-libs/timezone-data
 
-    echo "azryn: Setting locale"
+    echo "azryn: Setting locale..."
     echo $Locale > /etc/locale.gen
     locale-gen && locale -a && eselect locale list
     read -ep "Target locale: " TargetLocale
@@ -128,7 +128,7 @@ Minimal() {
     ## Update environment
     env-update && source /etc/profile && export PS1="(chroot) $PS1"
 
-    echo "azryn: Emerge/install Linux kernel and modules"
+    echo "azryn: Emerge/install Linux kernel and modules..."
     emerge -q \
            sys-kernel/gentoo-sources \
            sys-kernel/linux-firmware \
@@ -142,7 +142,7 @@ Minimal() {
         emerge -q intel-microcode
     fi
 
-    echo "azryn: Configuring Linux kernel"
+    echo "azryn: Configuring Linux kernel..."
     cd /usr/src/linux
     if [ -z $KernelConfig ]; then
         make defconfig && make menuconfig
@@ -150,38 +150,39 @@ Minimal() {
         wget $KernelConfig -O /usr/src/linux/.config
     fi
 
-    echo "azryn: Compiling Linux kernel, modules, and initramfs"
+    echo "azryn: Compiling Linux kernel, modules, and initramfs..."
     make -j$CPUCores && make modules_install && make install
     genkernel --install initramfs
     cd /
 
-    echo "azryn: Install netifrc"
+    echo "azryn: Install netifrc..."
     emerge -q --noreplace net-misc/netifrc
 
-    echo "azryn: Add connman to OpenRC"
+    echo "azryn: Add connman to OpenRC..."
     rc-update add connman default
 
-    echo "azryn: Setting hostname"
+    echo "azryn: Setting hostname..."
     echo "hostname=$Hostname" > /etc/conf.d/hostname
 
-    echo "azryn: Installing Grub"
+    echo "azryn: Installing Grub..."
     grub-install $GrubTarget
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    echo "azryn: Adding bash configuration"
+    echo "azryn: Adding bash configuration..."
     wget -q $BaseUrl/etc/bash/bashrc -O /etc/bash/bashrc
 
-    echo "azryn: Adding profile configuration"
+    echo "azryn: Adding profile configuration..."
     wget -q $BaseUrl/etc/profile -O /etc/profile
     wget -q $BaseUrl/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
     wget -q $BaseUrl/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
     wget -q $BaseUrl/etc/profile.d/environment.sh -O /etc/profile.d/environment.sh
 
-    echo "azryn: Setting root password"
+    echo "azryn: Setting root password..."
     echo $RootPwd | chpasswd
 }
 
 Complete() {
+    echo "azryn: Installing Xorg drivers..."
     emerge -q \
            x11-base/xorg-drivers \
            x11-misc/wmctrl \
@@ -190,6 +191,7 @@ Complete() {
     ## Update environment
     env-update && source /etc/profile && export PS1="(chroot) $PS1"
 
+    echo "azryn: Installing AzrynOS packages..."
     emerge -q \
            app-portage/gentoolkit \
            app-admin/eclean-kernel \
@@ -203,8 +205,8 @@ Complete() {
            media-video/mpv \
            net-misc/youtube-dl \
            sys-apps/mlocate \
-	   sys-process/htop \
-	   www-client/chromium \
+           sys-process/htop \
+           www-client/chromium \
            x11-apps/xbacklight \
            x11-apps/xrandr \
            x11-apps/xset \
@@ -215,10 +217,10 @@ Complete() {
            x11-terms/gnome-terminal \
            x11-wm/i3
 
-    echo "azryn: Add laptop_mode to OpenRC"
+    echo "azryn: Add laptop_mode to OpenRC..."
     rc-update add laptop_mode default
 
-    echo "azryn: Adding userland configuration files"
+    echo "azryn: Adding userland configuration files..."
     wget -q $BaseUrl/etc/Xresources       -O /etc/Xresources
     wget -q $BaseUrl/etc/emacs/default.el -O /etc/emacs/default.el
     wget -q $BaseUrl/etc/i3/config        -O /etc/i3/config
@@ -229,14 +231,14 @@ Complete() {
 }
 
 Cleanup() {
-    echo "azryn: Updating @world and removing unused packages"
+    echo "azryn: Updating @world and removing unused packages..."
     emerge -quDN @world
     emerge -q --depclean
     emerge -quD --changed-use @world
     eclean packages
     eclean-dist --deep --fetch-restricted
 
-    echo "azryn: Removing stage3 tarball"
+    echo "azryn: Removing stage3 tarball..."
     rm -rf /stage3*.tar.bz2
 }
 
@@ -246,20 +248,20 @@ Cleanup() {
 shopt -s nocasematch
 case $1 in
     bootstrap)
-	Bootstrap
-	;;
+        Bootstrap
+        ;;
 
     minimal)
-	Minimal
-	;;
+        Minimal
+        ;;
 
     complete)
-	Complete
-	;;
+        Complete
+        ;;
 
     cleanup)
-	Cleanup
-	;;
+        Cleanup
+        ;;
 
     *) echo "AzrynOS - i3wm powered Gentoo derivative"
        echo "  help         Shows help output"
