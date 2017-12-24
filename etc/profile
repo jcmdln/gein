@@ -1,0 +1,12 @@
+# /etc/profile
+
+if [ -e /etc/profile.env ] ; then
+    . /etc/profile.env
+fi
+
+umask 022
+
+for sh in /etc/profile.d/*.sh; do
+    [ -r "$sh" ] && . "$sh"
+done
+unset sh

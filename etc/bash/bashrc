@@ -1,0 +1,33 @@
+# /etc/bash/bashrc
+
+# Test for an interactive shell.
+if [[ $- != *i* ]] ; then
+    # Shell is non-interactive.  Be done now!
+    return
+fi
+
+shopt -s checkwinsize
+shopt -s no_empty_cmd_completion
+shopt -s histappend
+#PROMPT_COMMAND='history -a'
+
+# Change the window title of X terminals 
+case ${TERM} in
+    [aEkx]term*|rxvt*|gnome*|konsole*|interix)
+	PS1='\[\033]0;\u@\h:\w\007\]'
+	;;
+    screen*)
+	PS1='\[\033k\u@\h:\w\033\\\]'
+	;;
+    *)
+	unset PS1
+	;;
+esac
+
+for sh in /etc/bash/bashrc.d/* ; do
+    [[ -r ${sh} ]] && source "${sh}"
+done
+
+source /etc/profile
+
+unset use_color sh

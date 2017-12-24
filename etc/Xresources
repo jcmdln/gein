@@ -1,0 +1,4 @@
+# /etc/Xresources
+
+Xcursor.theme: breeze
+Xcursor.size: 16

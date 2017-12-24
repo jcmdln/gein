@@ -1,0 +1,190 @@
+# /etc/i3/config
+
+### Startup ######################################
+
+## disable dpms
+exec xset s off -dpms
+
+## Set font
+font pango:Dejavu Sans Mono 9
+
+bar {
+  position       top
+  status_command i3status
+}
+
+
+### Applications #################################
+
+## Modifier Key
+set $mod Mod4
+
+## Application Menu
+bindsym $mod+d exec dmenu_run
+
+## Terminal Emulator
+bindsym $mod+Return exec dbus-launch gnome-terminal
+
+
+### Multimedia Keys ##############################
+
+## Audio (Alsa)
+bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5+
+bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5-
+bindsym XF86AudioMute        exec --no-startup-id amixer set Master toggle
+
+## Audio (PulseAudio)
+# bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+# bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+# bindsym XF86AudioMute        exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+# bindsym XF86AudioPlay        exec --no-startup-id pactl play-pause
+# bindsym XF86AudioPause       exec --no-startup-id pactl pause
+# bindsym XF86AudioNext        exec --no-startup-id pactl next
+# bindsym XF86AudioPrev        exec --no-startup-id pactl previous
+
+## Brightness (xbacklight)
+bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 15
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 15
+
+## Brightness (brightnessctl)
+# bindsym XF86MonBrightnessUp   exec --no-startup-id brightnessctl set 5%+
+# bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+
+### Menus ########################################
+
+## Display
+# This section should serve as an example of how to configure your
+# display settings for use with multiple setups/devices.
+set $mode_display Home (h), Laptop (l)
+bindsym $mod+Shift+d mode "$mode_display"
+mode "$mode_display" {
+  bindsym h exec xrandr \
+    --output LVDS1 --primary --mode 1366x768 --pos 554x1080 --rotate normal \
+    --output HDMI1 --mode 1920x1080 --pos 0x0 --rotate normal \
+    --output DP-1 --off \
+    --output VGA-1 --off, mode "default"
+  bindsym l exec xrandr \
+    --output LVDS1 --primary --mode 1366x768 --pos 0x0 --rotate normal \
+    --output HDMI1 --off \
+    --output DP1 --off \
+    --output VGA1 --off, mode "default"
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+
+## Reload
+set $mode_reload Reload i3 config (r), Live restart of i3 (Shift+r)
+bindsym $mod+Shift+r mode "$mode_reload"
+mode "$mode_reload" {
+  bindsym r reload
+  bindsym Shift+r restart
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+
+## State
+set $Locker xset s 10 dpms 10 && i3lock -c 3f3f3f -n && xset s off -dpms
+set $mode_system Lock (l), Logout (e), Reboot (r), Shutdown (s)
+bindsym $mod+Home mode "$mode_system"
+mode "$mode_system" {
+  bindsym l exec --no-startup-id $Locker, mode "default"
+  bindsym e exec --no-startup-id i3-msg exit, mode "default"
+  bindsym r exec --no-startup-id reboot, mode "default"
+  bindsym s exec --no-startup-id poweroff -i, mode "default"
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+
+## Resize
+bindsym $mod+r mode "resize"
+mode "resize" {
+  bindsym j resize shrink width 10 px or 10 ppt
+  bindsym k resize grow height 10 px or 10 ppt
+  bindsym l resize shrink height 10 px or 10 ppt
+  bindsym semicolon resize grow width 10 px or 10 ppt
+  bindsym Left resize shrink width 10 px or 10 ppt
+  bindsym Down resize grow height 10 px or 10 ppt
+  bindsym Up resize shrink height 10 px or 10 ppt
+  bindsym Right resize grow width 10 px or 10 ppt
+
+  bindsym Return mode "default"
+  bindsym Escape mode "default"
+}
+
+
+### Keybinds #####################################
+
+## Change focus
+bindsym $mod+j focus left
+bindsym $mod+k focus down
+bindsym $mod+l focus up
+bindsym $mod+semicolon focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+## Move focused window
+bindsym $mod+Shift+j move left
+bindsym $mod+Shift+k move down
+bindsym $mod+Shift+l move up
+bindsym $mod+Shift+semicolon move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+## Window splitting
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+## Fullscreen focused container
+bindsym $mod+f fullscreen toggle
+
+## Cycle frame layout
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+## Toggle floating on focused frame
+bindsym $mod+Shift+space floating toggle
+
+## Change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+## Focus the parent container
+bindsym $mod+a focus parent
+
+## Switch to workspace
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+## Move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+## Kill focused window
+bindsym $mod+Shift+q kill
+
+## Drag floating windows with Mouse+$mod
+floating_modifier $mod
