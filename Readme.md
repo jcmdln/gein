@@ -1,9 +1,9 @@
-`AzrynOS` is a Linux-based distribution using Gentoo and i3wm. The
-primary goal is to automate the installation of my own ideal Gentoo
-setup though the current design allows for others to fork or submit PR's
-should it be desired. Keep in mind that this project is NOT a
-replacement for reading the Gentoo Handbook. Sabayon tries to do this
-and I don't want to repeat this line of thinking.
+`AzrynOS` is a Linux-based derivative of Gentoo using i3wm. The primary
+goal is to automate the installation of my own ideal Gentoo setup though
+the current design allows for others to fork or submit PR's should it be
+desired. Keep in mind that this project is NOT a replacement for reading
+the Gentoo Handbook. Sabayon tries to do this and I don't want to repeat
+this line of thinking.
 
 I'm aware that Gentoo is a highly personal system and much of what I've
 added may be undesired. Despite this I think that this project may serve
@@ -15,7 +15,7 @@ of the `azryn` script:
 # Run the following from a Gentoo LiveCD
 $ wget -q http://os.aswl.org -O /mnt/gentoo/azryn
 $ sh azryn
-AzrynOS - i3wm powered Gentoo derivative
+AzrynOS - Linux-based derivative of Gentoo using i3wm
   help         Shows help output
 
 Run in the order listed:

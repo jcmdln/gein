@@ -266,7 +266,7 @@ case $1 in
         Cleanup
         ;;
 
-    *) echo "AzrynOS - i3wm powered Gentoo derivative"
+    *) echo "AzrynOS - Linux-based derivative of Gentoo using i3wm"
        echo "  help         Shows help output"
        echo
        echo "Run in the order listed:"
