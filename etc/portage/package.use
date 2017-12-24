@@ -1,11 +1,20 @@
 # /etc/portage/package.use
 
-*/* -aqua -avahi -bindist -doc -gnome-keyring -llvm -offensive -multilib -pulseaudio -sslv3 -static -static-libs -systemd -tls-heartbeat alsa deblob ipv6 minimal threads unicode
+### Global #######################################
+
+## Blacklist
+*/* -aqua -avahi -bindist -doc -gnome-keyring -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
+
+## Whitelist
+*/* alsa bzip2 deblob ffmpeg imagemagick ipv6 minimal threads unicode zlib
+
+
+### Package ######################################
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/bzip2 abi_x86_32
 app-arch/file-roller
-app-editors/emacs X acl alsa gof gtk3 gzip-el imagemagick inotify jpeg libxml2 png sound ssl svg threads tiff xft xpm xwidgets zlib -athena -games -gtk
+app-editors/emacs -athena -dbus -games -gtk X acl alsa dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl threads xft xpm xwidgets
 app-editors/vim X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo X -games
 app-emulation/qemu sdl2 usb
@@ -20,7 +29,7 @@ dev-cpp/cairomm X
 dev-cpp/gtkmm X
 dev-db/sqlite abi_x86_32
 dev-games/ogre threads examples ois
-dev-games/openscenegraph qt5 jpeg ffmpeg svg sdl truetype png
+dev-games/openscenegraph qt5 jpeg svg sdl truetype png
 dev-lang/python:2.7 sqlite
 dev-libs/atk abi_x86_32
 dev-libs/expat abi_x86_32
@@ -34,7 +43,7 @@ dev-libs/libxml2 abi_x86_32 icu python
 dev-libs/lzo abi_x86_32
 dev-libs/nspr abi_x86_32
 dev-libs/nss abi_x86_32
-dev-libs/openssl abi_x86_32 zlib
+dev-libs/openssl abi_x86_32
 dev-qt/qtnetwork connman
 dev-util/geany gtk3 vte
 dev-util/pkgconfig abi_x86_32
@@ -44,10 +53,11 @@ kde-plasma/breeze X wayland
 lxqt-base/lxqt-meta about admin filemanager icons lximage minimal powermanagement sddm
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
 media-fonts/noto X cjk
-media-gfx/feh curl exif cinerma
+media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sdl sndfile valgrind media-gfx/feh curl exif cinerma
 media-gfx/gimp smp
 media-gfx/graphite2 abi_x86_32
-media-gfx/inkscape imagemagick jpeg latex
+media-gfx/imagemagick X corefonts cxx djvu fontconfig fpx fttw hdri jbig jpeg jpeg2k lcms lzma openexr pango png raw opencl svg tiff truetype webp wmf xml
+media-gfx/inkscape latex
 media-gfx/pstoedit plotutils
 media-libs/alsa-lib abi_x86_32
 media-libs/fontconfig abi_x86_32
@@ -61,9 +71,9 @@ media-libs/libtxc_dxtn abi_x86_32
 media-libs/mesa abi_x86_32 dri3 vaapi vdpau
 media-libs/openal abi_x86_32
 media-plugins/alsa-plugins abi_x86_32
-media-sound/cmus aac alsa ffmpeg flac libsamplerate mad mp4 opus oss unicode vorbis wavpack
+media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss unicode vorbis wavpack
 media-sound/pulseaudio abi_x86_32
-media-video/ffmpeg X aac blueray chromium gme hevc libass mp3 network ogg openh264 openssl opus rtmp sdl theora vorbis vpx x264 x265 xvid wavpack zlib
+media-video/ffmpeg X aac blueray chromium gme hevc libass mp3 network ogg openh264 openssl opus rtmp sdl theora vorbis vpx x264 x265 xvid wavpack
 media-video/mpv jpeg libass libmpv opengl
 net-libs/libasyncns abi_x86_32
 net-misc/connman bluetooth ethernet openvpn wifi
