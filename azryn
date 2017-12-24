@@ -46,8 +46,7 @@ Bootstrap() {
     if echo $Proceed | grep -iq "^n"; then exit; fi
 
     ## If this script isn't in /mnt/gentoo/azryn, cp it now
-    [ ! -e /mnt/gentoo/azryn ] && \
-        cp $0 /mnt/gentoo/azryn
+    [ ! -e /mnt/gentoo/azryn ] && cp $0 /mnt/gentoo/azryn
 
     echo "azryn: Ensure we are in /mnt/gentoo..."
     cd /mnt/gentoo
@@ -76,17 +75,21 @@ Bootstrap() {
 
     echo "azryn: Downloading portage configuration files..."
     [ ! -z $MakeConf ] && \
-        wget -q $MakeConf -O /mnt/gentoo/etc/portage/make.conf
+        wget -q $MakeConf \
+             -O /mnt/gentoo/etc/portage/make.conf
     [ ! -z $PackageAcceptKeywords ] && \
         wget -q $PackageAcceptKeywords \
              -O /mnt/gentoo/etc/portage/package.accept_keywords
     [ ! -z $PackageEnv ] && \
-        wget -q $PackageEnv -O /mnt/gentoo/etc/portage/package.env
+        wget -q $PackageEnv \
+             -O /mnt/gentoo/etc/portage/package.env
     [ ! -z $PackageLicense ] && \
-        wget -q $PackageLicense -O /mnt/gentoo/etc/portage/package.license
+        wget -q $PackageLicense \
+             -O /mnt/gentoo/etc/portage/package.license
     [ ! -z $PackageUse ] && \
         rm -rf /mnt/gentoo/etc/portage/package.use && \
-        wget -q $PackageUse -O /mnt/gentoo/etc/portage/package.use
+        wget -q $PackageUse \
+             -O /mnt/gentoo/etc/portage/package.use
 
     echo "azryn: Setting up Portage mirrors..."
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf
@@ -103,9 +106,6 @@ Bootstrap() {
 }
 
 Minimal() {
-    ## Reload profile and update PS1
-    source /etc/profile && export PS1="(chroot) $PS1"
-
     echo "azryn: Setting CPU cores and GPU type..."
     sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
         /etc/portage/make.conf
@@ -127,9 +127,7 @@ Minimal() {
     locale-gen && locale -a && eselect locale list
     read -ep "Target locale: " TargetLocale
     eselect locale set $TargetLocale
-
-    ## Update environment
-    env-update && source /etc/profile && export PS1="(chroot) $PS1"
+    env-update
 
     echo "azryn: Emerge/install Linux kernel and modules..."
     emerge -q \
@@ -175,10 +173,14 @@ Minimal() {
     wget -q $BaseUrl/etc/bash/bashrc -O /etc/bash/bashrc
 
     echo "azryn: Adding profile configuration..."
-    wget -q $BaseUrl/etc/profile -O /etc/profile
-    wget -q $BaseUrl/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
-    wget -q $BaseUrl/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
-    wget -q $BaseUrl/etc/profile.d/environment.sh -O /etc/profile.d/environment.sh
+    wget -q $BaseUrl/etc/profile \
+         -O /etc/profile
+    wget -q $BaseUrl/etc/profile.d/alias.sh \
+         -O /etc/profile.d/alias.sh
+    wget -q $BaseUrl/etc/profile.d/azryn.sh \
+         -O /etc/profile.d/azryn.sh
+    wget -q $BaseUrl/etc/profile.d/environment.sh \
+         -O /etc/profile.d/environment.sh
 
     echo "azryn: Setting root password..."
     echo $RootPwd | chpasswd
@@ -190,9 +192,7 @@ Complete() {
            x11-base/xorg-drivers \
            x11-misc/wmctrl \
            x11-misc/xdotool
-
-    ## Update environment
-    env-update && source /etc/profile && export PS1="(chroot) $PS1"
+    env-update
 
     echo "azryn: Installing AzrynOS packages..."
     emerge -q \
