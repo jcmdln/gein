@@ -277,13 +277,14 @@ case $1 in
         Cleanup
         ;;
 
-    *) echo "AzrynOS - Linux-based derivative of Gentoo using i3wm"
-       echo "  help         Shows help output"
-       echo
-       echo "Run in the order listed:"
-       echo "  bootstrap    Bootstrap the stage3 tarball"
-       echo "  minimal      Very basic Gentoo install"
-       echo "  complete     Full AzrynOS installation"
-       echo "  cleanup      Remove junk created during install"
+    *)
+        echo "AzrynOS - Linux-based derivative of Gentoo using i3wm"
+        echo "  help         Shows help output"
+        echo
+        echo "Run in the order listed:"
+        echo "  bootstrap    Bootstrap the stage3 tarball"
+        echo "  minimal      Very basic Gentoo install"
+        echo "  complete     Full AzrynOS installation"
+        echo "  cleanup      Remove junk created during install"
 esac
 shopt -u nocasematch
