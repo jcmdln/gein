@@ -236,6 +236,7 @@ DESKTOP() {
 I3WM() {
     echo "azryn: Installing i3wm desktop..."
     emerge -q \
+           lxde-base/lxappearance \
            x11-misc/dmenu \
            x11-misc/i3lock \
            x11-misc/i3status \
