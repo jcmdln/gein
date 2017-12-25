@@ -199,7 +199,9 @@ Complete() {
            app-admin/eclean-kernel \
            app-admin/sudo \
            app-editors/emacs \
+           app-editors/vim \
            app-laptop/laptop-mode-tools \
+           app-misc/tmux \
            app-portage/gentoolkit \
            app-text/aspell \
            kde-frameworks/breeze-icons \
