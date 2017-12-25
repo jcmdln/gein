@@ -5,7 +5,6 @@ azryn() {
         cleanup|-c)
             sudo emerge -avuDN --quiet-build @world && \
             sudo eclean --deep distfiles && \
-            sudo eclean --deep packages
             sudo revdep-rebuild
             ;;
 
