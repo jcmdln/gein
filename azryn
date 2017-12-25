@@ -206,6 +206,7 @@ Complete() {
            kde-plasma/breeze \
            kde-plasma/breeze-grub \
            kde-plasma/breeze-gtk \
+           kde-plasma/kwin \
            kde-plasma/sddm-kcm \
            lxqt-base/lxqt-meta \
            media-fonts/noto \
