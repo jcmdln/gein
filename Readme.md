@@ -27,7 +27,7 @@ as a subjectively decent example of getting started with Gentoo.
     - Most time-consuming packages are Mesa and Chromium.
 - "I keep getting boot failures after installing in a VirtualBox VM?"
   - Remove the virtual disk drive from the boot order and restart.
-- "The display is slow when using LXQT on my Nvidia GPU?"
+- "The display is lagging when using LXQT on my Nvidia GPU?"
   - Run `eselect opengl set nvidia` as root.
 
 
