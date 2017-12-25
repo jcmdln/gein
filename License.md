@@ -1,7 +1,7 @@
 Azryn Software Labs Public License
 Version 1.1.0, 2017-10-26
 
-Copyright (C) 2017 Azryn Software Labs, Inc. <http://www.aswl.org/apl/>
+Copyright (C) 2017 Azryn Software Labs, Inc. <https://apl.azryn.org/>
 
 Everyone is permitted to copy and distribute verbatim copies of this
 license document, but changing it is not allowed.
