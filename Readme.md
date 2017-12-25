@@ -32,7 +32,7 @@ as a subjectively decent example of getting started with Gentoo.
 ## Installation
 ```
 # Run the following from a Gentoo LiveCD
-$ wget -q http://os.aswl.org -O /mnt/gentoo/install.sh
+$ wget -q http://os.aswl.org/install.sh
 $ sh /mnt/gentoo/install.sh
 AzrynOS: Linux-based derivative of Gentoo
   help         Shows help output
