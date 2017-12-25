@@ -55,14 +55,15 @@ There are a few frontends for various tasks, one being the command
 `azryn` which at the time of writing is a frontend for common `emerge`
 tasks:
 ```
-$ azryn 
+$ azryn
 Available options:
-  cleanup, -c    Remove unneeded packages
-  install, -i    Install a package
-  remove,  -r    Safely remove a package
-  sync,    -s    Sync portage
-  update,  -u    Update @world without rebuild
-  upgrade, -U    Update @system and @world with rebuild
+  cleanup,  -c    Remove unneeded packages
+  install,  -i    Install a package
+  reconfig, -R    Get latest configuration files
+  remove,   -r    Safely remove a package
+  sync,     -s    Sync portage
+  update,   -u    Update @world without rebuild
+  upgrade,  -U    Update @system and @world with rebuild
 ```
 
 `azryn` is meant to act as a simplification script for performing
