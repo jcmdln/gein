@@ -279,7 +279,7 @@ case $1 in
         ;;
 
     *)
-        echo "AzrynOS - Linux-based derivative of Gentoo using i3wm"
+        echo "AzrynOS - Linux-based derivative of Gentoo using LXQT"
         echo "  help         Shows help output"
         echo
         echo "Run in the order listed:"
