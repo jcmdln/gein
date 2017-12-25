@@ -6,7 +6,7 @@
 */* -aqua -avahi -bindist -doc -gnome-keyring -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Whitelist
-*/* alsa bzip2 cairo deblob ffmpeg gif gnutls gpm imagemagick ipv6 jpeg jpeg2k minimal png svg threads unicode tiff xft xpm zlib
+*/* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png svg threads unicode tiff xft xpm zlib
 
 
 ### Package ######################################
