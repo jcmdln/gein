@@ -22,7 +22,7 @@ azryn() {
             ;;
 
         update|-u)
-            sudo emerge -avuDN --quiet-build @world && \
+            sudo emerge -avuDU --keep-going --with-bdeps=y @world && \
             sudo revdep-rebuild
             ;;
 
@@ -37,8 +37,8 @@ azryn() {
             echo "  install, -i    Install a package"
             echo "  remove,  -r    Safely remove a package"
             echo "  sync,    -s    Sync portage"
-            echo "  update,  -u    Update @world"
-            echo "  upgrade, -U    Update @system"
+            echo "  update,  -u    Update @world without rebuild"
+            echo "  upgrade, -U    Update @system and @world with rebuild"
             ;;
     esac
 }
