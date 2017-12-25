@@ -10,6 +10,25 @@ added may be undesired. Despite this I think that this project may serve
 as a subjectively decent example of getting started with Gentoo.
 
 
+## Warnings
+- AzrynOS is not production-ready, proceed with caution.
+- You must manually partition and mount your disks.
+  - Consult your Gentoo Handbook.
+
+
+## FAQ
+- "How much about Gentoo will I need to know to use AzrynOS?"
+  - I would suggest reading the Gentoo Handbook and every file in this
+    project before proceeding.
+- "How long does this take to install?"
+  - About 1 to 4 hours for the minimal install.
+    - Most time-consuming packages are GCC 6.4 and Linux.
+  - About 4 to 24 hours for the complete installation.
+    - Most time-consuming packages are Mesa and Chromium.
+- "I keep getting boot failures after installing in a VirtualBox VM?"
+  - Remove the virtual disk drive from the boot order and restart.
+
+
 ## Installation
 ```
 # Run the following from a Gentoo LiveCD
@@ -29,25 +48,6 @@ Installation options:
 Post-install tasks:
   cleanup      Remove junk created during install
 ```
-
-
-## Warnings
-- AzrynOS is not production-ready, proceed with caution.
-- You must manually partition and mount your disks.
-  - Consult your Gentoo Handbook.
-
-
-## FAQ
-- "How much about Gentoo will I need to know to use AzrynOS?"
-  - I would suggest reading the Gentoo Handbook and every file in this
-    project before proceeding.
-- "How long does this take to install?"
-  - About 1 to 4 hours for the minimal install.
-    - Most time-consuming packages are GCC 6.4 and Linux.
-  - About 4 to 24 hours for the complete installation.
-    - Most time-consuming packages are Mesa and Chromium.
-- "I keep getting boot failures after installing in a VirtualBox VM?"
-  - Remove the virtual disk drive from the boot order and restart.
 
 
 ## Post-boot tasks
