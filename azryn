@@ -38,7 +38,7 @@ Stage3="$S3Url/$(curl -s $S3Url/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1
 
 ### Passes #######################################
 
-Bootstrap() {
+BOOTSTRAP() {
     echo "Please ensure that you have performed the following: "
     echo "  - Edited the environment variables at the top of this script."
     echo "  - Partitioned and mounted your disk(s)."
@@ -99,13 +99,13 @@ Bootstrap() {
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
     chroot \
-        /mnt/gentoo /usr/bin/env -i \
+        $DATDIR /usr/bin/env -i \
         HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
         PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
         /bin/bash --login
 }
 
-Minimal() {
+MINIMAL() {
     echo "azryn: Setting CPU cores and GPU type..."
     sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
         /etc/portage/make.conf
@@ -173,66 +173,54 @@ Minimal() {
     wget -q $BaseUrl/etc/bash/bashrc -O /etc/bash/bashrc
 
     echo "azryn: Adding profile configuration..."
-    wget -q $BaseUrl/etc/profile \
-         -O /etc/profile
-    wget -q $BaseUrl/etc/profile.d/alias.sh \
-         -O /etc/profile.d/alias.sh
-    wget -q $BaseUrl/etc/profile.d/azryn.sh \
-         -O /etc/profile.d/azryn.sh
+    wget -q $BaseUrl/etc/profile -O /etc/profile
+    wget -q $BaseUrl/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
+    wget -q $BaseUrl/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
     wget -q $BaseUrl/etc/profile.d/environment.sh \
          -O /etc/profile.d/environment.sh
+
+    echo "azryn: Adding sudo, vim, tmux, and htop..."
+    emerge -q \
+           app-admin/sudo \
+           app-editors/vim \
+           app-misc/tmux \
+           sys-process/htop
+
+    echo "azryn: Adding userland configurations..."
+    wget -q $BaseUrl/etc/sudoers   -O /etc/sudoers
+    wget -q $BaseUrl/etc/tmux.conf -O /etc/tmux.conf
+    wget -q $BaseUrl/etc/vimrc     -O /etc/vimrc
 
     echo "azryn: Setting root password..."
     echo "root:$RootPwd" | chpasswd
 }
 
-Complete() {
+DESKTOP() {
     echo "azryn: Installing Xorg drivers..."
-    emerge -q \
-           x11-base/xorg-drivers \
-           x11-misc/wmctrl \
-           x11-misc/xdotool
+    emerge -q x11-base/xorg-drivers
     env-update
 
-    echo "azryn: Installing AzrynOS packages..."
+    echo "azryn: Installing base desktop packages..."
     emerge -q \
            app-admin/eclean-kernel \
-           app-admin/sudo \
            app-editors/emacs \
-           app-editors/vim \
            app-laptop/laptop-mode-tools \
-           app-misc/tmux \
            app-portage/gentoolkit \
            app-text/aspell \
            kde-frameworks/breeze-icons \
-           kde-plasma/breeze \
-           kde-plasma/breeze-grub \
            kde-plasma/breeze-gtk \
-           kde-plasma/kwin \
-           kde-plasma/sddm-kcm \
-           lxqt-base/lxqt-meta \
            media-fonts/noto \
            media-libs/alsa-lib \
            media-sound/alsa-utils \
            media-video/mpv \
            net-misc/youtube-dl \
            sys-apps/mlocate \
-           sys-process/htop \
-           www-client/chromium \
            x11-apps/xbacklight \
            x11-apps/xrandr \
            x11-apps/xset \
-           x11-misc/dmenu \
-           x11-misc/i3lock \
-           x11-misc/i3status \
+           x11-misc/wmctrl \
            x11-misc/xclip \
-           x11-terms/gnome-terminal \
-           x11-wm/i3
-
-    echo "azryn: Set SDDM as the display manager"
-    sed -i "s/DISPLAYMANAGER=\"xdm\"/DISPLAYMANAGER=\"sddm\"/g" \
-        /etc/portage/make.conf
-    rc-update add xdm default
+           x11-misc/xdotool
 
     echo "azryn: Add laptop_mode to OpenRC..."
     rc-update add laptop_mode default
@@ -241,19 +229,43 @@ Complete() {
     wget -q $BaseUrl/etc/Xresources       -O /etc/Xresources
     wget -q $BaseUrl/etc/emacs/default.el -O /etc/emacs/default.el
     wget -q $BaseUrl/etc/i3/config        -O /etc/i3/config
-    wget -q $BaseUrl/etc/sudoers          -O /etc/sudoers
-    wget -q $BaseUrl/etc/tmux.conf        -O /etc/tmux.conf
-    wget -q $BaseUrl/etc/vimrc            -O /etc/vimrc
     wget -q $BaseUrl/etc/xinitrc          -O /etc/xinitrc
 }
 
-Cleanup() {
+I3WM() {
+    DESKTOP
+
+    emerge -q \
+           x11-misc/dmenu \
+           x11-misc/i3lock \
+           x11-misc/i3status \
+           x11-terms/gnome-terminal \
+           x11-wm/i3
+}
+
+LXQT() {
+    DESKTOP
+
+    emerge -q \
+           kde-plasma/breeze \
+           kde-plasma/breeze-grub \
+           kde-plasma/kwin \
+           kde-plasma/sddm-kcm \
+           lxqt-base/lxqt-meta
+
+    echo "azryn: Set SDDM as the display manager"
+    sed -i "s/DISPLAYMANAGER=\"xdm\"/DISPLAYMANAGER=\"sddm\"/g" \
+        /etc/portage/make.conf
+    rc-update add xdm default
+}
+
+CLEANUP() {
     echo "azryn: Updating @world and removing unused packages..."
     emerge -quDN @world
     emerge -q --depclean
     emerge -quD --changed-use @world
-    eclean packages
-    eclean-dist --deep --fetch-restricted
+    eclean --deep distfiles
+    eclean --deep packages
 
     echo "azryn: Removing stage3 tarball..."
     rm -rf /stage3*.tar.bz2
@@ -265,29 +277,38 @@ Cleanup() {
 shopt -s nocasematch
 case $1 in
     bootstrap)
-        Bootstrap
+        BOOTSTRAP
         ;;
 
     minimal)
-        Minimal
+        MINIMAL
         ;;
 
-    complete)
-        Complete
+    i3wm)
+        I3WM
+        ;;
+
+    lxqt)
+        LXQT
         ;;
 
     cleanup)
-        Cleanup
+        CLEANUP
         ;;
 
     *)
-        echo "AzrynOS - Linux-based derivative of Gentoo using LXQT"
+        echo "AzrynOS - Linux-based derivative of Gentoo"
         echo "  help         Shows help output"
         echo
         echo "Run in the order listed:"
         echo "  bootstrap    Bootstrap the stage3 tarball"
         echo "  minimal      Very basic Gentoo install"
-        echo "  complete     Full AzrynOS installation"
+        echo ""
+        echo "Choose your desktop:"
+        echo "  i3wm         Install an i3wm desktop"
+        echo "  lxqt         Install an LXQT desktop"
+        echo ""
+        echo "Choose your desktop:"
         echo "  cleanup      Remove junk created during install"
 esac
 shopt -u nocasematch
