@@ -7,7 +7,7 @@ mkcd() {
 
 ## cp
 alias cp="cp -ip"
-alias cr="cp -ir"
+alias cr="cp -ipr"
 
 ## curl
 alias hurl="curl -f#LO"
@@ -15,9 +15,6 @@ alias hurl="curl -f#LO"
 ## df
 alias df="df -h"
 alias di="df -hi"
-
-## dig
-alias dit="dig +noall +nocmd +answer +multiline"
 
 ## free
 alias free="free -h"
@@ -30,28 +27,15 @@ alias ll="ls -al $ls"
 alias ls="ls -C $ls"
 
 ## mkdir
-alias mkdir="mkdir -vp $@"
-
-## more
-alias more="less"
+alias mkdir="mkdir -vp"
 
 ## mv
 alias mv="mv -i"
-
-## nano
-alias nano="nano -EOSWcimx"
-
-## ps
-alias pss="ps -af | head -1; ps -af | grep -v grep"
-alias psw="watch 'ps -af | sort -hrk4'"
 
 ## rm
 alias rf="rm -rf"
 alias rm="rm -i"
 alias rr="rm -ir"
-
-## screen
-alias screen="screen"
 
 ## scrot
 alias screenshot="scrot -s ~/Pictures/'Screenshot-%Y%m%d'.png"
