@@ -6,14 +6,13 @@
 */* -aqua -avahi -bindist -doc -gnome-keyring -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Whitelist
-*/* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png svg threads unicode tiff xft xpm zlib
+*/* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png qt5 svg threads tiff unicode xft xpm zlib
 
 
 ### Package ######################################
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/bzip2 abi_x86_32
-app-arch/file-roller
 app-editors/emacs -athena -dbus -games -gtk X acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
 app-editors/vim X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo X -games
@@ -21,7 +20,9 @@ app-emulation/qemu sdl2 usb
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
 app-office/libreoffice branding collada cups gltf gstreamer gtk mysql pdfimport postgres
+app-shells/zsh unicode
 app-text/ghostscript-gpl cups
+app-text/poppler -qt5 cairo
 app-text/xmlto text
 dev-cpp/cairomm X
 dev-cpp/gtkmm X
@@ -42,13 +43,17 @@ dev-libs/lzo abi_x86_32
 dev-libs/nspr abi_x86_32
 dev-libs/nss abi_x86_32
 dev-libs/openssl abi_x86_32
+dev-qt/qtgui egl
 dev-qt/qtnetwork connman
+dev-util/cmake -ncurses -qt5
 dev-util/geany gtk3 vte
 dev-util/pkgconfig abi_x86_32
 dev-vcs/git -gpg
 gnome-base/librsvg abi_x86_32
+kde-frameworks/kwindowsystem X
 kde-plasma/breeze X wayland
 lxqt-base/lxqt-meta about admin filemanager icons lximage minimal powermanagement sddm
+lxqt-base/lxqt-panel clock cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
 media-fonts/noto X cjk
 media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sdl sndfile valgrind media-gfx/feh curl exif cinerma
@@ -83,6 +88,7 @@ net-wireless/wpa_supplicant dbus
 sys-apps/attr abi_x86_32
 sys-apps/tcp-wrappers abi_x86_32
 sys-apps/util-linux abi_x86_32
+sys-auth/consolekit policykit
 sys-devel/gcc cxx nls nplt
 sys-devel/gettext abi_x86_32
 sys-devel/llvm abi_x86_32 clang
