@@ -99,7 +99,7 @@ Bootstrap() {
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
     chroot \
-        $DATDIR /usr/bin/env -i \
+        /mnt/gentoo /usr/bin/env -i \
         HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
         PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
         /bin/bash --login
