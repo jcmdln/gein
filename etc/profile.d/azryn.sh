@@ -12,7 +12,7 @@ azryn() {
             sudo revdep-rebuild
             ;;
 
-        reconfig)
+        reconfig|-R)
             echo "azryn: WARNING: This will overwrite the following scripts:"
             echo "/etc/portage/repos.conf/gentoo.conf"
             echo "/etc/profile"
