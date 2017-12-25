@@ -46,7 +46,7 @@ BOOTSTRAP() {
     if echo $Proceed | grep -iq "^n"; then exit; fi
 
     ## If this script isn't in /mnt/gentoo/azryn, cp it now
-    [ ! -e /mnt/gentoo/azryn ] && cp $0 /mnt/gentoo/azryn
+    [ ! -e /mnt/gentoo/azryn ] && cp $0 /mnt/gentoo/
 
     echo "azryn: Ensure we are in /mnt/gentoo..."
     cd /mnt/gentoo
