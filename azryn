@@ -196,12 +196,17 @@ Complete() {
 
     echo "azryn: Installing AzrynOS packages..."
     emerge -q \
-           app-portage/gentoolkit \
            app-admin/eclean-kernel \
            app-admin/sudo \
            app-editors/emacs \
            app-laptop/laptop-mode-tools \
+           app-portage/gentoolkit \
            app-text/aspell \
+           kde-frameworks/breeze-icons \
+           kde-plasma/breeze \
+           kde-plasma/breeze-grub \
+           kde-plasma/breeze-gtk \
+           lxqt-base/lxqt-meta \
            media-fonts/noto \
            media-libs/alsa-lib \
            media-sound/alsa-utils \
