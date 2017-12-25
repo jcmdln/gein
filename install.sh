@@ -184,6 +184,7 @@ MINIMAL() {
            app-admin/sudo \
            app-editors/vim \
            app-misc/tmux \
+           dev-vcs/git \
            sys-process/htop
 
     echo "azryn: Adding userland configurations..."
