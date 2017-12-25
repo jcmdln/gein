@@ -5,12 +5,11 @@ azryn() {
         cleanup|-c)
             sudo emerge -avuDN --quiet-build @world && \
             sudo eclean --deep distfiles && \
-            sudo revdep-rebuild
+            sudo revdep-rebuild -q
             ;;
 
         install|-i)
-            sudo emerge -av --quiet-build ${@:2} && \
-            sudo revdep-rebuild
+            sudo emerge -av --quiet-build ${@:2}
             ;;
 
         reconfig|-R)
@@ -69,7 +68,7 @@ azryn() {
 
         remove|-r)
             sudo emerge -avc --quiet-build ${@:2} && \
-            sudo revdep-rebuild
+            sudo revdep-rebuild -q
             ;;
 
         sync|-s)
@@ -78,12 +77,12 @@ azryn() {
 
         update|-u)
             sudo emerge -avuDU --keep-going --with-bdeps=y @world && \
-            sudo revdep-rebuild
+            sudo revdep-rebuild -q
             ;;
 
         upgrade|-U)
             sudo emerge -avuDN --quiet-build @system && \
-            sudo revdep-rebuild
+            sudo revdep-rebuild -q
             ;;
 
         *)
