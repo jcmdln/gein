@@ -32,7 +32,7 @@ PackageUse="$BaseUrl/etc/portage/package.use"
 ## Stage3
 S3Arch="amd64"
 S3Url="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
-[ ! -x $(command -v curl) ] && \
+[ -x "$(command -v curl)" ] && \
 Stage3="$S3Url/$(curl -s $S3Url/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
 
 
