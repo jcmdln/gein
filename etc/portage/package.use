@@ -45,7 +45,7 @@ dev-libs/nss abi_x86_32
 dev-libs/openssl abi_x86_32
 dev-libs/wayland abi_x86_32
 dev-qt/qtcore icu
-dev-qt/qtgui egl2
+dev-qt/qtgui egl
 dev-qt/qtmultimedia X gstreamer qml wayland
 dev-qt/qtnetwork connman
 dev-util/cmake -ncurses -qt5
