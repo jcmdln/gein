@@ -9,8 +9,8 @@ I'm aware that Gentoo is a highly personal system and much of what I've
 added may be undesired. Despite this I think that this project may serve
 as a subjectively decent example of getting started with Gentoo.
 
-The installation process is handled in four steps as shown in the output
-of the `azryn` script:
+
+## Installation
 ```
 # Run the following from a Gentoo LiveCD
 $ wget -q http://os.aswl.org -O /mnt/gentoo/azryn
@@ -29,11 +29,6 @@ Installation options:
 Post-install tasks:
   cleanup      Remove junk created during install
 ```
-
-If you want to fork this script or start with a basic Gentoo
-installation, simply stop after running the `minimal` pass and do as you
-wish. The `azryn` script is meant to be modular and allow configuration,
-so if you notice any issues please feel free to submit a PR.
 
 
 ## Warnings
