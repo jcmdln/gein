@@ -249,7 +249,8 @@ LXQT() {
            kde-plasma/breeze-grub \
            kde-plasma/kwin \
            kde-plasma/sddm-kcm \
-           lxqt-base/lxqt-meta
+           lxqt-base/lxqt-meta \
+           x11-terms/qterminal
 
     echo "azryn: Set SDDM as the display manager"
     sed -i "s/DISPLAYMANAGER=\"xdm\"/DISPLAYMANAGER=\"sddm\"/g" \
