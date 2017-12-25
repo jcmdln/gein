@@ -19,9 +19,6 @@ alias di="df -hi"
 ## dig
 alias dit="dig +noall +nocmd +answer +multiline"
 
-## du
-alias du="du -hs ./*"
-
 ## free
 alias free="free -h"
 
