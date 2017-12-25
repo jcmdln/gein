@@ -301,8 +301,12 @@ case $1 in
     *)
         echo "AzrynOS: Linux-based derivative of Gentoo"
         echo "  help         Shows help output"
+        echo ""
+        echo "Pre-install tasks:"
         echo "  bootstrap    Bootstrap the stage3 tarball"
-        echo "  minimal      Simple minimal Gentoo installer"
+        echo ""
+        echo "Installation options:"
+        echo "  minimal      Install minimal Gentoo"
         echo "  i3wm         Install Gentoo and i3wm desktop"
         echo "  lxqt         Install Gentoo and LXQT desktop"
         echo ""
