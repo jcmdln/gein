@@ -2,5 +2,6 @@
 
 lxqt-base/*
 media-gfx/lximage-qt
+sys-firmware/nvidia-firmware ~amd64
 x11-misc/obconf-qt
 x11-misc/pcmanfm-qt
