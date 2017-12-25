@@ -33,7 +33,7 @@ azryn() {
 
         *)
             echo "Available options:"
-            echo "  cleanup, -c    Safely remove unused packages from @world"
+            echo "  cleanup, -c    Remove unneeded packages"
             echo "  install, -i    Install a package"
             echo "  remove,  -r    Safely remove a package"
             echo "  sync,    -s    Sync portage"
