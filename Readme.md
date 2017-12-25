@@ -55,13 +55,14 @@ There are a few frontends for various tasks, one being the command
 `azryn` which at the time of writing is a frontend for common `emerge`
 tasks:
 ```
-$ azryn
-azryn: Invalid option: 
+$ azryn 
 Available options:
-  cleanup    Sync portage and remove junk
-  install    Install a package
-  update     Sync portage
-  upgrade    Upgrade @system and @world
+  cleanup, -c    Safely remove unused packages from @world
+  install, -i    Install a package
+  remove,  -r    Safely remove a package
+  sync,    -s    Sync portage
+  update,  -u    Update @world
+  upgrade, -U    Update @system
 ```
 
 `azryn` is meant to act as a simplification script for performing
