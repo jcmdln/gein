@@ -233,8 +233,7 @@ DESKTOP() {
 }
 
 I3WM() {
-    DESKTOP
-
+    echo "azryn: Installing i3wm desktop..."
     emerge -q \
            x11-misc/dmenu \
            x11-misc/i3lock \
@@ -244,8 +243,7 @@ I3WM() {
 }
 
 LXQT() {
-    DESKTOP
-
+    echo "azryn: Installing LXQT desktop..."
     emerge -q \
            kde-plasma/breeze \
            kde-plasma/breeze-grub \
@@ -285,10 +283,14 @@ case $1 in
         ;;
 
     i3wm)
+        MINIMAL
+        DESKTOP
         I3WM
         ;;
 
     lxqt)
+        MINIMAL
+        DESKTOP
         LXQT
         ;;
 
@@ -297,18 +299,14 @@ case $1 in
         ;;
 
     *)
-        echo "AzrynOS - Linux-based derivative of Gentoo"
+        echo "AzrynOS: Linux-based derivative of Gentoo"
         echo "  help         Shows help output"
-        echo
-        echo "Run in the order listed:"
         echo "  bootstrap    Bootstrap the stage3 tarball"
-        echo "  minimal      Very basic Gentoo install"
+        echo "  minimal      Simple minimal Gentoo installer"
+        echo "  i3wm         Install Gentoo and i3wm desktop"
+        echo "  lxqt         Install Gentoo and LXQT desktop"
         echo ""
-        echo "Choose your desktop:"
-        echo "  i3wm         Install an i3wm desktop"
-        echo "  lxqt         Install an LXQT desktop"
-        echo ""
-        echo "Choose your desktop:"
+        echo "Post-install tasks:"
         echo "  cleanup      Remove junk created during install"
 esac
 shopt -u nocasematch
