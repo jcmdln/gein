@@ -1,6 +1,6 @@
-`AzrynOS` is a Linux-based derivative of Gentoo using LXQT. The primary
-goal is to automate the installation of my own ideal Gentoo setup though
-the current design allows for others to fork or submit PR's should it be
+`AzrynOS` is a Linux-based derivative of Gentoo. The primary goal is to 
+automate the installation of my own ideal Gentoo setup though the 
+current design allows for others to fork or submit PR's should it be
 desired. Keep in mind that this project is NOT a replacement for reading
 the Gentoo Handbook. Sabayon tries to do this and I don't want to repeat
 this line of thinking.
@@ -14,14 +14,19 @@ of the `azryn` script:
 ```
 # Run the following from a Gentoo LiveCD
 $ wget -q http://os.aswl.org -O /mnt/gentoo/azryn
-$ sh azryn
-AzrynOS - Linux-based derivative of Gentoo using LXQT
+$ ./azryn 
+AzrynOS: Linux-based derivative of Gentoo
   help         Shows help output
 
-Run in the order listed:
+Pre-install tasks:
   bootstrap    Bootstrap the stage3 tarball
-  minimal      Very basic Gentoo install
-  complete     Full AzrynOS installation
+
+Installation options:
+  minimal      Install minimal Gentoo
+  i3wm         Install Gentoo and i3wm desktop
+  lxqt         Install Gentoo and LXQT desktop
+
+Post-install tasks:
   cleanup      Remove junk created during install
 ```
 
