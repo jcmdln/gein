@@ -14,12 +14,12 @@ GrubTarget="/dev/sda"
 Hostname="azryn"
 Locale="en_US.UTF-8 UTF-8"
 RootPwd="azryn"
-SwapSize="4G"
+SwapSize="2G"
 TimeZone="America/New_York"
 VideoCards="intel"
 
-## Kernel
-#KernelVersion=``
+## Kernel (Leave commented out unless you need this)
+#KernelVersion="4.14"
 #KernelConfig="$Base_Url/usr/src/linux/$KernelVersion.config"
 
 ## Portage
@@ -98,7 +98,11 @@ Bootstrap() {
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
-    chroot /mnt/gentoo /bin/bash
+    chroot \
+        $DATDIR /usr/bin/env -i \
+        HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
+        PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
+        /bin/bash --login
 }
 
 Minimal() {
