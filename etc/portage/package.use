@@ -6,7 +6,7 @@
 */* -aqua -avahi -bindist -doc -gnome-keyring -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Whitelist
-*/* alsa bzip2 cairo deblob ffmpeg gif imagemagick ipv6 jpeg jpeg2k minimal png svg threads unicode tiff xft xpm zlib
+*/* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png svg threads unicode tiff xft xpm zlib
 
 
 ### Package ######################################
@@ -21,15 +21,13 @@ app-emulation/qemu sdl2 usb
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
 app-office/libreoffice branding collada cups gltf gstreamer gtk mysql pdfimport postgres
-app-shells/zsh unicode
 app-text/ghostscript-gpl cups
-app-text/poppler cairo
 app-text/xmlto text
 dev-cpp/cairomm X
 dev-cpp/gtkmm X
 dev-db/sqlite abi_x86_32
 dev-games/ogre threads examples ois
-dev-games/openscenegraph qt5 jpeg svg sdl truetype png
+dev-games/openscenegraph qt5 sdl truetype
 dev-lang/python:2.7 sqlite
 dev-libs/atk abi_x86_32
 dev-libs/expat abi_x86_32
