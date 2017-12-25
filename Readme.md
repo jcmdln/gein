@@ -50,10 +50,17 @@ Post-install tasks:
   - Remove the virtual disk drive from the boot order and restart.
 
 
-## Post-install
-There are a few frontends for various tasks, one being the command
-`azryn` which at the time of writing is a frontend for common `emerge`
-tasks:
+## Post-boot tasks
+### Adding an administrative user
+```
+useradd -m -g wheel -G audio,network,video -s /bin/bash username
+passwd username
+```
+
+### Administering the system
+`azryn` is meant to act as a simplification script for performing
+administrative tasks. Later on this script will allow setting up a
+package server, building stage3 tarballs, and live images.
 ```
 $ azryn
 Available options:
@@ -66,6 +73,3 @@ Available options:
   upgrade,  -U    Update @system and @world with rebuild
 ```
 
-`azryn` is meant to act as a simplification script for performing
-administrative tasks. Later on this script will allow setting up a
-package server, building stage3 tarballs, and live images.
