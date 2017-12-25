@@ -48,3 +48,22 @@ so if you notice any issues please feel free to submit a PR.
     - Most time-consuming packages are Mesa and Chromium.
 - "I keep getting boot failures after installing in a VirtualBox VM?"
   - Remove the virtual disk drive from the boot order and restart.
+
+
+## Post-install
+There are a few frontends for various tasks, one being the command
+`azryn` which at the time of writing is a frontend for common `emerge`
+tasks:
+```
+$ azryn
+azryn: Invalid option: 
+Available options:
+  cleanup    Sync portage and remove junk
+  install    Install a package
+  update     Sync portage
+  upgrade    Upgrade @system and @world
+```
+
+`azryn` is meant to act as a simplification script for performing
+administrative tasks. Later on this script will allow setting up a
+package server, building stage3 tarballs, and live images.
