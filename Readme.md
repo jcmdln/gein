@@ -1,4 +1,4 @@
-`AzrynOS` is a Linux-based derivative of Gentoo using i3wm. The primary
+`AzrynOS` is a Linux-based derivative of Gentoo using LXQT. The primary
 goal is to automate the installation of my own ideal Gentoo setup though
 the current design allows for others to fork or submit PR's should it be
 desired. Keep in mind that this project is NOT a replacement for reading
@@ -15,7 +15,7 @@ of the `azryn` script:
 # Run the following from a Gentoo LiveCD
 $ wget -q http://os.aswl.org -O /mnt/gentoo/azryn
 $ sh azryn
-AzrynOS - Linux-based derivative of Gentoo using i3wm
+AzrynOS - Linux-based derivative of Gentoo using LXQT
   help         Shows help output
 
 Run in the order listed:
