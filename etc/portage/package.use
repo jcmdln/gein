@@ -43,8 +43,10 @@ dev-libs/lzo abi_x86_32
 dev-libs/nspr abi_x86_32
 dev-libs/nss abi_x86_32
 dev-libs/openssl abi_x86_32
+dev-libs/wayland abi_x86_32
 dev-qt/qtcore icu
-dev-qt/qtgui egl
+dev-qt/qtgui egl2
+dev-qt/qtmultimedia X gstreamer qml wayland
 dev-qt/qtnetwork connman
 dev-util/cmake -ncurses -qt5
 dev-util/geany gtk3 vte
@@ -52,7 +54,9 @@ dev-util/pkgconfig abi_x86_32
 dev-vcs/git -gpg
 gnome-base/librsvg abi_x86_32
 kde-frameworks/kwindowsystem X
+kde-frameworks/plasma X wayland
 kde-plasma/breeze X wayland
+kde-plasma/kwin multimedia
 lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage minimal powermanagement sddm
 lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
@@ -66,6 +70,7 @@ media-gfx/pstoedit plotutils
 media-libs/alsa-lib abi_x86_32
 media-libs/fontconfig abi_x86_32
 media-libs/freetype abi_x86_32
+media-libs/gst-plugins-bad X egl opengl wayland
 media-libs/harfbuzz abi_x86_32 icu
 media-libs/imlib2 X
 media-libs/jasper abi_x86_32
@@ -74,7 +79,7 @@ media-libs/libpng abi_x86_32 apng
 media-libs/libsdl2 X opengl
 media-libs/libsndfile abi_x86_32
 media-libs/libtxc_dxtn abi_x86_32
-media-libs/mesa abi_x86_32 dri3 vaapi vdpau
+media-libs/mesa abi_x86_32 dri3 gles2 vaapi vdpau wayland
 media-libs/openal abi_x86_32
 media-libs/phonon -vlc gstreamer
 media-libs/tiff abi_x86_32
