@@ -3,7 +3,7 @@
 ### Global #######################################
 
 ## Blacklist
-*/* -aqua -avahi -bindist -doc -gnome-keyring -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
+*/* -aqua -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Whitelist
 */* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png qt5 svg threads tiff unicode xft xpm zlib
@@ -43,6 +43,7 @@ dev-libs/lzo abi_x86_32
 dev-libs/nspr abi_x86_32
 dev-libs/nss abi_x86_32
 dev-libs/openssl abi_x86_32
+dev-qt/qtcore icu
 dev-qt/qtgui egl
 dev-qt/qtnetwork connman
 dev-util/cmake -ncurses -qt5
@@ -52,8 +53,8 @@ dev-vcs/git -gpg
 gnome-base/librsvg abi_x86_32
 kde-frameworks/kwindowsystem X
 kde-plasma/breeze X wayland
-lxqt-base/lxqt-meta about admin filemanager icons lximage minimal powermanagement sddm
-lxqt-base/lxqt-panel clock cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
+lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage minimal powermanagement sddm
+lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
 media-fonts/noto X cjk
 media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sdl sndfile valgrind media-gfx/feh curl exif cinerma
@@ -75,8 +76,10 @@ media-libs/libsndfile abi_x86_32
 media-libs/libtxc_dxtn abi_x86_32
 media-libs/mesa abi_x86_32 dri3 vaapi vdpau
 media-libs/openal abi_x86_32
+media-libs/phonon -vlc gstreamer
 media-libs/tiff abi_x86_32
 media-plugins/alsa-plugins abi_x86_32
+media-plugins/gst-plugins-meta ogg vorbis
 media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss unicode vorbis wavpack
 media-sound/pulseaudio abi_x86_32
 media-video/ffmpeg X aac amr blueray cdio chromium encode gme hevc libass mp3 network ogg openal opengl openh264 openssl opus rtmp sdl theora vaapi vdpau vorbis vpx wavpack x264 x265 xvid
@@ -139,6 +142,7 @@ x11-libs/libXrender abi_x86_32
 x11-libs/libXtst abi_x86_32
 x11-libs/libXxf86vm abi_x86_32
 x11-libs/libdrm abi_x86_32
+x11-libs/libfm vala
 x11-libs/libpciaccess abi_x86_32
 x11-libs/libva X abi_x86_32
 x11-libs/libva-intel-driver abi_x86_32
