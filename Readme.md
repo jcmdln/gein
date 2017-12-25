@@ -61,8 +61,8 @@ Available options:
   install, -i    Install a package
   remove,  -r    Safely remove a package
   sync,    -s    Sync portage
-  update,  -u    Update @world
-  upgrade, -U    Update @system
+  update,  -u    Update @world without rebuild
+  upgrade, -U    Update @system and @world with rebuild
 ```
 
 `azryn` is meant to act as a simplification script for performing
