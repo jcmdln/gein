@@ -258,6 +258,7 @@ LXQT() {
     sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
         /etc/portage/make.conf
     rc-update add xdm default
+    rc-update add dbus default
 }
 
 CLEANUP() {
