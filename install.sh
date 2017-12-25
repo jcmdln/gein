@@ -255,7 +255,7 @@ LXQT() {
            x11-terms/qterminal
 
     echo "azryn: Set SDDM as the display manager"
-    sed -i "s/DISPLAYMANAGER=\"xdm\"/DISPLAYMANAGER=\"sddm\"/g" \
+    sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
         /etc/portage/make.conf
     rc-update add xdm default
 }
