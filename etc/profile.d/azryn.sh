@@ -2,35 +2,43 @@
 
 azryn() {
     case $1 in
-        cleanup)
-            sudo emerge -avc --quiet-build && \
-            sudo emerge -avuUD --quiet-build @world && \
-            sudo eclean packages && \
-            sudo eclean-dist --deep --fetch-restricted
+        cleanup|-c)
+            sudo emerge -avuDN --quiet-build @world && \
+            sudo revdep-rebuild
             ;;
 
-        install)
-            sudo emerge -av --quiet-build ${@:2}
+        install|-i)
+            sudo emerge -av --quiet-build ${@:2} && \
+            sudo revdep-rebuild
             ;;
 
-        update)
+        remove|-r)
+            sudo emerge -avc --quiet-build ${@:2} && \
+            sudo revdep-rebuild
+            ;;
+
+        sync|-s)
             sudo emerge -v --sync
             ;;
 
-        upgrade)
-            sudo emerge -avuDN --quiet-build @system && \
+        update|-u)
             sudo emerge -avuDN --quiet-build @world && \
-            sudo emerge -avc --quiet-build && \
+            sudo revdep-rebuild
+            ;;
+
+        upgrade|-U)
+            sudo emerge -avuDN --quiet-build @system && \
             sudo revdep-rebuild
             ;;
 
         *)
-            echo "azryn: Invalid option: $@"
             echo "Available options:"
-            echo "  cleanup    Sync portage and remove junk"
-            echo "  install    Install a package"
-            echo "  update     Sync portage and update"
-            echo "  upgrade    Upgrade @system and @world"
+            echo "  cleanup, -c    Safely remove unused packages from @world"
+            echo "  install, -i    Install a package"
+            echo "  remove,  -r    Safely remove a package"
+            echo "  sync,    -s    Sync portage"
+            echo "  update,  -u    Update @world"
+            echo "  upgrade, -U    Update @system"
             ;;
     esac
 }
