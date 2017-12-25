@@ -160,6 +160,7 @@ x11-libs/pango X abi_x86_32
 x11-libs/pixman abi_x86_32
 x11-misc/dmenu xinerama
 x11-misc/i3status filecaps
+x11-misc/sddm consolekit
 x11-proto/compositeproto abi_x86_32
 x11-proto/damageproto abi_x86_32
 x11-proto/dri2proto abi_x86_32
