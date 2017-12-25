@@ -183,7 +183,7 @@ Minimal() {
          -O /etc/profile.d/environment.sh
 
     echo "azryn: Setting root password..."
-    echo $RootPwd | chpasswd
+    echo "root:$RootPwd" | chpasswd
 }
 
 Complete() {
