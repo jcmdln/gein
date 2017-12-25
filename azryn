@@ -98,11 +98,7 @@ Bootstrap() {
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
-    chroot /mnt/gentoo /usr/bin/env -i \
-           HOME="/root" TERM="$TERM" \
-           PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
-           PS1="[chroot \u@\h \w]$" \
-           /bin/bash --login
+    chroot /mnt/gentoo /bin/bash
 }
 
 Minimal() {
