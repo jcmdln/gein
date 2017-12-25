@@ -57,7 +57,7 @@ tasks:
 ```
 $ azryn 
 Available options:
-  cleanup, -c    Safely remove unused packages from @world
+  cleanup, -c    Remove unneeded packages
   install, -i    Install a package
   remove,  -r    Safely remove a package
   sync,    -s    Sync portage
