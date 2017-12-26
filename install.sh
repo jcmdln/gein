@@ -18,9 +18,9 @@ SwapSize="2G"
 TimeZone="America/New_York"
 VideoCards="intel"
 
-## Kernel (Leave commented out unless you need this)
-#KernelVersion="4.14"
-#KernelConfig="$Base_Url/usr/src/linux/$KernelVersion.config"
+## Kernel
+KernelVersion="4.14"
+KernelConfig="$Base_Url/usr/src/linux/$KernelVersion.config"
 
 ## Portage
 MakeConf="$BaseUrl/etc/portage/make.conf"
@@ -112,7 +112,8 @@ MINIMAL() {
     echo "azryn: Syncing Portage and selecting profile..."
     emerge -q --sync
     eselect profile list
-    read -ep "Which profile? [Default is 1]: " TargetProfile
+    echo "azryn: Hint: choose the latest 'default/linux/amd64/xx.x'"
+    read -ep "Which profile? : " TargetProfile
     [ -z $TargetProfile ] && TargetProfile="1"
     eselect profile set $TargetProfile
     emerge -quDN @world
