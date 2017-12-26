@@ -20,7 +20,7 @@
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/bzip2 abi_x86_32
 app-editors/emacs -athena -games -gtk acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
-app-editors/vim -perl -python -racket -tcl
+app-editors/vim -X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo -games
 app-emulation/qemu sdl2 usb
 app-emulation/wine-gecko abi_x86_32
