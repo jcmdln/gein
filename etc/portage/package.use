@@ -93,6 +93,7 @@ net-libs/libasyncns abi_x86_32
 net-misc/connman bluetooth ethernet openvpn wifi
 net-misc/curl abi_x86_32
 sys-apps/attr abi_x86_32
+sys-apps/dbus abi_x86_32
 sys-apps/tcp-wrappers abi_x86_32
 sys-apps/util-linux abi_x86_32
 sys-auth/consolekit policykit
