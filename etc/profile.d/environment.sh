@@ -34,9 +34,8 @@ GLOBALMAN="/usr/man:/usr/share/man:/usr/local/man:/usr/local/share/man"
 LOCALMAN="$HOME/.local/man:$HOME/.local/share/man"
 export MANPATH="$GLOBALMAN:$LOCALMAN:$PROGMAN"
 
-## If user != root
-if [[ $EUID -ne 0 ]]; then
-    ## Create missing user directories
+if [ $(whoami) != 'root' ]; then
+    ## Create missing directories
     [ ! -e $HOME/Documents ] && mkdir $HOME/Documents
     [ ! -e $HOME/Downloads ] && mkdir $HOME/Downloads
     [ ! -e $HOME/Images    ] && mkdir $HOME/Images
@@ -44,6 +43,6 @@ if [[ $EUID -ne 0 ]]; then
     [ ! -e $HOME/Templates ] && mkdir $HOME/Templates
     [ ! -e $HOME/Videos    ] && mkdir $HOME/Videos
 
-    ## Add missing user configuration
+    ## Add missing configuration
     [ ! -e $HOME/.xinitrc ] && cp /etc/xinitrc $HOME/.xinitrc
 fi
