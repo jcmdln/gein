@@ -1,9 +1,9 @@
 # /etc/portage/package.accept_keywords
 
+app-emulation/wine-mono ~amd64
+app-emulation/wine-staging ~amd64
 lxqt-base/*
 media-gfx/lximage-qt
 sys-firmware/nvidia-firmware ~amd64
 x11-misc/obconf-qt
 x11-misc/pcmanfm-qt
-app-emulation/wine-staging ~amd64
-app-emulation/wine-mono ~amd64

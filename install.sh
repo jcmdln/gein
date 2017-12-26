@@ -33,7 +33,7 @@ PackageUse="$BaseUrl/etc/portage/package.use"
 S3Arch="amd64"
 S3Url="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
 [ -x "$(command -v curl)" ] && \
-Stage3="$S3Url/$(curl -s $S3Url/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
+S3Tgt="$(curl -s $S3Url/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
 
 
 ### Passes #######################################
@@ -55,7 +55,7 @@ BOOTSTRAP() {
     ntpd -q -g
 
     echo "azryn: Downloading and extracting Stage3 tarball..."
-    wget -q $Stage3
+    wget -q $S3Url/$S3Tgt
     tar -xjpf stage3-*.tar.bz2 --xattrs --numeric-owner
 
     echo "azryn: Mounting hardware devices..."
@@ -98,11 +98,10 @@ BOOTSTRAP() {
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
-    chroot \
-        /mnt/gentoo /usr/bin/env -i \
-        HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
-        PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
-        /bin/bash --login
+    chroot /mnt/gentoo /usr/bin/env -i \
+           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
+           PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
+           /bin/bash --login
 }
 
 MINIMAL() {
@@ -127,7 +126,7 @@ MINIMAL() {
     locale-gen && locale -a && eselect locale list
     read -ep "Target locale: " TargetLocale
     eselect locale set $TargetLocale
-    env-update
+    env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
     echo "azryn: Emerge/install Linux kernel and modules..."
     emerge -q \
@@ -199,7 +198,7 @@ MINIMAL() {
 DESKTOP() {
     echo "azryn: Installing Xorg drivers..."
     emerge -q x11-base/xorg-drivers
-    env-update
+    env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
     echo "azryn: Installing base desktop packages..."
     emerge -q \
