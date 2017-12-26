@@ -6,17 +6,18 @@
 */* -aqua -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -multilib -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Whitelist
-*/* alsa bzip2 cairo dbus deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal pulseaudio png qt5 svg threads tiff unicode xft xpm zlib
+*/* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png pulseaudio qt5 svg threads tiff unicode xft xpm zlib
 
 
 ### Package ######################################
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/bzip2 abi_x86_32
-app-editors/emacs -athena -games -gtk X acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
+app-editors/emacs -athena -dbus -games -gtk X acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
 app-editors/vim X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo X -games
 app-emulation/qemu sdl2 usb
+app-emulation/wine-gecko abi_x86_32
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
 app-office/libreoffice branding collada cups gltf gstreamer gtk mysql pdfimport postgres
@@ -32,20 +33,27 @@ dev-games/openscenegraph qt5 sdl truetype
 dev-lang/python:2.7 sqlite
 dev-libs/atk abi_x86_32
 dev-libs/expat abi_x86_32
-dev-libs/glib abi_x86_32
+dev-libs/glib dbus abi_x86_32
+dev-libs/gmp abi_x86_32
 dev-libs/icu abi_x86_32
 dev-libs/libcroco abi_x86_32
 dev-libs/libffi abi_x86_32
+dev-libs/libgcrypt abi_x86_32
+dev-libs/libgpg-error abi_x86_32
 dev-libs/libpcre abi_x86_32 pcre16
 dev-libs/libpthread-stubs abi_x86_32
+dev-libs/libtasn1 abi_x86_32
+dev-libs/libunistring abi_x86_32
 dev-libs/libxml2 abi_x86_32 icu python
+dev-libs/libxslt abi_x86_32
 dev-libs/lzo abi_x86_32
+dev-libs/nettle abi_x86_32
 dev-libs/nspr abi_x86_32
 dev-libs/nss abi_x86_32
 dev-libs/openssl abi_x86_32
 dev-libs/wayland abi_x86_32
 dev-qt/qtcore icu
-dev-qt/qtgui egl
+dev-qt/qtgui egl dbus
 dev-qt/qtmultimedia X gstreamer qml wayland
 dev-qt/qtnetwork connman
 dev-util/cmake -ncurses -qt5
@@ -57,6 +65,7 @@ kde-frameworks/kwindowsystem X
 kde-frameworks/plasma X wayland
 kde-plasma/breeze X wayland
 kde-plasma/kwin multimedia
+kde-plasma/systemsettings gtk
 lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage minimal powermanagement sddm
 lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
@@ -70,10 +79,12 @@ media-gfx/pstoedit plotutils
 media-libs/alsa-lib abi_x86_32
 media-libs/fontconfig abi_x86_32
 media-libs/freetype abi_x86_32
+media-libs/glu abi_x86_32
 media-libs/gst-plugins-bad X egl opengl wayland
 media-libs/harfbuzz abi_x86_32 icu
 media-libs/imlib2 X
 media-libs/jasper abi_x86_32
+media-libs/lcms abi_x86_32
 media-libs/libjpeg-turbo abi_x86_32
 media-libs/libpng abi_x86_32 apng
 media-libs/libsdl2 X opengl
@@ -89,14 +100,18 @@ media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss unicode vorbis wav
 media-sound/pulseaudio abi_x86_32
 media-video/ffmpeg X aac amr blueray cdio chromium encode gme hevc libass mp3 network ogg openal opengl openh264 openssl opus rtmp sdl theora vaapi vdpau vorbis vpx wavpack x264 x265 xvid
 media-video/mpv libass libmpv opengl
+net-dns/libidn2 abi_x86_32
+net-libs/gnutls abi_x86_32
 net-libs/libasyncns abi_x86_32
 net-misc/connman bluetooth ethernet openvpn wifi
 net-misc/curl abi_x86_32
+net-wireless/wpa_supplicant dbus
 sys-apps/attr abi_x86_32
 sys-apps/dbus abi_x86_32
 sys-apps/tcp-wrappers abi_x86_32
 sys-apps/util-linux abi_x86_32
 sys-auth/consolekit policykit
+sys-auth/pambase consolekit
 sys-devel/gcc cxx nls nplt
 sys-devel/gettext abi_x86_32
 sys-devel/llvm abi_x86_32 clang
@@ -109,6 +124,7 @@ sys-libs/libcxx libcxxabi
 sys-libs/ncurses abi_x86_32
 sys-libs/readline abi_x86_32
 sys-libs/zlib abi_x86_32 minizip
+virtual/glu abi_x86_32
 virtual/jpeg abi_x86_32
 virtual/libffi abi_x86_32
 virtual/libiconv abi_x86_32
@@ -160,7 +176,7 @@ x11-libs/pango X abi_x86_32
 x11-libs/pixman abi_x86_32
 x11-misc/dmenu xinerama
 x11-misc/i3status filecaps
-x11-misc/sddm consolekit pam
+x11-misc/sddm consolekit
 x11-proto/compositeproto abi_x86_32
 x11-proto/damageproto abi_x86_32
 x11-proto/dri2proto abi_x86_32
@@ -176,10 +192,3 @@ x11-proto/renderproto abi_x86_32
 x11-proto/scrnsaverproto abi_x86_32
 x11-proto/xcb-proto abi_x86_32
 x11-proto/xextproto abi_x86_32
-x11-proto/xf86bigfontproto abi_x86_32
-x11-proto/xf86driproto abi_x86_32
-x11-proto/xf86vidmodeproto abi_x86_32
-x11-proto/xineramaproto abi_x86_32
-x11-proto/xproto abi_x86_32
-x11-terms/gnome-terminal -gnome-shell -nautilus
-x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3

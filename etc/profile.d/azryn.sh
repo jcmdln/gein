@@ -13,6 +13,12 @@ azryn() {
             ;;
 
         reconfig|-R)
+	    ## Maintain current make.conf settings
+    	    vcards=$(grep VIDEO_CARD /etc/portage/make.conf)
+	    vcards=${vcards#*=}
+	    mopts=$(grep MAKEOPTS /etc/portage/make.conf)
+	    mopts=${mopts#*=}
+
             echo "azryn: WARNING: This will overwrite the following scripts:"
             echo "/etc/portage/repos.conf/gentoo.conf"
             echo "/etc/portage/make.conf"
@@ -62,8 +68,13 @@ azryn() {
             wget -q $BaseUrl/etc/tmux.conf        -O /etc/tmux.conf
             wget -q $BaseUrl/etc/vimrc            -O /etc/vimrc
             wget -q $BaseUrl/etc/xinitrc          -O /etc/xinitrc
-            
+
+	    sed -i "s/MAKEOPTS=.*/MAKEOPTS=$mopts/g" /etc/portage/make.conf
+	    sed -i "s/VIDEO_CARDS=.*/VIDEO_CARDS=$vcards/g" /etc/portage/make.conf
+
             unset BaseUrl
+	    unset vcards
+	    unset mopts
             ;;
 
         remove|-r)

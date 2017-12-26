@@ -1,1 +1,2 @@
 # /etc/portage/package.license
+>=www-client/google-chrome-63.0.3239.108 google-chrome
