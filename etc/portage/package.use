@@ -3,17 +3,17 @@
 ### Global #######################################
 
 ## Blacklist
-*/* -aqua -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -multilib -pulseaudio -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
+*/* -aqua -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -multilib -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Whitelist
-*/* alsa bzip2 cairo deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal png qt5 svg threads tiff unicode xft xpm zlib
+*/* alsa bzip2 cairo dbus deblob ffmpeg gif gnutls imagemagick ipv6 jpeg jpeg2k minimal pulseaudio png qt5 svg threads tiff unicode xft xpm zlib
 
 
 ### Package ######################################
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/bzip2 abi_x86_32
-app-editors/emacs -athena -dbus -games -gtk X acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
+app-editors/emacs -athena -games -gtk X acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
 app-editors/vim X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo X -games
 app-emulation/qemu sdl2 usb
@@ -32,7 +32,7 @@ dev-games/openscenegraph qt5 sdl truetype
 dev-lang/python:2.7 sqlite
 dev-libs/atk abi_x86_32
 dev-libs/expat abi_x86_32
-dev-libs/glib dbus abi_x86_32
+dev-libs/glib abi_x86_32
 dev-libs/icu abi_x86_32
 dev-libs/libcroco abi_x86_32
 dev-libs/libffi abi_x86_32
@@ -92,7 +92,6 @@ media-video/mpv libass libmpv opengl
 net-libs/libasyncns abi_x86_32
 net-misc/connman bluetooth ethernet openvpn wifi
 net-misc/curl abi_x86_32
-net-wireless/wpa_supplicant dbus
 sys-apps/attr abi_x86_32
 sys-apps/tcp-wrappers abi_x86_32
 sys-apps/util-linux abi_x86_32
@@ -160,7 +159,7 @@ x11-libs/pango X abi_x86_32
 x11-libs/pixman abi_x86_32
 x11-misc/dmenu xinerama
 x11-misc/i3status filecaps
-x11-misc/sddm consolekit
+x11-misc/sddm consolekit pam
 x11-proto/compositeproto abi_x86_32
 x11-proto/damageproto abi_x86_32
 x11-proto/dri2proto abi_x86_32
