@@ -10,13 +10,16 @@
 #
 # This script does automate the install but you will need to adjust the
 # variables in 'Setup' to suit your desired install. The installation
-# process will not proceed unless 'GrubTarget' and 'VideoCards' are set
-# though some example values have been provided. If you are unsure how
-# to proceed, consult the AMD64 Gentoo Handbook.
+# process will not proceed unless 'PartitionBoot' and 'VideoCards' are
+# set though some example values have been provided. If you are unsure
+# how to proceed, consult the Gentoo Handbook.
 #
 # === WARNINGS ===
 # - Your root password is set to the value of $Hostname for simplicity.
 #   Change your root password with 'passwd' after the MINIMAL install.
+#
+# - Be sure to set $PartitionBoot to your boot target, though the
+#   default value of '/dev/sda' will install to the master boot record.
 #
 # - By default, $AutoKernel is set to 'true' which means that the kernel
 #   will be built using 'make defconfig'. If you want to run
@@ -30,29 +33,29 @@
 ### Setup ########################################
 
 ## Azryn
-BaseUrl="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
-#GrubTarget="/dev/sda"
 Hostname="azryn"
 Locale="en_US.UTF-8 UTF-8"
+#PartitionBoot="/dev/sda"
+Source="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
 SwapSize="2G"
 TimeZone="America/New_York"
-#VideoCards="i965 intel"
 #VideoCards="amdgpu radeonsi"
+#VideoCards="i965 intel"
 #VideoCards="nouveau nvidia"
 #VideoCards="virtualbox vmware"
 
 ## Kernel
 AutoKernel="true"
 #KernelVersion="4.14"
-#KernelConfig="$Base_Url/usr/src/linux/$KernelVersion.config"
+#KernelConfig="$Source/usr/src/linux/$KernelVersion.config"
 
 ## Portage
-MakeConf="$BaseUrl/etc/portage/make.conf"
-PackageAcceptKeywords="$BaseUrl/etc/portage/package.accept_keywords"
-PackageEnv="$BaseUrl/etc/portage/package.env"
-PackageLicense="$BaseUrl/etc/portage/package.license"
-PackageUse="$BaseUrl/etc/portage/package.use"
+MakeConf="$Source/etc/portage/make.conf"
+PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
+PackageEnv="$Source/etc/portage/package.env"
+PackageLicense="$Source/etc/portage/package.license"
+PackageUse="$Source/etc/portage/package.use"
 
 ## Stage3
 S3Arch="amd64"
@@ -70,23 +73,26 @@ BOOTSTRAP() {
     read -ep "Proceed with installation? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^n"; then exit; fi
 
-    if [ -z $VideoCards || -z $GrubTarget ]; then
+    if [ -z $VideoCards || -z $PartitionBoot ]; then
         echo "azryn: You didn't read $0 and adjust the variables! Exiting..."
         exit
     fi
 
-    ## If this script isn't in /mnt/gentoo/azryn, cp it now
+    echo "azryn: Ensuring we are in /mnt/gentoo..."
     [ ! -e /mnt/gentoo/$(basename $0) ] && cp $0 /mnt/gentoo/
-
-    echo "azryn: Ensure we are in /mnt/gentoo..."
     cd /mnt/gentoo
 
     echo "azryn: Setting system time via ntpd..."
     ntpd -q -g
 
     echo "azryn: Downloading and extracting Stage3 tarball..."
-    wget -q $S3Url/$S3Tgt
-    tar -xjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+    if [ -z $S3Tgt ]; then
+        wget -q $S3Url/$S3Tgt
+        tar -xjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+    else
+        echo "azryn: 'S3Tgt' is not set! Is cURL missing? Exiting..."
+        exit
+    fi
 
     echo "azryn: Mounting hardware devices..."
     mount -t proc /proc /mnt/gentoo/proc
@@ -123,7 +129,7 @@ BOOTSTRAP() {
 
     echo "azryn: Setting up Portage mirrors..."
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf
-    wget -q $BaseUrl/etc/portage/repos.conf/gentoo.conf \
+    wget -q $Source/etc/portage/repos.conf/gentoo.conf \
          -O /etc/portage/repos.conf/gentoo.conf
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
@@ -192,7 +198,7 @@ MINIMAL() {
     cd /
 
     echo "azryn: Install netifrc..."
-    emerge -q --noreplace net-misc/netifrc
+    emerge -qn net-misc/netifrc
 
     echo "azryn: Add connman to OpenRC..."
     rc-update add connman default
@@ -200,18 +206,18 @@ MINIMAL() {
     echo "azryn: Setting hostname..."
     echo "hostname=$Hostname" > /etc/conf.d/hostname
 
-    echo "azryn: Installing Grub..."
-    grub-install $GrubTarget
+    echo "azryn: Installing Grub to $PartitionBoot..."
+    grub-install $PartitionBoot
     grub-mkconfig -o /boot/grub/grub.cfg
 
     echo "azryn: Adding bash configuration..."
-    wget -q $BaseUrl/etc/bash/bashrc -O /etc/bash/bashrc
+    wget -q $Source/etc/bash/bashrc -O /etc/bash/bashrc
 
     echo "azryn: Adding profile configuration..."
-    wget -q $BaseUrl/etc/profile -O /etc/profile
-    wget -q $BaseUrl/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
-    wget -q $BaseUrl/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
-    wget -q $BaseUrl/etc/profile.d/environment.sh \
+    wget -q $Source/etc/profile -O /etc/profile
+    wget -q $Source/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
+    wget -q $Source/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
+    wget -q $Source/etc/profile.d/environment.sh \
          -O /etc/profile.d/environment.sh
 
     echo "azryn: Adding sudo, vim, tmux, and htop..."
@@ -223,9 +229,9 @@ MINIMAL() {
            sys-process/htop
 
     echo "azryn: Adding userland configurations..."
-    wget -q $BaseUrl/etc/sudoers   -O /etc/sudoers
-    wget -q $BaseUrl/etc/tmux.conf -O /etc/tmux.conf
-    wget -q $BaseUrl/etc/vimrc     -O /etc/vimrc
+    wget -q $Source/etc/sudoers   -O /etc/sudoers
+    wget -q $Source/etc/tmux.conf -O /etc/tmux.conf
+    wget -q $Source/etc/vimrc     -O /etc/vimrc
 
     echo "azryn: Setting root password..."
     echo "root:$Hostname" | chpasswd
@@ -262,10 +268,10 @@ DESKTOP() {
     rc-update add laptop_mode default
 
     echo "azryn: Adding userland configuration files..."
-    wget -q $BaseUrl/etc/Xresources       -O /etc/Xresources
-    wget -q $BaseUrl/etc/emacs/default.el -O /etc/emacs/default.el
-    wget -q $BaseUrl/etc/i3/config        -O /etc/i3/config
-    wget -q $BaseUrl/etc/xinitrc          -O /etc/xinitrc
+    wget -q $Source/etc/Xresources       -O /etc/Xresources
+    wget -q $Source/etc/emacs/default.el -O /etc/emacs/default.el
+    wget -q $Source/etc/i3/config        -O /etc/i3/config
+    wget -q $Source/etc/xinitrc          -O /etc/xinitrc
 }
 
 I3WM() {
@@ -294,6 +300,7 @@ LXQT() {
         /etc/conf.d/xdm
     sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
         /usr/share/xsessions/lxqt.desktop
+
     rc-update add xdm default
     rc-update add dbus default
 }
@@ -304,7 +311,6 @@ CLEANUP() {
     emerge -q --depclean
     emerge -quD --changed-use @world
     eclean --deep distfiles
-    eclean --deep packages
 
     echo "azryn: Removing stage3 tarball..."
     rm -rf /stage3*.tar.bz2
