@@ -1,12 +1,13 @@
 # /etc/profile
 
-if [ -e /etc/profile.env ] ; then
-    . /etc/profile.env
-fi
-
 umask 022
+
+[ -e /etc/profile.env ] && source /etc/profile.env
 
 for sh in /etc/profile.d/*.sh; do
     [ -r "$sh" ] && . "$sh"
 done
+
+[ -e $HOME/.profile ] && source $HOME/.profile
+
 unset sh
