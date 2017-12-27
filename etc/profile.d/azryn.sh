@@ -9,72 +9,48 @@ azryn() {
             ;;
 
         install|-i)
-            sudo emerge -avn --quiet-build ${@:2}
+            sudo emerge -av --quiet-build ${@:2}
             ;;
 
         reconfig|-R)
-	    ## Maintain current make.conf settings
-    	    vcards=$(grep VIDEO_CARD /etc/portage/make.conf)
-	    vcards=${vcards#*=}
-	    mopts=$(grep MAKEOPTS /etc/portage/make.conf)
-	    mopts=${mopts#*=}
+            BaseUrl="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
+            Files="
+                /etc/portage/repos.conf/gentoo.conf
+                /etc/portage/make.conf
+                /etc/portage/package.accept_keywords
+                /etc/portage/package.env
+                /etc/portage/package.license
+                /etc/portage/package.use
+                /etc/profile
+                /etc/profile.d/alias.sh
+                /etc/profile.d/azryn.sh
+                /etc/profile.d/environment.sh
+                /etc/Xresources
+                /etc/emacs/default.el
+                /etc/i3/config
+                /etc/sudoers
+                /etc/tmux.conf
+                /etc/vimrc
+                /etc/xinitrc
+            "
 
             echo "azryn: WARNING: This will overwrite the following scripts:"
-            echo "/etc/portage/repos.conf/gentoo.conf"
-            echo "/etc/portage/make.conf"
-            echo "/etc/portage/package.accept_keywords"
-            echo "/etc/portage/package.env"
-            echo "/etc/portage/package.license"
-            echo "/etc/portage/package.use"
-            echo "/etc/profile"
-            echo "/etc/profile.d/alias.sh"
-            echo "/etc/profile.d/azryn.sh"
-            echo "/etc/profile.d/environment.sh"
-            echo "/etc/Xresources"
-            echo "/etc/emacs/default.el"
-            echo "/etc/i3/config"
-            echo "/etc/sudoers"
-            echo "/etc/tmux.conf"
-            echo "/etc/vimrc"
-            echo "/etc/xinitrc"
+            for cfg in $Files; do echo $cfg; done
             read -ep "Proceed with replacing configurations? [Y/N]: " Proceed
             if echo $Proceed | grep -iq "^n"; then exit; fi
 
-            BaseUrl="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
+            MOPTS=$(grep MAKEOPTS /etc/portage/make.conf | sed 's/.*MAKEOPTS=//')
+            VIDEO=$(grep VIDEO_CARDS /etc/portage/make.conf | sed 's/.*VIDEO_CARDS=//')
 
-            echo "azryn: Replacing portage configuration files..."
-            wget -q $BaseUrl/etc/portage/repos.conf/gentoo.conf \
-                 -O /etc/portage/repos.conf/gentoo.conf
-            wget -q $BaseUrl/etc/portage/make.conf -O /etc/portage/make.conf
-            wget -q $BaseUrl/etc/portage/package.accept_keywords \
-                 -O /etc/portage/package.accept_keywords
-            wget -q $BaseUrl/etc/portage/package.env -O /etc/portage/package.env
-            wget -q $BaseUrl/etc/portage/package.license \
-                 -O /etc/portage/package.license
-            wget -q $BaseUrl/etc/portage/package.use -O /etc/portage/package.use
+            for cfg in $Files; do
+                wget -q $BaseUrl/$cfg -O $cfg
+            done
 
-            echo "azryn: Replacing profile configuration files..."
-            wget -q $BaseUrl/etc/profile -O /etc/profile
-            wget -q $BaseUrl/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
-            wget -q $BaseUrl/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
-            wget -q $BaseUrl/etc/profile.d/environment.sh \
-                 -O /etc/profile.d/environment.sh
+            sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MOPTS/g;
+                    s/VIDEO_CARDS=.*/VIDEO_CARDS=$VIDEO/g" \
+                        /etc/portage/make.conf
 
-            echo "azryn: Replacing userland configuration files..."
-            wget -q $BaseUrl/etc/Xresources       -O /etc/Xresources
-            wget -q $BaseUrl/etc/emacs/default.el -O /etc/emacs/default.el
-            wget -q $BaseUrl/etc/i3/config        -O /etc/i3/config
-            wget -q $BaseUrl/etc/sudoers          -O /etc/sudoers
-            wget -q $BaseUrl/etc/tmux.conf        -O /etc/tmux.conf
-            wget -q $BaseUrl/etc/vimrc            -O /etc/vimrc
-            wget -q $BaseUrl/etc/xinitrc          -O /etc/xinitrc
-
-	    sed -i "s/MAKEOPTS=.*/MAKEOPTS=$mopts/g" /etc/portage/make.conf
-	    sed -i "s/VIDEO_CARDS=.*/VIDEO_CARDS=$vcards/g" /etc/portage/make.conf
-
-            unset BaseUrl
-	    unset vcards
-	    unset mopts
+            unset BaseUrl mopts vcards
             ;;
 
         remove|-r)
