@@ -6,21 +6,46 @@
 # Software Labs Public License along with this program. If not, please
 # see https://apl.azryn.org/ for a copy.
 #
+##################################################
+#
+# This script does automate the install but you will need to adjust the
+# variables in 'Setup' to suit your desired install. The installation
+# process will not proceed unless 'GrubTarget' and 'VideoCards' are set
+# though some example values have been provided. If you are unsure how
+# to proceed, consult the AMD64 Gentoo Handbook.
+#
+# === WARNINGS ===
+# - Your root password is set to the value of $Hostname for simplicity.
+#   Change your root password with 'passwd' after the MINIMAL install.
+#
+# - By default, $AutoKernel is set to 'true' which means that the kernel
+#   will be built using 'make defconfig'. If you want to run
+#   'make defconfig; make menuconfig' then set $AutoKernel to 'false'.
+#   You may also supply your own URL to $KernelConfig while setting
+#   $AutoKernel to 'false' to use a pre-built kernel config. And example
+#   kernel config is provided though commented out.
+#
+##################################################
+
+### Setup ########################################
 
 ## Azryn
 BaseUrl="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
-GrubTarget="/dev/sda"
+#GrubTarget="/dev/sda"
 Hostname="azryn"
 Locale="en_US.UTF-8 UTF-8"
-RootPwd="azryn"
 SwapSize="2G"
 TimeZone="America/New_York"
-VideoCards="intel"
+#VideoCards="i965 intel"
+#VideoCards="amdgpu radeonsi"
+#VideoCards="nouveau nvidia"
+#VideoCards="virtualbox vmware"
 
 ## Kernel
-KernelVersion="4.14"
-KernelConfig="$Base_Url/usr/src/linux/$KernelVersion.config"
+AutoKernel="true"
+#KernelVersion="4.14"
+#KernelConfig="$Base_Url/usr/src/linux/$KernelVersion.config"
 
 ## Portage
 MakeConf="$BaseUrl/etc/portage/make.conf"
@@ -44,6 +69,11 @@ BOOTSTRAP() {
     echo "  - Partitioned and mounted your disk(s)."
     read -ep "Proceed with installation? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^n"; then exit; fi
+
+    if [ -z $VideoCards || -z $GrubTarget ]; then
+        echo "azryn: You didn't read $0 and adjust the variables! Exiting..."
+        exit
+    fi
 
     ## If this script isn't in /mnt/gentoo/azryn, cp it now
     [ ! -e /mnt/gentoo/azryn ] && cp $0 /mnt/gentoo/
@@ -145,10 +175,15 @@ MINIMAL() {
 
     echo "azryn: Configuring Linux kernel..."
     cd /usr/src/linux
-    if [ -z $KernelConfig ]; then
-        make defconfig && make menuconfig
-    else
-        wget $KernelConfig -O /usr/src/linux/.config
+    if [ "$AutoKernel" = "true" && -z $KernelConfig ]; then
+        make defconfig
+    elif [ "$AutoKernel" = "false" ]; then
+        if [ ! -z $KernelConfig ]; then
+            wget -q $KernelConfig -O /usr/src/linux/.config
+        else
+            make defconfig
+        fi
+        make menuconfig
     fi
 
     echo "azryn: Compiling Linux kernel, modules, and initramfs..."
@@ -193,7 +228,7 @@ MINIMAL() {
     wget -q $BaseUrl/etc/vimrc     -O /etc/vimrc
 
     echo "azryn: Setting root password..."
-    echo "root:$RootPwd" | chpasswd
+    echo "root:$Hostname" | chpasswd
 }
 
 DESKTOP() {
