@@ -9,7 +9,7 @@ azryn() {
             ;;
 
         install|-i)
-            sudo emerge -av --quiet-build ${@:2}
+            sudo emerge -avn --quiet-build ${@:2}
             ;;
 
         reconfig|-R)
