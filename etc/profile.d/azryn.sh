@@ -43,10 +43,10 @@ azryn() {
             VIDEO=$(grep VIDEO_CARDS /etc/portage/make.conf | sed 's/.*VIDEO_CARDS=//')
 
             for cfg in $Files; do
-                wget -q $BaseUrl/$cfg -O $cfg
+                sudo wget -q $BaseUrl/$cfg -O $cfg
             done
 
-            sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MOPTS/g;
+            sudo sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MOPTS/g;
                     s/VIDEO_CARDS=.*/VIDEO_CARDS=$VIDEO/g" \
                         /etc/portage/make.conf
 
