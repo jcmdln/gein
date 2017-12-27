@@ -14,7 +14,14 @@ as a subjectively decent example of getting started with Gentoo.
 - AzrynOS is not production-ready, proceed with caution.
 - You must manually partition and mount your disks.
   - Consult your Gentoo Handbook.
-
+  - Your root password is set to the value of $Hostname for simplicity.
+    Change your root password with 'passwd' after the MINIMAL install.
+  - By default, $AutoKernel is set to 'true' which means that the kernel
+    will be built using 'make defconfig'. If you want to run
+    'make defconfig; make menuconfig' then set $AutoKernel to 'false'.
+    You may also supply your own URL to $KernelConfig while setting
+    $AutoKernel to 'false' to use a pre-built kernel config. And example
+    kernel config is provided though commented out.
 
 ## FAQ
 - "How much about Gentoo will I need to know to use AzrynOS?"
