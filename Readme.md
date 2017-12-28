@@ -42,10 +42,10 @@ as a subjectively decent example of getting started with Gentoo.
 
 ## Getting Started
 1. Download a Gentoo LiveCD from https://www.gentoo.org/downloads/
+
 2. Write the ISO to a USB drive:
-```
-$ dd if=~/Downloads/<iso> of=/dev/<usb>
-```
+```$ dd if=~/Downloads/<iso> of=/dev/<usb>```
+
 3. Boot from the USB drive on the target device
 
 
@@ -56,6 +56,7 @@ $ fdisk /dev/sda
 $ mkfs.ext4 /dev/sda1
 $ mount /dev/sda1 /mnt/gentoo
 ```
+
 2. Download and run `install.sh`:
 ```
 $ wget http://os.aswl.org/install.sh
@@ -74,13 +75,17 @@ Installation options:
 Post-install tasks:
   cleanup      Remove junk created during install
 ```
+
 3. Read the information at the top of `install.sh` and modify the
 variables:
 ```$ vi install.sh```
+
 4. Start the bootstrap:
 ```$ sh install.sh bootstrap```
+
 5. Install your desired variant:
 ```$ sh install lxqt```
+
 6. (Optional) Cleanup:
 ```$ sh install.sh cleanup```
 
