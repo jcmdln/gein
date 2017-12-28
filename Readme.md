@@ -44,7 +44,6 @@ as a subjectively decent example of getting started with Gentoo.
 1. Download a Gentoo LiveCD from https://www.gentoo.org/downloads/
 2. Write the ISO to a USB drive:
 ```
-# THIS IS AN EXAMPLE!
 $ dd if=~/Downloads/<iso> of=/dev/<usb>
 ```
 3. Boot from the USB drive on the target device
@@ -53,22 +52,8 @@ $ dd if=~/Downloads/<iso> of=/dev/<usb>
 ## Installing
 1. Partition and mount your disk(s):
 ```
-# THIS IS AN EXAMPLE!
-# Make a single partition
 $ fdisk /dev/sda
-
-# Enter these in the fdisk prompt:
-o
-n
-enter
-enter
-enter
-w
-
-# Partition as EXT4
 $ mkfs.ext4 /dev/sda1
-
-# Mount to /mnt/gentoo
 $ mount /dev/sda1 /mnt/gentoo
 ```
 2. Download and run `install.sh`:
@@ -91,11 +76,7 @@ Post-install tasks:
 ```
 3. Read the information at the top of `install.sh` and modify the
 variables:
-```
-$ vi install.sh
-# or
-$ nano install.sh
-```
+```$ vi install.sh```
 4. Start the bootstrap:
 ```$ sh install.sh bootstrap```
 5. Install your desired variant:
