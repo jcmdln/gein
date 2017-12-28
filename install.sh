@@ -293,6 +293,7 @@ LXQT() {
            kde-plasma/kwin \
            kde-plasma/sddm-kcm \
            lxqt-base/lxqt-meta \
+           net-misc/cmst \
            x11-terms/qterminal
 
     echo "azryn: Set SDDM as the display manager"
