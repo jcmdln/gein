@@ -3,23 +3,24 @@
 ### Global #######################################
 
 ## Blacklist
-*/* -aqua -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -multilib -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
+*/* -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Minimal
 */* bzip2 deblob gnutls ipv6 minimal threads unicode zlib
 
 ## Desktop
-*/* X alsa cairo dbus egl ffmpeg gif gles imagemagick jpeg jpeg2k openal opengl pulseaudio png svg tiff vaapi vdpau xft xpm
-
-## LXQT
-*/* qt5 wayland
+*/* alsa cairo dbus egl ffmpeg gif gles imagemagick jpeg jpeg2k openal opengl pulseaudio png svg tiff vaapi vdpau xft xpm
 
 
 ### Package ######################################
 
+app-accessibility/at-spi2-atk abi_x86_32
+app-accessibility/at-spi2-core X abi_x86_32
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/bzip2 abi_x86_32
-app-editors/emacs -athena -games -gtk acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
+app-crypt/gpgme qt5
+app-crypt/pinentry qt5
+app-editors/emacs -athena -games -gtk X acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
 app-editors/vim -X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo -games
 app-emulation/qemu sdl2 usb
@@ -27,9 +28,11 @@ app-emulation/wine-gecko abi_x86_32
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
 app-office/libreoffice branding collada cups gltf gstreamer gtk mysql pdfimport postgres
-app-text/ghostscript-gpl cups
+app-text/ghostscript-gpl X cups
 app-text/poppler -qt5
 app-text/xmlto text
+dev-cpp/cairomm X
+dev-cpp/gtkmm X wayland
 dev-db/sqlite abi_x86_32
 dev-games/ogre examples ois
 dev-games/openscenegraph sdl truetype
@@ -63,48 +66,71 @@ dev-util/geany gtk3 vte
 dev-util/pkgconfig abi_x86_32
 dev-vcs/git -gpg
 gnome-base/librsvg abi_x86_32
+kde-frameworks/frameworkintegration X
+kde-frameworks/kdbusaddons X abi_x86_32
+kde-frameworks/kidletime X xscreensaver
+kde-frameworks/kinit X
+kde-frameworks/kio X
+kde-frameworks/kjobwidgets X
+kde-frameworks/knotifications X
+kde-frameworks/kwindowsystem X wayland
+kde-frameworks/plasma X wayland
+kde-plasma/breeze wayland
 kde-plasma/kwin multimedia
 kde-plasma/systemsettings gtk
 lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage powermanagement sddm
 lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
-media-fonts/noto cjk
+media-fonts/corefonts X
+media-fonts/noto X cjk
+media-fonts/noto-cjk X
+media-fonts/urw-fonts X
 media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sdl sndfile valgrind media-gfx/feh curl exif cinerma
 media-gfx/gimp smp
 media-gfx/graphite2 abi_x86_32
-media-gfx/imagemagick corefonts cxx djvu fontconfig fpx fttw hdri jbig lcms lzma openexr raw opencl truetype webp wmf xml
+media-gfx/imagemagick X corefonts cxx djvu fontconfig fpx fttw hdri jbig lcms lzma openexr raw opencl truetype webp wmf xml
 media-gfx/inkscape latex
 media-gfx/pstoedit plotutils
 media-libs/alsa-lib abi_x86_32
 media-libs/fontconfig abi_x86_32
 media-libs/freeglut abi_x86_32
-media-libs/freetype abi_x86_32
+media-libs/freetype X abi_x86_32
 media-libs/glu abi_x86_32
+media-libs/gst-plugins-bad X wayland
+media-libs/gst-plugins-base X wayland
 media-libs/harfbuzz abi_x86_32 icu
 media-libs/jasper abi_x86_32
 media-libs/lcms abi_x86_32
+media-libs/libepoxy X abi_x86_32
 media-libs/libjpeg-turbo abi_x86_32
 media-libs/libpng abi_x86_32 apng
+media-libs/libsdl X
+media-libs/libsdl2 X wayland
 media-libs/libsndfile abi_x86_32
 media-libs/libtxc_dxtn abi_x86_32
-media-libs/mesa abi_x86_32 dri3 gles2
+media-libs/libwmf X
+media-libs/mesa X abi_x86_32 dri3 gles2 wayland
 media-libs/openal abi_x86_32
 media-libs/phonon -vlc gstreamer
 media-libs/tiff abi_x86_32
 media-plugins/alsa-plugins abi_x86_32
-media-plugins/gst-plugins-meta ogg vorbis
+media-plugins/gst-plugins-meta X ogg vorbis wayland
+media-plugins/gst-plugins-vaapi X wayland
 media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss vorbis wavpack
+media-sound/pavucontrol X
 media-sound/pulseaudio abi_x86_32
-media-video/ffmpeg aac amr blueray cdio chromium encode gme hevc libass mp3 network ogg openh264 openssl opus rtmp sdl theora vorbis vpx wavpack x264 x265 xvid
-media-video/mpv libass libmpv
+media-video/ffmpeg X aac amr blueray cdio chromium encode gme hevc libass mp3 network ogg openh264 openssl opus rtmp sdl theora vorbis vpx wavpack x264 x265 xvid
+media-video/mpv X libass libmpv wayland
 net-dns/libidn2 abi_x86_32
 net-libs/gnutls abi_x86_32
 net-libs/libasyncns abi_x86_32
 net-misc/connman bluetooth ethernet openvpn wifi
 net-misc/curl abi_x86_32
+net-print/cups X
 net-wireless/wpa_supplicant
 sys-apps/attr abi_x86_32
-sys-apps/dbus abi_x86_32
+sys-apps/dbus X abi_x86_32
+sys-apps/groff X
 sys-apps/tcp-wrappers abi_x86_32
 sys-apps/util-linux abi_x86_32
 sys-auth/consolekit policykit
@@ -121,6 +147,7 @@ sys-libs/libcxx libcxxabi
 sys-libs/ncurses abi_x86_32
 sys-libs/readline abi_x86_32
 sys-libs/zlib abi_x86_32 minizip
+sys-process/psmisc X
 virtual/glu abi_x86_32
 virtual/jpeg abi_x86_32
 virtual/libffi abi_x86_32
@@ -132,15 +159,16 @@ virtual/pkgconfig abi_x86_32
 www-client/chromium cups hangouts proprietary-codecs system-ffmpeg system-icu system-libvpx
 www-plugins/adobe-flash ppapi
 x11-base/xorg-drivers libinput
-x11-base/xorg-server -minimal
+x11-base/xorg-server -minimal wayland
 x11-drivers/nvidia-drivers x86_video_abi multilib
 x11-drivers/xf86-video-amdgpu glamor
 x11-drivers/xf86-video-ati glamor
 x11-drivers/xf86-video-intel dri3 sna
 x11-drivers/xf86-video-virtualbox dri
-x11-libs/cairo abi_x86_32 xcb
-x11-libs/gdk-pixbuf abi_x86_32
-x11-libs/gtk+:2 abi_x86_32
+x11-libs/cairo X abi_x86_32 xcb
+x11-libs/gdk-pixbuf X abi_x86_32
+x11-libs/gtk+:2 X abi_x86_32 wayland
+x11-libs/gtk+:3 X abi_x86_32 wayland
 x11-libs/libICE abi_x86_32
 x11-libs/libSM abi_x86_32
 x11-libs/libX11 abi_x86_32
@@ -164,13 +192,14 @@ x11-libs/libXxf86vm abi_x86_32
 x11-libs/libdrm abi_x86_32
 x11-libs/libfm vala
 x11-libs/libpciaccess abi_x86_32
-x11-libs/libva abi_x86_32
-x11-libs/libva-intel-driver abi_x86_32
-x11-libs/libva-vdpau-driver abi_x86_32
+x11-libs/libva X abi_x86_32 wayland
+x11-libs/libva-intel-driver X abi_x86_32 wayland
+x11-libs/libva-vdpau-driver X abi_x86_32 wayland
 x11-libs/libvdpau abi_x86_32
-x11-libs/libxcb abi_x86_32 xkb
+x11-libs/libxcb X abi_x86_32 xkb
+x11-libs/libxkbcommon X abi_x86_32
 x11-libs/libxshmfence abi_x86_32
-x11-libs/pango abi_x86_32
+x11-libs/pango X abi_x86_32
 x11-libs/pixman abi_x86_32
 x11-misc/dmenu xinerama
 x11-misc/i3status filecaps
