@@ -107,12 +107,10 @@ BOOTSTRAP() {
                 dev ) mount --rbind /dev  /mnt/gentoo/dev
                       mount --make-rslave /mnt/gentoo/dev;;
                 *) echo "azryn: $target: Improper hardware device"
-                   sleep 5
                    exit
             esac
         else
             echo "azryn: $target unable to be mounted! Exiting..."
-            sleep 5
             exit
         fi
     done
