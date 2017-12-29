@@ -58,10 +58,10 @@ PackageLicense="$Source/etc/portage/package.license"
 PackageUse="$Source/etc/portage/package.use"
 
 ## Stage3
-S3Arch="latest-stage3-amd64"
+S3Arch="amd64"
 S3Src="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
 [ -x "$(command -v curl)" ] && \
-    S3Cur="$(curl -s $S3Src/$S3Arch.txt|tail -1|awk '{print $1}')"
+    S3Cur="$(curl -s $S3Src/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
 Stage="$S3Src/$S3Cur"
 
 
