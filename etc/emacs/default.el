@@ -1,99 +1,102 @@
 ;; /etc/emacs/default.el
 
-;; Encoding
-(setq prefer-coding-system 'utf-8
-      set-default-coding-systems 'utf-8
-      set-language-environment "UTF-8"
-      set-locale-environment "en_US.UTF-8")
-
 ;; Disable menubar, scrollbar, and toolbar before they initialize
 (when (fboundp 'menu-bar-mode)   (menu-bar-mode   -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode   -1))
 
-;; Startup Hooks
-(add-hook 'lisp-mode-hook   'linum-mode)
-(add-hook 'prog-mode-hook   'linum-mode)
-(add-hook 'text-mode-hook   'linum-mode)
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-;; Startup
-(setq initial-scratch-message nil
-      inhibit-splash-screen t
-      inhibit-startup-buffer-menu t
-      column-number-mode t
-      visible-bell t)
-
-;; Get environment variables
-(setenv "EDITOR"         "emacsclient")
-(setenv "GIT_EDITOR"     "emacsclient")
-(setenv "GOPATH"         (getenv "GOPATH"))
-(setenv "MANPATH"        (getenv "MANPATH"))
-(setenv "PATH"           (getenv "PATH"))
-(setenv "PROMPT_COMMAND" "")
-(setenv "SHELL"          (getenv "SHELL"))
-(setenv "TERM"           (getenv "TERM"))
-
-;; Set font as 9pt normal monospace
-(set-face-attribute
- 'default nil
- :family "Monospace" :weight 'normal
- :width 'normal      :height 96)
-
-;; Set theme to 'tango-dark'
+;; Theme/Font
 (load-theme 'tango-dark)
+(set-face-attribute 'default nil
+                    :family "Monospace" :weight 'normal
+                    :width 'normal      :height 96)
 
-;; Autosave/Backups
-(setq auto-save-default nil
-      auto-save-file-name-transforms `((".*" "~/.emacs.d/backup/" t))
-      backup-directory-alist `((".*" . "~/.emacs.d/backup/"))
-      create-lockfiles nil
-      delete-by-moving-to-trash t
-      delete-old-versions t
-      delete-selection-mode t
-      kept-new-versions 2
-      vc-follow-symlinks t
-      vc-make-backup-files t
-      version-control t)
+(add-hook
+ 'after-init-hook
+ (lambda()
+   ;; Line number column
+   (add-hook 'lisp-mode-hook 'linum-mode)
+   (add-hook 'prog-mode-hook 'linum-mode)
+   (add-hook 'text-mode-hook 'linum-mode)
 
-;; Cut/Paste
-(setq require-final-newline t
-      save-interprogram-paste-before-kill t
-      select-enable-primary nil)
+   ;; Saving
+   (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-;; Indentation
-(setq c-basic-offset 2
-      cperl-indent-level 2
-      js-indent-level 2
-      indent-tabs-mode nil
-      tab-width 2)
+   ;; Shorter y/n prompts
+   (fset 'yes-or-no-p 'y-or-n-p)
 
-;; Mouse
-(setq mouse-wheel-follow-mouse 't
-      mouse-wheel-progressive-speed nil
-      mouse-wheel-scroll-amount '(3 ((shift) . 3))
-      mouse-yank-at-point t)
+   ;; Globally enable word-wrap
+   (global-visual-line-mode t)
 
-;; Scrolling
-(setq auto-window-vscroll nil
-      scroll-conservatively 101
-      scroll-down-aggressively 0.0
-      scroll-margin 0
-      scroll-preserve-screen-position 1
-      scroll-step 1
-      scroll-up-aggressively 0.0)
+   ;; Highlight matching parenthesis
+   (show-paren-mode t)
 
-;; Shorter y/n prompts
-(fset 'yes-or-no-p 'y-or-n-p)
+   ;; Enable Emacs mouse commands
+   (xterm-mouse-mode t)
 
-;; Globally enable word-wrap
-(global-visual-line-mode t)
+   ;; Environment Variables
+   (setenv "EDITOR"         "emacsclient")
+   (setenv "GIT_EDITOR"     "emacsclient")
+   (setenv "GOPATH"         (getenv "GOPATH"))
+   (setenv "MANPATH"        (getenv "MANPATH"))
+   (setenv "PATH"           (getenv "PATH"))
+   (setenv "PROMPT_COMMAND" "")
+   (setenv "SHELL"          (getenv "SHELL"))
+   (setenv "TERM"           (getenv "TERM"))))
 
-;; Highlight matching parenthesis
-(show-paren-mode t)
+(setq
+ ;; Misc
+ initial-scratch-message nil
+ inhibit-splash-screen t
+ inhibit-startup-buffer-menu t
+ column-number-mode t
+ visible-bell t
 
-;; Enable Emacs mouse commands
-(xterm-mouse-mode t)
+ ;; Encoding
+ prefer-coding-system 'utf-8
+ set-default-coding-systems 'utf-8
+ set-language-environment "UTF-8"
+ set-locale-environment "en_US.UTF-8"
+
+ ;; Autosave/Backups
+ auto-save-default nil
+ auto-save-file-name-transforms `((".*" "~/.emacs.d/backup/" t))
+ backup-directory-alist `((".*" . "~/.emacs.d/backup/"))
+ create-lockfiles nil
+ delete-by-moving-to-trash t
+ delete-old-versions t
+ delete-selection-mode t
+ kept-new-versions 2
+ vc-follow-symlinks t
+ vc-make-backup-files t
+ version-control t
+
+ ;; Cut/Paste
+ require-final-newline t
+ save-interprogram-paste-before-kill t
+ select-enable-primary nil
+
+ ;; Indentation
+ c-basic-offset 2
+ cperl-indent-level 2
+ js-indent-level 2
+ tab-width 2
+ indent-tabs-mode nil
+
+ ;; Mouse
+ mouse-wheel-follow-mouse 't
+ mouse-wheel-progressive-speed nil
+ mouse-wheel-scroll-amount '(3 ((shift) . 3))
+ mouse-yank-at-point t
+
+ ;; Scrolling
+ auto-window-vscroll nil
+ scroll-conservatively 101
+ scroll-down-aggressively 0.0
+ scroll-margin 0
+ scroll-preserve-screen-position 1
+ scroll-step 1
+ scroll-up-aggressively 0.0)
 
 ;; Autoload custom file on start
 (setq custom-file "~/.emacs.d/custom.el")
@@ -211,7 +214,24 @@
    (lambda()
      (append-to-list 'eshell-visual-commands
                      '("alsamixer" "htop" "top" "nano" "vi" "vim" "less" "ssh"
-                       "tail" "watch"))))
+                       "tail" "watch"))
+
+     (eshell/alias "clear" "eshell-clear")
+     (eshell/alias "cp" "cp -ip $1 $2")
+     (eshell/alias "cr" "cp -ipr $1 $2")
+     (eshell/alias "hurl" "curl --fail --location --remote-name-all --progress-bar $*")
+     (eshell/alias "df" "df -h $*")
+     (eshell/alias "di" "df -hi $*")
+     (eshell/alias "free" "free -h $*")
+     (eshell/alias "l" "ls -hSC --color=auto --group-directories-first $*")
+     (eshell/alias "la" "ls -ahSC --color=auto --group-directories-first $*")
+     (eshell/alias "ll" "ls -halS --color=auto --group-directories-first $*")
+     (eshell/alias "ls" "ls -hSC --color=auto --group-directories-first $*")
+     (eshell/alias "mkcd" "mkdir -vp $1; cd $1")
+     (eshell/alias "mkdir" "mkdir -vp $*")
+     (eshell/alias "rf" "rm -rf $*")
+     (eshell/alias "rm" "rm -i $*")
+     (eshell/alias "rr" "rm -ir $*")))
 
   (defun eshell-clear()
     "Clear the eshell buffer"
@@ -253,6 +273,21 @@
       (switch-to-buffer (generate-new-buffer "*eww*"))
       (eww-mode)
       (eww url))))
+
+(use-package gnus
+  :config
+  (gnus-add-configuration
+   '(article
+     (horizontal 1.0
+                 (vertical 25 (group 1.0))
+                 (vertical 1.0
+                           (summary 0.25 point)
+                           (article 1.0)))))
+  (gnus-add-configuration
+   '(summary
+     (horizontal 1.0
+                 (vertical 25  (group 1.0))
+                 (vertical 1.0 (summary 1.0 point))))))
 
 (use-package ibuffer
   :config
@@ -299,6 +334,48 @@
 
 ;;; Extras ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package circe
+  :config
+  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
+  (add-hook 'circe-message-option-functions 'my-circe-message-option-chanserv)
+  (add-hook 'lui-mode-hook (lambda() (my-lui-setup) (my-circe-set-margin)))
+  (if (file-exists-p "~/.emacs.d/circe.el")
+      (load-file "~/.emacs.d/circe.el"))
+
+  (setq circe-default-part-message ""
+        circe-default-quit-message ""
+        circe-format-server-topic "*** Topic change by {userhost}: {topic-diff}"
+        circe-reduce-lurker-spam t
+        circe-use-cycle-completion t
+        lui-fill-type nil
+        lui-flyspell-alist '((".*" "american"))
+        lui-flyspell-p t
+        lui-time-stamp-format "%H:%M:%S"
+        lui-time-stamp-position 'left-margin)
+
+  (require 'circe-chanop)
+  (enable-circe-color-nicks)
+
+  (defun my-circe-set-margin() (setq left-margin-width 9))
+  (setf (cdr (assoc 'continuation fringe-indicator-alist)) nil)
+
+  (defun my-lui-setup()
+    (setq fringes-outside-margins t
+          left-margin-width 9
+          word-wrap t
+          wrap-prefix ""))
+
+  (defun my-circe-prompt()
+    (lui-set-prompt
+     (concat (propertize
+              (concat (buffer-name) ">")
+              'face 'circe-prompt-face) " ")))
+
+  (defun my-circe-message-option-chanserv (nick user host command args)
+    (when (and (string= "ChanServ" nick)
+               (string-match "^\\[#.+?\\]" (cadr args)))
+      '((dont-display . t)))))
+
 (use-package cmake-ide
   :config (cmake-ide-setup))
 
@@ -315,20 +392,19 @@
   (add-to-list 'company-backends '(company-irony-c-headers company-irony)))
 
 (use-package counsel
-  :bind
-  (("<f1> f"  . counsel-describe-function)
-   ("<f1> l"  . counsel-find-library)
-   ("<f1> v"  . counsel-describe-variable)
-   ("<f2> i"  . counsel-info-lookup-symbol)
-   ("<f2> u"  . counsel-unicode-char)
-   ("C-S-o"   . counsel-rhythmbox)
-   ("C-c g"   . counsel-git)
-   ("C-c j"   . counsel-git-grep)
-   ("C-c l"   . counsel-ag)
-   ("C-r"     . counsel-expression-history)
-   ("C-x C-f" . counsel-find-file)
-   ("C-x l"   . counsel-locate)
-   ("M-x"     . counsel-M-x)))
+  :bind (("<f1> f"  . counsel-describe-function)
+         ("<f1> l"  . counsel-find-library)
+         ("<f1> v"  . counsel-describe-variable)
+         ("<f2> i"  . counsel-info-lookup-symbol)
+         ("<f2> u"  . counsel-unicode-char)
+         ("C-S-o"   . counsel-rhythmbox)
+         ("C-c g"   . counsel-git)
+         ("C-c j"   . counsel-git-grep)
+         ("C-c l"   . counsel-ag)
+         ("C-r"     . counsel-expression-history)
+         ("C-x C-f" . counsel-find-file)
+         ("C-x l"   . counsel-locate)
+         ("M-x"     . counsel-M-x)))
 
 (use-package diff-hl
   :config
@@ -355,10 +431,9 @@
 (use-package go-mode
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
-  (add-hook 'go-mode-hook
-            (lambda()
-              (setq tab-width 4
-                    indent-tabs-mode 1))))
+  (add-hook 'go-mode-hook (lambda()
+                            (setq tab-width 4
+                                  indent-tabs-mode 1))))
 
 (use-package highlight-indent-guides
   :config
