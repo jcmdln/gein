@@ -18,8 +18,8 @@ GODOC="$GOPATH/doc"
 export GOBIN GODOC GOPATH
 
 ## Racket
-RKTPATH="/usr/racket:/usr/local/racket:$HOME/racket:$HOME/.racket"
-RKTBIN="$RKTROOT/bin"
+RKTROOT="/usr/racket:/usr/local/racket:$HOME/racket:$HOME/.racket"
+RKTPATH="$RKTROOT/bin"
 RKTMAN="$RKTROOT/man"
 
 ## Path
