@@ -47,7 +47,7 @@ mktgz() {
 mktxz() {
     tar -vcfJ $1.tar.xz $@
 }
-alias untar="tar -vxf"
+alias untar="tar -xf"
 
 
 ### Extras #######################################
