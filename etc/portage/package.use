@@ -88,6 +88,7 @@ x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl
 ### Multilib (required for Steam) ################
 
 # app-accessibility/at-spi2-atk abi_x86_32
+# app-accessibility/at-spi2-core abi_x86_32
 # app-arch/bzip2 abi_x86_32
 # app-emulation/wine-gecko abi_x86_32
 # dev-db/sqlite abi_x86_32
