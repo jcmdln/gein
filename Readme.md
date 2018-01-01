@@ -44,76 +44,81 @@ as a subjectively decent example of getting started with Gentoo.
 1. Download a Gentoo LiveCD from https://www.gentoo.org/downloads/
 
 2. Write the ISO to a USB drive:
-```$ dd if=~/Downloads/<iso> of=/dev/<usb>```
+
+        $ dd if=~/Downloads/<iso> of=/dev/<usb>
 
 3. Boot from the USB drive on the target device
 
 
 ## Installing
 1. Partition and mount your disk(s):
-```
-$ fdisk /dev/sda
-$ mkfs.ext4 /dev/sda1
-$ mount /dev/sda1 /mnt/gentoo
-```
+
+        $ fdisk /dev/sda
+        $ mkfs.ext4 /dev/sda1
+        $ mount /dev/sda1 /mnt/gentoo
 
 2. Download and run `install.sh`:
-```
-$ wget http://os.aswl.org/install.sh
-$ sh install.sh
-AzrynOS: Linux-based derivative of Gentoo
-  help         Shows help output
 
-Pre-install tasks:
-  bootstrap    Bootstrap the stage3 tarball
+        $ wget http://os.aswl.org/install.sh
+        $ sh install.sh
+        AzrynOS: Linux-based derivative of Gentoo
+          help         Shows help output
 
-Installation options:
-  minimal      Install minimal Gentoo
-  i3wm         Install Gentoo and i3wm desktop
-  lxqt         Install Gentoo and LXQT desktop
+        Pre-install tasks:
+          bootstrap    Bootstrap the stage3 tarball
 
-Post-install tasks:
-  cleanup      Remove junk created during install
-```
+        Installation options:
+          minimal      Install minimal Gentoo
+          i3wm         Install Gentoo and i3wm desktop
+          lxqt         Install Gentoo and LXQT desktop
+
+        Post-install tasks:
+          cleanup      Remove junk created during install
 
 3. Read the information at the top of `install.sh` and modify the
 variables:
-```$ vi install.sh```
+
+        $ vi install.sh
 
 4. Start the bootstrap:
-```$ sh install.sh bootstrap```
+
+        $ sh install.sh bootstrap
 
 5. Install your desired variant:
-```$ sh install lxqt```
+
+        $ sh install lxqt
 
 6. (Optional) Cleanup:
-```$ sh install.sh cleanup```
+
+        $ sh install.sh cleanup
+
 
 Enjoy your AzrynOS installation!
+
 
 
 ## Post-install
 
 ### Adding an administrative user
-```
-$ useradd -m -g wheel -G audio,network,video -s /bin/bash username
-$ passwd username
-```
+
+        $ useradd -m -g wheel -G audio,network,video -s /bin/bash username
+        $ passwd username
+
 
 ### Administering the system
 `azryn` is meant to act as a simplification script for performing
 administrative tasks such as package and configuration management:
-```
-$ azryn
-Available options:
-  cleanup,  -c    Remove unneeded packages
-  install,  -i    Install a package
-  reconfig, -R    Get latest configuration files
-  remove,   -r    Safely remove a package
-  sync,     -s    Sync portage
-  update,   -u    Update @world without rebuild
-  upgrade,  -U    Update @system and @world with rebuild
-```
+
+        $ azryn
+        Available options:
+          cleanup,  -c    Remove unneeded packages
+          install,  -i    Install a package
+          reconfig, -R    Get latest configuration files
+          remove,   -r    Safely remove a package
+          sync,     -s    Sync portage
+          update,   -u    Update @world without rebuild
+          upgrade,  -U    Update @system and @world with rebuild
+
 
 ### Installing a Web Browser
 AzrynOS does not ship with a web browser unless you count w3m or eww

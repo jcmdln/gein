@@ -63,7 +63,8 @@ azryn() {
             ;;
 
         update|-u)
-            sudo emerge -avuDU --keep-going --with-bdeps=y @world && \
+            sudo emerge -avuDU \
+                 --keep-going --with-bdeps=y --quiet-build @world && \
             sudo revdep-rebuild -q
             ;;
 

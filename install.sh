@@ -59,9 +59,10 @@ PackageUse="$Source/etc/portage/package.use"
 
 ## Stage3
 S3Arch="amd64"
-S3Url="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
+S3Src="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
 [ -x "$(command -v curl)" ] && \
-S3Tgt="$(curl -s $S3Url/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
+    S3Cur="$(curl -s $S3Src/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
+Stage="$S3Src/$S3Cur"
 
 
 ### Passes #######################################
@@ -79,15 +80,16 @@ BOOTSTRAP() {
     fi
 
     echo "azryn: Ensuring we are in /mnt/gentoo..."
-    [ ! -e /mnt/gentoo/$(basename $0) ] && cp $0 /mnt/gentoo/
-    cd /mnt/gentoo
+    [ ! -e /mnt/gentoo/$(basename $0) ] && \
+        cp $0 /mnt/gentoo/ && \
+        cd /mnt/gentoo
 
     echo "azryn: Setting system time via ntpd..."
-    ntpd -q -g
+    [ -x "$(command -v ntpd)" ] && ntpd -q -g
 
     echo "azryn: Downloading and extracting Stage3 tarball..."
-    if [ -z $S3Tgt ]; then
-        wget -q $S3Url/$S3Tgt
+    if [ -z $S3Cur ]; then
+        wget -q $Stage
         tar -xjpf stage3-*.tar.bz2 --xattrs --numeric-owner
     else
         echo "azryn: 'S3Tgt' is not set! Is cURL missing? Exiting..."
@@ -95,11 +97,23 @@ BOOTSTRAP() {
     fi
 
     echo "azryn: Mounting hardware devices..."
-    mount -t proc /proc /mnt/gentoo/proc
-    mount --rbind /sys  /mnt/gentoo/sys
-    mount --make-rslave /mnt/gentoo/sys
-    mount --rbind /dev  /mnt/gentoo/dev
-    mount --make-rslave /mnt/gentoo/dev
+    HW="proc sys dev"
+    for target in $HW; do
+        if [ -e /mnt/gentoo/$target ]; then
+            case $target in
+                proc) mount -t proc /proc /mnt/gentoo/proc;;
+                sys ) mount --rbind /sys  /mnt/gentoo/sys
+                      mount --make-rslave /mnt/gentoo/sys;;
+                dev ) mount --rbind /dev  /mnt/gentoo/dev
+                      mount --make-rslave /mnt/gentoo/dev;;
+                *) echo "azryn: $target: Improper hardware device"
+                   exit
+            esac
+        else
+            echo "azryn: $target unable to be mounted! Exiting..."
+            exit
+        fi
+    done
 
     echo "azryn: Setting up swapfile..."
     SwapFile="/mnt/gentoo/swapfile"
@@ -210,16 +224,6 @@ MINIMAL() {
     grub-install $PartitionBoot
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    echo "azryn: Adding bash configuration..."
-    wget -q $Source/etc/bash/bashrc -O /etc/bash/bashrc
-
-    echo "azryn: Adding profile configuration..."
-    wget -q $Source/etc/profile -O /etc/profile
-    wget -q $Source/etc/profile.d/alias.sh -O /etc/profile.d/alias.sh
-    wget -q $Source/etc/profile.d/azryn.sh -O /etc/profile.d/azryn.sh
-    wget -q $Source/etc/profile.d/environment.sh \
-         -O /etc/profile.d/environment.sh
-
     echo "azryn: Adding sudo, vim, tmux, and htop..."
     emerge -q \
            app-admin/sudo \
@@ -229,12 +233,23 @@ MINIMAL() {
            sys-process/htop
 
     echo "azryn: Adding userland configurations..."
-    wget -q $Source/etc/sudoers   -O /etc/sudoers
-    wget -q $Source/etc/tmux.conf -O /etc/tmux.conf
-    wget -q $Source/etc/vimrc     -O /etc/vimrc
+    CfgFiles="
+        /etc/bash/bashrc
+        /etc/profile
+        /etc/profile.d/alias.sh
+        /etc/profile.d/azryn.sh
+        /etc/profile.d/environment.sh
+        /etc/sudoers
+        /etc/tmux.conf
+        /etc/vimrc
+    "
+    for cfg in $CfgFiles; do
+        wget -q $Source/$cfg -O $cfg
+    done
 
     echo "azryn: Setting root password..."
-    echo "root:$Hostname" | chpasswd
+    [ -x $(command -v chpasswd) ] && \
+        echo "root:$Hostname" | chpasswd
 }
 
 DESKTOP() {
@@ -245,12 +260,12 @@ DESKTOP() {
     echo "azryn: Installing base desktop packages..."
     emerge -q \
            app-admin/eclean-kernel \
-           app-editors/emacs \
            app-laptop/laptop-mode-tools \
            app-portage/gentoolkit \
            app-text/aspell \
            kde-frameworks/breeze-icons \
            kde-plasma/breeze-gtk \
+           lxde-base/lxappearance \
            media-fonts/noto \
            media-libs/alsa-lib \
            media-sound/alsa-utils \
@@ -258,30 +273,32 @@ DESKTOP() {
            net-misc/youtube-dl \
            sys-apps/mlocate \
            x11-apps/xbacklight \
-           x11-apps/xrandr \
            x11-apps/xset \
-           x11-misc/wmctrl \
            x11-misc/xclip \
-           x11-misc/xdotool
+           x11-terms/gnome-terminal
 
     echo "azryn: Add laptop_mode to OpenRC..."
     rc-update add laptop_mode default
 
     echo "azryn: Adding userland configuration files..."
-    wget -q $Source/etc/Xresources       -O /etc/Xresources
-    wget -q $Source/etc/emacs/default.el -O /etc/emacs/default.el
-    wget -q $Source/etc/i3/config        -O /etc/i3/config
-    wget -q $Source/etc/xinitrc          -O /etc/xinitrc
+    CfgFiles="
+        /etc/Xresources
+        /etc/emacs/default.el
+        /etc/i3/config
+        /etc/xinitrc
+    "
+    for cfg in $CfgFiles; do
+        wget -q $Source/$cfg -O $cfg
+    done
 }
 
 I3WM() {
     echo "azryn: Installing i3wm desktop..."
     emerge -q \
-           lxde-base/lxappearance \
+           x11-misc/arandr \
            x11-misc/dmenu \
            x11-misc/i3lock \
            x11-misc/i3status \
-           x11-terms/gnome-terminal \
            x11-wm/i3
 }
 
@@ -293,8 +310,7 @@ LXQT() {
            kde-plasma/kwin \
            kde-plasma/sddm-kcm \
            lxqt-base/lxqt-meta \
-           net-misc/cmst \
-           x11-terms/qterminal
+           net-misc/cmst
 
     echo "azryn: Set SDDM as the display manager"
     sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
