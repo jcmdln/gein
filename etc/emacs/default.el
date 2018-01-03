@@ -58,19 +58,6 @@
  set-language-environment "UTF-8"
  set-locale-environment "en_US.UTF-8"
 
- ;; Autosave/Backups
- auto-save-default nil
- auto-save-file-name-transforms `((".*" "~/.emacs.d/backup/" t))
- backup-directory-alist `((".*" . "~/.emacs.d/backup/"))
- create-lockfiles nil
- delete-by-moving-to-trash t
- delete-old-versions t
- delete-selection-mode t
- kept-new-versions 2
- vc-follow-symlinks t
- vc-make-backup-files t
- version-control t
-
  ;; Cut/Paste
  require-final-newline t
  save-interprogram-paste-before-kill t
@@ -459,6 +446,8 @@
         enable-recursive-minibuffers t))
 
 (use-package magit)
+
+(use-package no-littering)
 
 (use-package nov
   :config (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
