@@ -36,12 +36,13 @@ export MANPATH="$GLOBALMAN:$LOCALMAN:$PROGMAN"
 
 if [ $(whoami) != 'root' ]; then
     ## Create missing directories
-    [ ! -e $HOME/Documents ] && mkdir $HOME/Documents
-    [ ! -e $HOME/Downloads ] && mkdir $HOME/Downloads
-    [ ! -e $HOME/Images    ] && mkdir $HOME/Images
-    [ ! -e $HOME/Projects  ] && mkdir $HOME/Projects
-    [ ! -e $HOME/Templates ] && mkdir $HOME/Templates
-    [ ! -e $HOME/Videos    ] && mkdir $HOME/Videos
+    [ -d $HOME/Documents ] || mkdir $HOME/Documents
+    [ -d $HOME/Downloads ] || mkdir $HOME/Downloads
+    [ -d $HOME/Music     ] || mkdir $HOME/Music
+    [ -d $HOME/Pictures  ] || mkdir $HOME/Pictures
+    [ -d $HOME/Projects  ] || mkdir $HOME/Projects
+    [ -d $HOME/Templates ] || mkdir $HOME/Templates
+    [ -d $HOME/Videos    ] || mkdir $HOME/Videos
 
     ## Add missing configuration
     [ ! -e $HOME/.xinitrc ] && cp /etc/xinitrc $HOME/.xinitrc
