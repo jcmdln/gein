@@ -109,15 +109,16 @@ Enjoy your AzrynOS installation!
 `azryn` is meant to act as a simplification script for performing
 administrative tasks such as package and configuration management:
 
-        $ azryn
-        Available options:
-          cleanup,  -c    Remove unneeded packages
-          install,  -i    Install a package
-          reconfig, -R    Get latest configuration files
-          remove,   -r    Safely remove a package
-          sync,     -s    Sync portage
-          update,   -u    Update @world without rebuild
-          upgrade,  -U    Update @system and @world with rebuild
+        $ azryn 
+        azryn: Available options:
+          -c, clean      Remove unneeded packages
+          -i, install    Install a package
+          -p, purge      Remove unneeded packages
+          -r, remove     Safely remove a package
+          -s, sync       Sync portage
+          -u, update     Update @world without rebuild
+          -U, upgrade    Update @system and @world with rebuild
+          -C config      Get latest configuration files
 
 
 ### Installing a Web Browser
