@@ -1,10 +1,5 @@
 # /etc/profile.d/alias.sh
 
-## cd
-mkcd() {
-    mkdir -vp $1; cd $1
-}
-
 ## cp
 alias cp="cp -ip"
 alias cr="cp -ipr"
@@ -37,15 +32,12 @@ alias rf="rm -rf"
 alias rm="rm -i"
 alias rr="rm -ir"
 
-## scrot
-alias screenshot="scrot -s ~/Pictures/'Screenshot-%Y%m%d'.png"
-
 ## tar
 mktgz() {
-    tar -vcfz $1.tar.gz $@
+    tar -cfz $1.tar.gz $@
 }
 mktxz() {
-    tar -vcfJ $1.tar.xz $@
+    tar -cfJ $1.tar.xz $@
 }
 alias untar="tar -xf"
 
