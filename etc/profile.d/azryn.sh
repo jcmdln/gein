@@ -2,18 +2,43 @@
 
 azryn() {
     case $1 in
-        cleanup|-c)
-            sudo emerge -avuDN --quiet-build @world && \
-            sudo eclean --deep distfiles && \
-            sudo revdep-rebuild -q
+        sync|-s)
+            sudo emerge -v --sync
             ;;
 
         install|-i)
             sudo emerge -av --quiet-build ${@:2}
             ;;
 
+        remove|-r)
+            sudo emerge -avc --quiet-build ${@:2} && \
+            sudo revdep-rebuild -q
+            ;;
+
+        update|-u)
+            sudo emerge -avuDU \
+                 --keep-going --with-bdeps=y --quiet-build @world && \
+            sudo revdep-rebuild -q
+            ;;
+
+        upgrade|-U)
+            sudo emerge -avuDN --quiet-build @system && \
+            sudo revdep-rebuild -q
+            ;;
+
+        clean|-c)
+            sudo emerge -avuDN --quiet-build @world && \
+            sudo eclean --deep distfiles && \
+            sudo revdep-rebuild -q
+            ;;
+
+        purge|-p)
+            azryn -r $(qlist -CI ${@:2})
+            sudo revdep-rebuild -q
+            ;;
+
         reconfig|-R)
-            BaseUrl="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
+            Source="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
             Files="
                 /etc/portage/repos.conf/gentoo.conf
                 /etc/portage/make.conf
@@ -39,49 +64,30 @@ azryn() {
             read -ep "Proceed with replacing configurations? [Y/N]: " Proceed
             if echo $Proceed | grep -iq "^n"; then exit; fi
 
-            MOPTS=$(grep MAKEOPTS /etc/portage/make.conf | sed 's/.*MAKEOPTS=//')
-            VIDEO=$(grep VIDEO_CARDS /etc/portage/make.conf | sed 's/.*VIDEO_CARDS=//')
+            MakeOpts=`grep MAKEOPTS /etc/portage/make.conf|sed 's/.*MAKEOPTS=//'`
+            VideoCards=`grep VIDEO_CARDS /etc/portage/make.conf|sed 's/.*VIDEO_CARDS=//'`
 
             for cfg in $Files; do
                 sudo wget -q $BaseUrl/$cfg -O $cfg
             done
 
-            sudo sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MOPTS/g;
-                    s/VIDEO_CARDS=.*/VIDEO_CARDS=$VIDEO/g" \
-                        /etc/portage/make.conf
+            sudo sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
+                         s/VIDEO_CARDS=.*/VIDEO_CARDS=$VideoCards/g" \
+                             /etc/portage/make.conf
 
-            unset BaseUrl mopts vcards
-            ;;
-
-        remove|-r)
-            sudo emerge -avc --quiet-build ${@:2} && \
-            sudo revdep-rebuild -q
-            ;;
-
-        sync|-s)
-            sudo emerge -v --sync
-            ;;
-
-        update|-u)
-            sudo emerge -avuDU \
-                 --keep-going --with-bdeps=y --quiet-build @world && \
-            sudo revdep-rebuild -q
-            ;;
-
-        upgrade|-U)
-            sudo emerge -avuDN --quiet-build @system && \
-            sudo revdep-rebuild -q
+            unset Source MakeOpts VideoCards
             ;;
 
         *)
-            echo "Available options:"
-            echo "  cleanup,  -c    Remove unneeded packages"
-            echo "  install,  -i    Install a package"
-            echo "  reconfig, -R    Get latest configuration files"
-            echo "  remove,   -r    Safely remove a package"
-            echo "  sync,     -s    Sync portage"
-            echo "  update,   -u    Update @world without rebuild"
-            echo "  upgrade,  -U    Update @system and @world with rebuild"
+            echo "azryn: Available options:"
+            echo "  -c, clean      Remove unneeded packages"
+            echo "  -i, install    Install a package"
+            echo "  -p, purge      Remove unneeded packages"
+            echo "  -r, remove     Safely remove a package"
+            echo "  -s, sync       Sync portage"
+            echo "  -u, update     Update @world without rebuild"
+            echo "  -U, upgrade    Update @system and @world with rebuild"
+            echo "  -C config      Get latest configuration files"
             ;;
     esac
 }
