@@ -9,7 +9,7 @@
 */* alsa bzip2 dbus deblob ffmpeg gif gnutls imagemagick jpeg jpeg2k minimal png pulseaudio svg threads tiff unicode xft xpm zlib
 
 ## Desktop
-# */* X cairo egl gles openal opengl qt5 sdl sdl2 vaapi vdpau wayland
+# */* X cairo egl gles openal opengl sdl sdl2 vaapi vdpau
 
 
 ### Packages #####################################
@@ -85,7 +85,7 @@ x11-terms/gnome-terminal -gnome-shell -nautilus
 x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3
 
 
-### Multilib (required for Steam) ################
+### Multilib #####################################
 
 # app-accessibility/at-spi2-atk abi_x86_32
 # app-accessibility/at-spi2-core abi_x86_32
@@ -183,6 +183,7 @@ x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl
 # x11-libs/libdrm abi_x86_32
 # x11-libs/libpciaccess abi_x86_32
 # x11-libs/libva abi_x86_32
+# x11-libs/libva-intel-driver abi_x86_32
 # x11-libs/libvdpau abi_x86_32
 # x11-libs/libxcb abi_x86_32
 # x11-libs/libxshmfence abi_x86_32
