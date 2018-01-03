@@ -257,16 +257,14 @@ DESKTOP() {
     emerge -q x11-base/xorg-drivers
     env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
-    echo "azryn: Installing base desktop packages..."
+    echo "azryn: Installing desktop packages..."
     emerge -q \
            app-admin/eclean-kernel \
            app-laptop/laptop-mode-tools \
            app-portage/gentoolkit \
            app-text/aspell \
-           kde-frameworks/breeze-icons \
-           kde-plasma/breeze-gtk \
-           lxde-base/lxappearance \
            media-fonts/noto \
+           media-gfx/scrot \
            media-libs/alsa-lib \
            media-sound/alsa-utils \
            media-video/mpv \
@@ -274,32 +272,28 @@ DESKTOP() {
            sys-apps/mlocate \
            x11-apps/xbacklight \
            x11-apps/xset \
+           x11-apps/xsetroot \
+           x11-misc/arandr \
+           x11-misc/dmenu \
+           x11-misc/i3lock \
+           x11-misc/i3status \
            x11-misc/xclip \
-           x11-terms/gnome-terminal
+           x11-terms/gnome-terminal \
+           x11-wm/i3
 
     echo "azryn: Add laptop_mode to OpenRC..."
     rc-update add laptop_mode default
 
     echo "azryn: Adding userland configuration files..."
     CfgFiles="
-        /etc/Xresources
-        /etc/emacs/default.el
-        /etc/i3/config
-        /etc/xinitrc
+      /etc/Xresources
+      /etc/emacs/default.el
+      /etc/i3/config
+      /etc/xinitrc
     "
     for cfg in $CfgFiles; do
         wget -q $Source/$cfg -O $cfg
     done
-}
-
-I3WM() {
-    echo "azryn: Installing i3wm desktop..."
-    emerge -q \
-           x11-misc/arandr \
-           x11-misc/dmenu \
-           x11-misc/i3lock \
-           x11-misc/i3status \
-           x11-wm/i3
 }
 
 LXQT() {
@@ -349,7 +343,6 @@ case $1 in
     i3wm)
         MINIMAL
         DESKTOP
-        I3WM
         ;;
 
     lxqt)
