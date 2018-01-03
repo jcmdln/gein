@@ -234,14 +234,14 @@ MINIMAL() {
 
     echo "azryn: Adding userland configurations..."
     CfgFiles="
-        /etc/bash/bashrc
-        /etc/profile
-        /etc/profile.d/alias.sh
-        /etc/profile.d/azryn.sh
-        /etc/profile.d/environment.sh
-        /etc/sudoers
-        /etc/tmux.conf
-        /etc/vimrc
+      /etc/bash/bashrc
+      /etc/profile
+      /etc/profile.d/alias.sh
+      /etc/profile.d/azryn.sh
+      /etc/profile.d/environment.sh
+      /etc/sudoers
+      /etc/tmux.conf
+      /etc/vimrc
     "
     for cfg in $CfgFiles; do
         wget -q $Source/$cfg -O $cfg
