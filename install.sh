@@ -296,26 +296,6 @@ DESKTOP() {
     done
 }
 
-LXQT() {
-    echo "azryn: Installing LXQT desktop..."
-    emerge -q \
-           kde-plasma/breeze \
-           kde-plasma/breeze-grub \
-           kde-plasma/kwin \
-           kde-plasma/sddm-kcm \
-           lxqt-base/lxqt-meta \
-           net-misc/cmst
-
-    echo "azryn: Set SDDM as the display manager"
-    sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
-        /etc/conf.d/xdm
-    sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
-        /usr/share/xsessions/lxqt.desktop
-
-    rc-update add xdm default
-    rc-update add dbus default
-}
-
 CLEANUP() {
     echo "azryn: Updating @world and removing unused packages..."
     emerge -quDN @world
@@ -345,12 +325,6 @@ case $1 in
         DESKTOP
         ;;
 
-    lxqt)
-        MINIMAL
-        DESKTOP
-        LXQT
-        ;;
-
     cleanup)
         CLEANUP
         ;;
@@ -365,7 +339,6 @@ case $1 in
         echo "Installation options:"
         echo "  minimal      Install minimal Gentoo"
         echo "  i3wm         Install Gentoo and i3wm desktop"
-        echo "  lxqt         Install Gentoo and LXQT desktop"
         echo ""
         echo "Post-install tasks:"
         echo "  cleanup      Remove junk created during install"
