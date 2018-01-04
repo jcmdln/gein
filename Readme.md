@@ -70,7 +70,6 @@ as a subjectively decent example of getting started with Gentoo.
         Installation options:
           minimal      Install minimal Gentoo
           i3wm         Install Gentoo and i3wm desktop
-          lxqt         Install Gentoo and LXQT desktop
 
         Post-install tasks:
           cleanup      Remove junk created during install
