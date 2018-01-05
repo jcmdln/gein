@@ -143,7 +143,7 @@ BOOTSTRAP() {
     echo "azryn: Setting up Portage mirrors..."
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf
     wget -q $Source/etc/portage/repos.conf/gentoo.conf \
-         -O /mnt/etc/portage/repos.conf/gentoo.conf
+         -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
