@@ -40,15 +40,14 @@ Locale="en_US.UTF-8 UTF-8"
 Source="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
 SwapSize="2G"
 TimeZone="America/New_York"
-#VideoCards="amdgpu radeonsi"
 #VideoCards="i965 intel"
+#VideoCards="amdgpu radeonsi"
 #VideoCards="nouveau nvidia"
 #VideoCards="virtualbox vmware"
 
 ## Kernel
 AutoKernel="true"
-#KernelVersion="4.14"
-#KernelConfig="$Source/usr/src/linux/$KernelVersion.config"
+#KernelConfig="$Source/usr/src/linux/x.x.config"
 
 ## Portage
 MakeConf="$Source/etc/portage/make.conf"
@@ -74,7 +73,7 @@ BOOTSTRAP() {
     read -ep "Proceed with installation? [Y/N]: " Proceed
     if echo $Proceed | grep -iq "^n"; then exit; fi
 
-    if [ -z $VideoCards || -z $PartitionBoot ]; then
+    if [ -z $VideoCards ] || [ -z $PartitionBoot ]; then
         echo "azryn: You didn't read $0 and adjust the variables! Exiting..."
         exit
     fi
@@ -144,7 +143,7 @@ BOOTSTRAP() {
     echo "azryn: Setting up Portage mirrors..."
     mkdir -vp /mnt/gentoo/etc/portage/repos.conf
     wget -q $Source/etc/portage/repos.conf/gentoo.conf \
-         -O /etc/portage/repos.conf/gentoo.conf
+         -O /mnt/etc/portage/repos.conf/gentoo.conf
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
@@ -195,7 +194,7 @@ MINIMAL() {
 
     echo "azryn: Configuring Linux kernel..."
     cd /usr/src/linux
-    if [ "$AutoKernel" = "true" && -z $KernelConfig ]; then
+    if [ "$AutoKernel" = "true" ] && [ -z $KernelConfig ]; then
         make defconfig
     elif [ "$AutoKernel" = "false" ]; then
         if [ ! -z $KernelConfig ]; then
