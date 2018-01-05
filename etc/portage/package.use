@@ -3,7 +3,7 @@
 ### Global #######################################
 
 ## Blacklist
-*/* -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -wayland
+*/* -avahi -bindist -doc -gnome-keyring -handbook -introspection -kdesu -kwallet -llvm -offensive -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -wayland
 
 ## Whitelist
 */* alsa bzip2 dbus deblob ffmpeg gif gnutls imagemagick jpeg jpeg2k minimal png pulseaudio svg threads tiff unicode xft xpm zlib
@@ -85,7 +85,6 @@ x11-misc/i3status filecaps
 x11-misc/sddm consolekit
 x11-terms/gnome-terminal -gnome-shell -nautilus
 x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3
-
 
 ### Multilib #####################################
 
@@ -206,6 +205,7 @@ x11-proto/renderproto abi_x86_32
 x11-proto/scrnsaverproto abi_x86_32
 x11-proto/xcb-proto abi_x86_32
 x11-proto/xextproto abi_x86_32
+x11-proto/xf86bigfontproto abi_x86_32
 x11-proto/xf86driproto abi_x86_32
 x11-proto/xf86vidmodeproto abi_x86_32
 x11-proto/xineramaproto abi_x86_32
