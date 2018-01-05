@@ -15,6 +15,7 @@
 ### Packages #####################################
 
 app-admin/sudo -gcrypt -openssl sendmail
+app-arch/zip -bzip2
 app-editors/emacs -athena -games -gtk acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
 app-editors/vim -X -perl -python -racket -tcl
 app-emacs/emacs-common-gentoo -games
