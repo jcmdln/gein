@@ -88,9 +88,9 @@ BOOTSTRAP() {
     [ -x "$(command -v ntpd)" ] && ntpd -q -g
 
     echo "azryn: Downloading and extracting Stage3 tarball..."
-    if [ -z $S3Cur ]; then
+    if [ ! -z $S3Cur ]; then
         wget -q $Stage
-        tar -xjpf stage3-*.tar.bz2 --xattrs --numeric-owner
+        tar -xpf stage3-* --xattrs --numeric-owner
     else
         echo "azryn: 'S3Tgt' is not set! Is cURL missing? Exiting..."
         exit
