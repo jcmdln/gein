@@ -210,9 +210,6 @@ MINIMAL() {
     genkernel --install initramfs
     cd /
 
-    echo "azryn: Install netifrc..."
-    emerge -qn net-misc/netifrc
-
     echo "azryn: Add connman to OpenRC..."
     rc-update add connman default
 
