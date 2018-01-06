@@ -24,7 +24,7 @@ RKTMAN="$RKTROOT/man"
 
 ## Path
 CODEPATH="$GOBIN:$RKTPATH"
-GLOBALPATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin"
+GLOBALPATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
 LOCALPATH="$HOME/.local/bin:$HOME/.bin:$HOME/bin"
 export PATH="$GLOBALPATH:$LOCALPATH:$CODEPATH"
 
