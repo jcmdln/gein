@@ -284,6 +284,7 @@ DESKTOP() {
     rc-update add laptop_mode default
 
     echo "azryn: Adding userland configuration files..."
+    [ ! -d /etc/emacs ] && mkdir -p /etc/emacs
     CfgFiles="
       /etc/Xresources
       /etc/emacs/default.el
