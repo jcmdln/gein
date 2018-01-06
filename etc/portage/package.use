@@ -23,6 +23,7 @@ app-emulation/qemu usb
 app-laptop/laptop-mode-tools acpi bluetooth
 app-misc/screenfetch -X
 app-office/libreoffice branding collada gltf gstreamer gtk mysql pdfimport postgres
+app-text/ghostscript-gpl cups
 app-text/poppler -qt5
 app-text/xmlto text
 dev-games/ogre examples ois
