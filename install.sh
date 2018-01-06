@@ -141,9 +141,9 @@ BOOTSTRAP() {
              -O /mnt/gentoo/etc/portage/package.use
 
     echo "azryn: Setting up Portage mirrors..."
-    mkdir -vp /mnt/gentoo/etc/portage/repos.conf
-    wget -q $Source/etc/portage/repos.conf/gentoo.conf \
-         -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+    #mkdir -vp /mnt/gentoo/etc/portage/repos.conf
+    #wget -q $Source/etc/portage/repos.conf/gentoo.conf \
+    #     -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
     cp -vL /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
@@ -185,6 +185,7 @@ MINIMAL() {
            sys-apps/pciutils \
            sys-kernel/genkernel \
            net-misc/connman \
+           net-misc/dhcpcd \
            sys-boot/grub:2
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
@@ -301,7 +302,7 @@ CLEANUP() {
     eclean --deep distfiles
 
     echo "azryn: Removing stage3 tarball..."
-    rm -rf /stage3*.tar.bz2
+    rm -rf /stage3*
 }
 
 
