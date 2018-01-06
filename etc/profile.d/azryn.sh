@@ -72,7 +72,7 @@ azryn() {
             VideoCards=`grep VIDEO_CARDS /etc/portage/make.conf|sed 's/.*VIDEO_CARDS=//'`
 
             for cfg in $Files; do
-                wget -q $BaseUrl/$cfg -O $cfg
+                wget -q $Source/$cfg -O $cfg
             done
 
             sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
