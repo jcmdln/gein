@@ -1,40 +1,44 @@
 # /etc/profile.d/azryn.sh
 
 azryn() {
+    if [ $EUID -ne 0 ]; then
+        echo "azryn: You must run this script with elevated privileges"
+        exit
+    fi
+
     case $1 in
         sync|-s)
-            sudo emerge -v --sync
+            emerge -v --sync
             ;;
 
         install|-i)
-            sudo emerge -av --quiet-build ${@:2}
+            emerge -av --quiet-build ${@:2}
             ;;
 
         remove|-r)
-            sudo emerge -avc --quiet-build ${@:2} && \
-            sudo revdep-rebuild -q
+            emerge -avc --quiet-build ${@:2} && \
+            revdep-rebuild -q
             ;;
 
         update|-u)
-            sudo emerge -avuDU \
-                 --keep-going --with-bdeps=y --quiet-build @world && \
-            sudo revdep-rebuild -q
+            emerge -avuDU --keep-going --with-bdeps=y --quiet-build @world && \
+            revdep-rebuild -q
             ;;
 
         upgrade|-U)
-            sudo emerge -avuDN --quiet-build @system && \
-            sudo revdep-rebuild -q
+            emerge -avuDN --quiet-build @system && \
+            revdep-rebuild -q
             ;;
 
         clean|-c)
-            sudo emerge -avuDN --quiet-build @world && \
-            sudo eclean --deep distfiles && \
-            sudo revdep-rebuild -q
+            emerge -avuDN --quiet-build @world && \
+            eclean --deep distfiles && \
+            revdep-rebuild -q
             ;;
 
         purge|-p)
             azryn -r $(qlist -CI ${@:2})
-            sudo revdep-rebuild -q
+            revdep-rebuild -q
             ;;
 
         reconfig|-R)
@@ -68,12 +72,12 @@ azryn() {
             VideoCards=`grep VIDEO_CARDS /etc/portage/make.conf|sed 's/.*VIDEO_CARDS=//'`
 
             for cfg in $Files; do
-                sudo wget -q $BaseUrl/$cfg -O $cfg
+                wget -q $BaseUrl/$cfg -O $cfg
             done
 
-            sudo sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
-                         s/VIDEO_CARDS=.*/VIDEO_CARDS=$VideoCards/g" \
-                             /etc/portage/make.conf
+            sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
+                    s/VIDEO_CARDS=.*/VIDEO_CARDS=$VideoCards/g" \
+                        /etc/portage/make.conf
 
             unset Source MakeOpts VideoCards
             ;;
