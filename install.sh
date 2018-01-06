@@ -149,7 +149,7 @@ BOOTSTRAP() {
     echo "azryn: Chroot'ing into /mnt/gentoo..."
     chroot /mnt/gentoo /usr/bin/env -i \
            HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
-           PATH="/bin:/sbin:/usr/bin:/usr/sbin" \
+           PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin" \
            /bin/bash --login
 }
 
@@ -237,7 +237,7 @@ MINIMAL() {
       /etc/profile
       /etc/profile.d/alias.sh
       /etc/profile.d/azryn.sh
-      /etc/profile.d/environment.sh
+      /etc/profile.d/env.sh
       /etc/sudoers
       /etc/tmux.conf
       /etc/vimrc
