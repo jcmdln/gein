@@ -264,6 +264,7 @@ DESKTOP() {
            media-gfx/scrot \
            media-libs/alsa-lib \
            media-sound/alsa-utils \
+           media-sound/pavucontrol \
            media-video/mpv \
            net-misc/youtube-dl \
            sys-apps/mlocate \
