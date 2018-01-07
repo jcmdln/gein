@@ -2,21 +2,16 @@
 automate the installation of my own ideal Gentoo setup though the
 current design allows for others to fork or submit PR's should it be
 desired. Keep in mind that this project is NOT a replacement for reading
-the Gentoo Handbook. Sabayon tries to do this and I don't want to repeat
-this line of thinking.
+the Gentoo Handbook.
 
-I'm aware that Gentoo is a highly personal system and much of what I've
-added may be undesired. Despite this I think that this project may serve
-as a subjectively decent example of getting started with Gentoo.
+You may review the source code at https://github.com/Azryn/AzrynOS for
+more information if needed.
 
 
 ## FAQ
 - "How much about Gentoo will I need to know to use AzrynOS?"
   - I would suggest reading the Gentoo Handbook and every file in this
     project before proceeding.
-- "How long does this take to install?"
-  - About 1 to 4 hours for the minimal install.
-  - About 4 to 24 hours for the complete installation.
 - "I keep getting boot failures after installing in a VirtualBox VM?"
   - Remove the virtual disk drive from the boot order and restart.
 - "The display is lagging when using LXQT on my Nvidia GPU?"
@@ -24,20 +19,10 @@ as a subjectively decent example of getting started with Gentoo.
 
 
 ## Warnings
-- AzrynOS is not production-ready, proceed with caution.
+- Read the warnings at the top of `install.sh` FIRST!
 - You must manually partition and mount your disks.
   - Consult your Gentoo Handbook.
-- Read the warnings at the top of `install.sh` FIRST!
-  - Your root password is set to the value of $Hostname for simplicity.
-    Change your root password with 'passwd' after the MINIMAL install.
-  - Be sure to uncomment the appropriate `VIDEO_CARDS` line and modify
-    as needed
-  - By default, $AutoKernel is set to 'true' which means that the kernel
-    will be built using 'make defconfig'. If you want to run
-    'make defconfig; make menuconfig' then set $AutoKernel to 'false'.
-    You may also supply your own URL to $KernelConfig while setting
-    $AutoKernel to 'false' to use a pre-built kernel config. And example
-    kernel config is provided though commented out.
+- AzrynOS does not ship with a web browser or office suite.
 
 
 ## Getting Started
@@ -51,12 +36,7 @@ as a subjectively decent example of getting started with Gentoo.
 
 
 ## Installing
-1. Partition and mount your disk(s):
-
-        $ fdisk /dev/sda
-        $ mkfs.ext4 /dev/sda1
-        $ mount /dev/sda1 /mnt/gentoo
-
+1. Partition and mount your disk(s)
 2. Download and run `install.sh`:
 
         $ wget http://os.aswl.org/install.sh
@@ -70,7 +50,7 @@ as a subjectively decent example of getting started with Gentoo.
           -d desktop      Install a complete AzrynOS desktop
 
 3. Read the information at the top of `install.sh` and modify the
-variables:
+variables as needed:
 
         $ vi install.sh
 
@@ -83,31 +63,3 @@ variables:
         $ sh install.sh desktop
 
 Enjoy your AzrynOS installation!
-
-
-## Post-install
-
-### Administering the system
-`azryn` is meant to act as a simplification script for performing
-administrative tasks such as package and configuration management:
-
-        $ azryn 
-        azryn: Available options:
-          -c, clean      Remove unneeded packages
-          -i, install    Install a package
-          -p, purge      Remove unneeded packages
-          -r, remove     Safely remove a package
-          -s, sync       Sync portage
-          -u, update     Update @world without rebuild
-          -U, upgrade    Update @system and @world with rebuild
-          -C config      Get latest configuration files
-
-
-### Installing a Web Browser
-AzrynOS does not ship with a web browser unless you count w3m or eww
-within Emacs. I would suggest using either Firefox or Chromium though
-these packages take some time to compile on older hardware. You may
-resort to installing google-chrome which is a binary package if desired.
-
-### Installing an Office Suite
-Maybe install the libreoffice-bin binary? Depends on your needs.
