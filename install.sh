@@ -26,7 +26,8 @@ Source="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
 # for simplicity. Change your root password with 'passwd' after the
 # installation completes. Be sure to set $PartitionBoot to your intended
 # Grub destination. The default value will install to the master boot
-# record (MBR) of '/dev/sda'.
+# record (MBR) of '/dev/sda'. You will also need to uncomment the line
+# pertaining to your GPU and modify it as needed.
 
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
 Hostname="azryn"
