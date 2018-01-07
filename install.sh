@@ -55,6 +55,8 @@ PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
 PackageEnv="$Source/etc/portage/package.env"
 PackageLicense="$Source/etc/portage/package.license"
 PackageUse="$Source/etc/portage/package.use"
+# Stage3 no longer includes git, comment this out for now
+#ReposConf="$Source/etc/portage/repos.conf/gentoo.conf"
 
 ## Stage3
 S3Arch="amd64"
@@ -90,6 +92,7 @@ BOOTSTRAP() {
     if [ ! -z $S3Cur ]; then
         wget -q $Stage
         tar -xpf stage3-* --xattrs --numeric-owner
+        rm -rf stage3-*
     else
         echo "azryn: 'S3Tgt' is not set! Is cURL missing? Exiting..."
         exit
@@ -122,6 +125,9 @@ BOOTSTRAP() {
         echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
+    echo "azryn: Copying '/etc/resolv.conf'..."
+    cp -L /etc/resolv.conf /mnt/gentoo/etc/
+
     echo "azryn: Downloading portage configuration files..."
     [ ! -z $MakeConf ] && \
         wget -q $MakeConf \
@@ -139,12 +145,10 @@ BOOTSTRAP() {
         rm -rf /mnt/gentoo/etc/portage/package.use && \
         wget -q $PackageUse \
              -O /mnt/gentoo/etc/portage/package.use
-
-    echo "azryn: Setting up Portage mirrors..."
-    #mkdir -vp /mnt/gentoo/etc/portage/repos.conf
-    #wget -q $Source/etc/portage/repos.conf/gentoo.conf \
-    #     -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
-    cp -vL /etc/resolv.conf /mnt/gentoo/etc/
+    [ ! -z $ReposConf ] && \
+        mkdir -p /mnt/gentoo/etc/portage/repos.conf && \
+        wget -q $ReposConf \
+             -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 
     echo "azryn: Chroot'ing into /mnt/gentoo..."
     chroot /mnt/gentoo /usr/bin/env -i \
@@ -162,14 +166,14 @@ MINIMAL() {
     emerge -q --sync
     eselect profile list
     echo "azryn: Hint: choose the latest 'default/linux/amd64/xx.x'"
-    read -ep "Which profile? : " TargetProfile
+    read -ep "Which profile?: " TargetProfile
     [ -z $TargetProfile ] && TargetProfile="1"
     eselect profile set $TargetProfile
-    emerge -quDN @world
+    emerge -vuDN --quiet-build @world
 
     echo "azryn: Setting timezone..."
     echo $TimeZone > /etc/timezone
-    emerge -q --config sys-libs/timezone-data
+    emerge -v --quiet-build --config sys-libs/timezone-data
 
     echo "azryn: Setting locale..."
     echo $Locale > /etc/locale.gen
@@ -179,18 +183,18 @@ MINIMAL() {
     env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
     echo "azryn: Emerge/install Linux kernel and modules..."
-    emerge -q \
-           sys-kernel/gentoo-sources \
-           sys-kernel/linux-firmware \
-           sys-apps/pciutils \
-           sys-kernel/genkernel \
-           net-misc/connman \
-           net-misc/dhcpcd \
-           sys-boot/grub:2
+    emerge \
+        -v --quiet-build \
+        sys-kernel/gentoo-sources \
+        sys-kernel/linux-firmware \
+        sys-apps/pciutils \
+        net-misc/connman \
+        net-misc/dhcpcd \
+        sys-boot/grub:2
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "azryn: emerging intel-microcode"
-        emerge -q intel-microcode
+        emerge -v --quiet-build intel-microcode
     fi
 
     echo "azryn: Configuring Linux kernel..."
@@ -208,7 +212,6 @@ MINIMAL() {
 
     echo "azryn: Compiling Linux kernel, modules, and initramfs..."
     make -j$CPUCores && make modules_install && make install
-    genkernel --install initramfs
     cd /
 
     echo "azryn: Add connman to OpenRC..."
@@ -222,12 +225,13 @@ MINIMAL() {
     grub-mkconfig -o /boot/grub/grub.cfg
 
     echo "azryn: Adding sudo, vim, tmux, and htop..."
-    emerge -q \
-           app-admin/sudo \
-           app-editors/vim \
-           app-misc/tmux \
-           dev-vcs/git \
-           sys-process/htop
+    emerge \
+        -v --quiet-build \
+        app-admin/sudo \
+        app-editors/vim \
+        app-misc/tmux \
+        dev-vcs/git \
+        sys-process/htop
 
     echo "azryn: Adding userland configurations..."
     CfgFiles="
@@ -251,33 +255,33 @@ MINIMAL() {
 
 DESKTOP() {
     echo "azryn: Installing Xorg drivers..."
-    emerge -q x11-base/xorg-drivers
+    emerge -v --quiet-build x11-base/xorg-drivers
     env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
     echo "azryn: Installing desktop packages..."
-    emerge -q \
-           app-admin/eclean-kernel \
-           app-laptop/laptop-mode-tools \
-           app-portage/gentoolkit \
-           app-text/aspell \
-           media-fonts/noto \
-           media-gfx/scrot \
-           media-libs/alsa-lib \
-           media-sound/alsa-utils \
-           media-sound/pavucontrol \
-           media-video/mpv \
-           net-misc/youtube-dl \
-           sys-apps/mlocate \
-           x11-apps/xbacklight \
-           x11-apps/xset \
-           x11-apps/xsetroot \
-           x11-misc/arandr \
-           x11-misc/dmenu \
-           x11-misc/i3lock \
-           x11-misc/i3status \
-           x11-misc/xclip \
-           x11-terms/gnome-terminal \
-           x11-wm/i3
+    emerge \
+        -v --quiet-build \
+        app-laptop/laptop-mode-tools \
+        app-portage/gentoolkit \
+        app-text/aspell \
+        media-fonts/noto \
+        media-gfx/scrot \
+        media-libs/alsa-lib \
+        media-sound/alsa-utils \
+        media-sound/pavucontrol \
+        media-video/mpv \
+        net-misc/youtube-dl \
+        sys-apps/mlocate \
+        x11-apps/xbacklight \
+        x11-apps/xset \
+        x11-apps/xsetroot \
+        x11-misc/arandr \
+        x11-misc/dmenu \
+        x11-misc/i3lock \
+        x11-misc/i3status \
+        x11-misc/xclip \
+        x11-terms/gnome-terminal \
+        x11-wm/i3
 
     echo "azryn: Add laptop_mode to OpenRC..."
     rc-update add laptop_mode default
@@ -296,17 +300,6 @@ DESKTOP() {
     done
 }
 
-CLEANUP() {
-    echo "azryn: Updating @world and removing unused packages..."
-    emerge -quDN @world
-    emerge -q --depclean
-    emerge -quD --changed-use @world
-    eclean --deep distfiles
-
-    echo "azryn: Removing stage3 tarball..."
-    rm -rf /stage3*
-}
-
 
 ### Execution ####################################
 
@@ -323,10 +316,6 @@ case $1 in
     i3wm)
         MINIMAL
         DESKTOP
-        ;;
-
-    cleanup)
-        CLEANUP
         ;;
 
     *)
