@@ -59,7 +59,7 @@ media-plugins/gst-plugins-meta ogg vorbis
 media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss vorbis wavpack
 media-video/ffmpeg aac amr blueray cdio encode gme hevc libass mp3 network ogg openh264 openssl opus rtmp theora vorbis vpx wavpack x264 x265 xvid
 media-video/mpv libass libmpv
-net-misc/connman bluetooth ethernet openvpn wifi
+net-misc/connman bluetooth ethernet iptables openvpn wifi
 net-misc/openssh -X
 net-vpn/openvpn lz4 lzo plugins
 net-wireless/wpa_supplicant -qt5
