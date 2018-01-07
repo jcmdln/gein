@@ -2,43 +2,46 @@
 
 azryn() {
     if [ $EUID -ne 0 ]; then
-        echo "azryn: You must run this script with elevated privileges"
-        exit
+        if [ -e $(command -v sudo) ]; then
+            SU="sudo"
+        else
+            SU="su -c"
+        fi
     fi
 
     case $1 in
         sync|-s)
-            emerge -v --sync
+            $SU emerge -v --sync
             ;;
 
         install|-i)
-            emerge -av --quiet-build ${@:2}
+            $SU emerge -av --quiet-build ${@:2}
             ;;
 
         remove|-r)
-            emerge -avc --quiet-build ${@:2} && \
-            revdep-rebuild -q
+            $SU emerge -avc --quiet-build ${@:2} && \
+            $SU revdep-rebuild -q
             ;;
 
         update|-u)
-            emerge -avuDU --keep-going --with-bdeps=y --quiet-build @world && \
-            revdep-rebuild -q
+            $SU emerge -avuDU --keep-going --with-bdeps=y --quiet-build @world && \
+            $SU revdep-rebuild -q
             ;;
 
         upgrade|-U)
-            emerge -avuDN --quiet-build @system && \
-            revdep-rebuild -q
+            $SU emerge -avuDN --quiet-build @system && \
+            $SU revdep-rebuild -q
             ;;
 
         clean|-c)
-            emerge -avuDN --quiet-build @world && \
-            eclean --deep distfiles && \
-            revdep-rebuild -q
+            $SU emerge -avuDN --quiet-build @world && \
+            $SU eclean --deep distfiles && \
+            $SU revdep-rebuild -q
             ;;
 
         purge|-p)
-            azryn -r $(qlist -CI ${@:2})
-            revdep-rebuild -q
+            $SU azryn -r $(qlist -CI ${@:2})
+            $SU revdep-rebuild -q
             ;;
 
         reconfig|-R)
@@ -57,7 +60,6 @@ azryn() {
                 /etc/Xresources
                 /etc/emacs/default.el
                 /etc/i3/config
-                /etc/i3status.conf
                 /etc/sudoers
                 /etc/tmux.conf
                 /etc/vimrc
@@ -73,12 +75,12 @@ azryn() {
             VideoCards=`grep VIDEO_CARDS /etc/portage/make.conf|sed 's/.*VIDEO_CARDS=//'`
 
             for cfg in $Files; do
-                wget -q $Source/$cfg -O $cfg
+                $SU wget -q $Source/$cfg -O $cfg
             done
 
-            sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
-                    s/VIDEO_CARDS=.*/VIDEO_CARDS=$VideoCards/g" \
-                        /etc/portage/make.conf
+            $SU sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
+                        s/VIDEO_CARDS=.*/VIDEO_CARDS=$VideoCards/g" \
+                            /etc/portage/make.conf
 
             unset Source MakeOpts VideoCards
             ;;
