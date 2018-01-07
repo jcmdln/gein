@@ -6,6 +6,8 @@ dev-util/bcc ~amd64
 lxqt-base/*
 media-gfx/lximage-qt
 net-misc/cmst ~amd64
+sys-devel/gcc ~amd64
 sys-firmware/nvidia-firmware ~amd64
+sys-kernel/gentoo-sources ~amd64
 x11-misc/obconf-qt
 x11-misc/pcmanfm-qt
