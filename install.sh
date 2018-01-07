@@ -288,6 +288,7 @@ DESKTOP() {
       /etc/Xresources
       /etc/emacs/default.el
       /etc/i3/config
+      /etc/i3status.conf
       /etc/xinitrc
     "
     for cfg in $CfgFiles; do
