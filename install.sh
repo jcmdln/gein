@@ -2,11 +2,9 @@
 #
 # Copyright (C) 2017 Azryn Software Labs contact@azryn.org
 # This software is licensed under the Azryn Software Labs Public License
-# of version 1.1.0 or later. You should have received a copy of the Azryn
-# Software Labs Public License along with this program. If not, please
-# see https://apl.azryn.org/ for a copy.
-#
-##################################################
+# of version 1.1.0 or later. You should have received a copy of the
+# Azryn Software Labs Public License along with this program. If not,
+# please see https://apl.azryn.org/ for a copy.
 #
 # This script does automate the install but you will need to adjust the
 # variables in 'Setup' to suit your desired install. The installation
@@ -14,30 +12,26 @@
 # set though some example values have been provided. If you are unsure
 # how to proceed, consult the Gentoo Handbook.
 #
-# === WARNINGS ===
-# - Your root password is set to the value of $Hostname for simplicity.
-#   Change your root password with 'passwd' after the MINIMAL install.
-#
-# - Be sure to set $PartitionBoot to your boot target, though the
-#   default value of '/dev/sda' will install to the master boot record.
-#
-# - By default, $AutoKernel is set to 'true' which means that the kernel
-#   will be built using 'make defconfig'. If you want to run
-#   'make defconfig; make menuconfig' then set $AutoKernel to 'false'.
-#   You may also supply your own URL to $KernelConfig while setting
-#   $AutoKernel to 'false' to use a pre-built kernel config. And example
-#   kernel config is provided though commented out.
-#
-##################################################
 
-### Setup ########################################
 
-## Azryn
+# This script heavily relies on downloading configuration files from the
+# main repository. If you have cloned AzrynOS and made your own changes
+# to the configuration files, you may change the $Source URL as needed.
+
+Source="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
+
+
+# This section defines the basic variables needed in order to complete
+# the installation. Your root password is set to the value of $Hostname
+# for simplicity. Change your root password with 'passwd' after the
+# installation completes. Be sure to set $PartitionBoot to your intended
+# Grub destination. The default value will install to the master boot
+# record (MBR) of '/dev/sda'.
+
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
 Hostname="azryn"
 Locale="en_US.UTF-8 UTF-8"
 #PartitionBoot="/dev/sda"
-Source="https://raw.githubusercontent.com/Azryn/AzrynOS/master"
 SwapSize="2G"
 TimeZone="America/New_York"
 #VideoCards="i965 intel"
@@ -45,35 +39,59 @@ TimeZone="America/New_York"
 #VideoCards="nouveau nvidia"
 #VideoCards="virtualbox vmware"
 
-## Kernel
+
+# By default, $AutoKernel is set to 'true' which means that the kernel
+# will be built using 'make defconfig'. If you want to run
+# 'make defconfig; make menuconfig' then set $AutoKernel to 'false'. You
+# may also supply your own URL to $KernelConfig while setting
+# $AutoKernel to 'false' to use a pre-built kernel config. An example
+# kernel config is provided though commented out.
+
 AutoKernel="true"
 #KernelConfig="$Source/usr/src/linux/x.x.config"
 
-## Portage
+
+# Much work has been done to simplify or in most cases fully automate
+# interacting with Portage though this section simply creates easily
+# referenced variables that may be called later in this script. At the
+# time of writing, the Gentoo stage3 no longer includes 'git' which
+# prevents using the GitHub mirror. Please leave this commented for now.
+
 MakeConf="$Source/etc/portage/make.conf"
 PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
 PackageEnv="$Source/etc/portage/package.env"
 PackageLicense="$Source/etc/portage/package.license"
 PackageUse="$Source/etc/portage/package.use"
-# Stage3 no longer includes git, comment this out for now
 #ReposConf="$Source/etc/portage/repos.conf/gentoo.conf"
 
-## Stage3
+
+# This section exists to automate identifying and downloading the latest
+# stage3 archive under the condition that cURL is present. This is not
+# an issue when using the Gentoo installation CD's though prevents
+# errors when executing MINIMAL() or DESKTOP() due to cURL missing
+# after completing the BOOTSTRAP().
+
 S3Arch="amd64"
 S3Src="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
+S3Txt="curl -s $S3Src/latest-stage3-$S3Arch.txt"
 [ -x "$(command -v curl)" ] && \
-    S3Cur="$(curl -s $S3Src/latest-stage3-$S3Arch.txt|tail -1|awk '{print $1}')"
-Stage="$S3Src/$S3Cur"
+    S3Cur="$($S3Txt|tail -1|awk '{print $1}')" && \
+    Stage3="$S3Src/$S3Cur"
 
 
-### Passes #######################################
+# Bootstrapping a Gentoo stage3 archive is a fairly quick process though
+# we must also ensure this script will be accessible from the chroot as
+# well as other housekeeping tasks. The Portage configuration files are
+# setup in this section.
 
 BOOTSTRAP() {
     echo "Please ensure that you have performed the following: "
     echo "  - Edited the environment variables at the top of this script."
     echo "  - Partitioned and mounted your disk(s)."
     read -ep "Proceed with installation? [Y/N]: " Proceed
-    if echo $Proceed | grep -iq "^n"; then exit; fi
+    if echo $Proceed | grep -iq "^n"; then
+        exit
+    fi
 
     if [ -z $VideoCards ] || [ -z $PartitionBoot ]; then
         echo "azryn: You didn't read $0 and adjust the variables! Exiting..."
@@ -89,8 +107,8 @@ BOOTSTRAP() {
     [ -x "$(command -v ntpd)" ] && ntpd -q -g
 
     echo "azryn: Downloading and extracting Stage3 tarball..."
-    if [ ! -z $S3Cur ]; then
-        wget -q $Stage
+    if [ ! -z $Stage3 ]; then
+        wget -q $Stage3
         tar -xpf stage3-* --xattrs --numeric-owner
         rm -rf stage3-*
     else
@@ -156,6 +174,10 @@ BOOTSTRAP() {
            PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin" \
            /bin/bash --login
 }
+
+
+# In this section we will update various configuration files, select the
+# desired profile, compile the kernel, and install some basic packages.
 
 MINIMAL() {
     echo "azryn: Setting CPU cores and GPU type..."
@@ -250,8 +272,21 @@ MINIMAL() {
 
     echo "azryn: Setting root password..."
     [ -x $(command -v chpasswd) ] && \
-        echo "root:$Hostname" | chpasswd
+        echo root:$Hostname | chpasswd
+
+    read -ep "azryn: Setup a standard user? [Y/N]: " SetupUser
+    if echo $SetupUser | grep -iq "^y"; then
+        read -ep "Username: " Username
+        read -ep "Password: " Password
+        useradd -m -G wheel,audio,video -s /bin/bash $Username
+        echo $Username:$Password | chpasswd
+    fi
 }
+
+
+# In this section we will install the chosen xorg-driver and packages
+# for i3wm as the desktop of choice. Some additional packages are added
+# as a convenience.
 
 DESKTOP() {
     echo "azryn: Installing Xorg drivers..."
@@ -261,6 +296,7 @@ DESKTOP() {
     echo "azryn: Installing desktop packages..."
     emerge \
         -v --quiet-build \
+        app-editors/emacs \
         app-laptop/laptop-mode-tools \
         app-portage/gentoolkit \
         app-text/aspell \
@@ -287,7 +323,6 @@ DESKTOP() {
     rc-update add laptop_mode default
 
     echo "azryn: Adding userland configuration files..."
-    [ ! -d /etc/emacs ] && mkdir -p /etc/emacs
     CfgFiles="
       /etc/Xresources
       /etc/emacs/default.el
@@ -295,41 +330,39 @@ DESKTOP() {
       /etc/i3status.conf
       /etc/xinitrc
     "
+    [ ! -d /etc/emacs ] && mkdir -p /etc/emacs
     for cfg in $CfgFiles; do
         wget -q $Source/$cfg -O $cfg
     done
 }
 
 
-### Execution ####################################
+# This is the CLI that controls what will be run. Keep in mind that the
+# BOOTSTRAP() needs to be run to completion before running the MINIMAL()
+# or DESKTOP() passes.
 
 shopt -s nocasematch
 case $1 in
-    bootstrap)
+    -b|bootstrap)
         BOOTSTRAP
         ;;
 
-    minimal)
+    -m|minimal)
         MINIMAL
         ;;
 
-    i3wm)
+    -d|desktop)
         MINIMAL
         DESKTOP
         ;;
 
     *)
         echo "AzrynOS: Linux-based derivative of Gentoo"
-        echo "  help         Shows help output"
+        echo "  -h help         Shows this output"
+        echo "  -b bootstrap    Bootstrap the stage3 tarball"
         echo ""
-        echo "Pre-install tasks:"
-        echo "  bootstrap    Bootstrap the stage3 tarball"
-        echo ""
-        echo "Installation options:"
-        echo "  minimal      Install minimal Gentoo"
-        echo "  i3wm         Install Gentoo and i3wm desktop"
-        echo ""
-        echo "Post-install tasks:"
-        echo "  cleanup      Remove junk created during install"
+        echo "Post-bootstrap:"
+        echo "  -m minimal      Perform a basic Gentoo installation"
+        echo "  -d desktop      Install a complete AzrynOS desktop"
 esac
 shopt -u nocasematch
