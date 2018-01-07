@@ -62,17 +62,12 @@ as a subjectively decent example of getting started with Gentoo.
         $ wget http://os.aswl.org/install.sh
         $ sh install.sh
         AzrynOS: Linux-based derivative of Gentoo
-          help         Shows help output
+          -h help         Shows this output
+          -b bootstrap    Bootstrap the stage3 tarball
 
-        Pre-install tasks:
-          bootstrap    Bootstrap the stage3 tarball
-
-        Installation options:
-          minimal      Install minimal Gentoo
-          i3wm         Install Gentoo and i3wm desktop
-
-        Post-install tasks:
-          cleanup      Remove junk created during install
+        Post-bootstrap:
+          -m minimal      Perform a basic Gentoo installation
+          -d desktop      Install a complete AzrynOS desktop
 
 3. Read the information at the top of `install.sh` and modify the
 variables:
@@ -85,24 +80,12 @@ variables:
 
 5. Install your desired variant:
 
-        $ sh install lxqt
-
-6. (Optional) Cleanup:
-
-        $ sh install.sh cleanup
-
+        $ sh install.sh desktop
 
 Enjoy your AzrynOS installation!
 
 
-
 ## Post-install
-
-### Adding an administrative user
-
-        $ useradd -m -g wheel -G audio,network,video -s /bin/bash username
-        $ passwd username
-
 
 ### Administering the system
 `azryn` is meant to act as a simplification script for performing
