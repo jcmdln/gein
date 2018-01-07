@@ -57,6 +57,7 @@ azryn() {
                 /etc/Xresources
                 /etc/emacs/default.el
                 /etc/i3/config
+                /etc/i3status.conf
                 /etc/sudoers
                 /etc/tmux.conf
                 /etc/vimrc
