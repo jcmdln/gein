@@ -222,7 +222,8 @@ MINIMAL() {
         sys-boot/grub:2 \
         sys-kernel/gentoo-sources \
         sys-kernel/linux-firmware \
-        sys-process/htop
+        sys-process/htop \
+        virtual/cron
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "azryn: emerging intel-microcode"
@@ -246,9 +247,10 @@ MINIMAL() {
     make -j$CPUCores && make modules_install && make install
     cd /
 
-    echo "azryn: Adding network services to OpenRC..."
+    echo "azryn: Adding services to OpenRC..."
     rc-update add dhcpcd default
     rc-update add connman default
+    rc-update add cronie default
 
     echo "azryn: Setting hostname..."
     echo "hostname=$Hostname" > /etc/conf.d/hostname
