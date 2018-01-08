@@ -90,7 +90,10 @@ BOOTSTRAP() {
     echo "  - Edited the environment variables at the top of this script."
     echo "  - Partitioned and mounted your disk(s)."
     read -ep "Proceed with installation? [Y/N]: " Proceed
-    if echo $Proceed | grep -iq "^n"; then
+    if echo $Proceed | grep -iq "^y"; then
+        echo "azryn: Proceeding with installation..."
+    else
+        echo "azryn: Exiting as requested..."
         exit
     fi
 
@@ -205,15 +208,21 @@ MINIMAL() {
     eselect locale set $TargetLocale
     env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
-    echo "azryn: Emerge/install Linux kernel and modules..."
+    echo "azryn: Emerging base packages..."
     emerge \
         -v --quiet-build \
-        sys-kernel/gentoo-sources \
-        sys-kernel/linux-firmware \
-        sys-apps/pciutils \
+        app-admin/sudo \
+        app-editors/vim \
+        app-misc/tmux \
+        dev-util/bcc \
+        dev-vcs/git \
         net-misc/connman \
         net-misc/dhcpcd \
-        sys-boot/grub:2
+        sys-apps/pciutils \
+        sys-boot/grub:2 \
+        sys-kernel/gentoo-sources \
+        sys-kernel/linux-firmware \
+        sys-process/htop
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "azryn: emerging intel-microcode"
@@ -237,7 +246,8 @@ MINIMAL() {
     make -j$CPUCores && make modules_install && make install
     cd /
 
-    echo "azryn: Add connman to OpenRC..."
+    echo "azryn: Adding network services to OpenRC..."
+    rc-update add dhcpcd default
     rc-update add connman default
 
     echo "azryn: Setting hostname..."
@@ -246,15 +256,6 @@ MINIMAL() {
     echo "azryn: Installing Grub to $PartitionBoot..."
     grub-install $PartitionBoot
     grub-mkconfig -o /boot/grub/grub.cfg
-
-    echo "azryn: Adding sudo, vim, tmux, and htop..."
-    emerge \
-        -v --quiet-build \
-        app-admin/sudo \
-        app-editors/vim \
-        app-misc/tmux \
-        dev-vcs/git \
-        sys-process/htop
 
     echo "azryn: Adding userland configurations..."
     CfgFiles="
