@@ -76,25 +76,40 @@ mode "$System" {
 ### Display ######################################
 
 ## Auto-enable/disable HDMI-1
-# exec --no-startup-id \
-# while :; do \
-#   if [ $(xrandr | grep -c 'HDMI-1 connected') == 1 ]; then \
-#     xrandr \
-#       --output DP-1 --off \
-#       --output LVDS-1 --primary --mode 1366x768 --pos 554x1080 --rotate normal \
-#       --output HDMI-1 --mode 1920x1080 --pos 0x0 --rotate normal \
-#       --output VGA-1 --off; \
-#   else \
-#     xrandr --output DP-1 --off \
-#       --output LVDS-1 --primary --mode 1366x768 --pos 0x0 --rotate normal \
-#       --output VGA-1 --off \
-#       --output HDMI-1 --off; \
-#   fi; \
-#   sleep 2; \
-# done
+exec --no-startup-id \
+while :; do \
+  if [ $(xrandr | grep -c 'HDMI-1 connected') == 1 ]; then \
+    xrandr \
+      --output DP-1 --off \
+      --output LVDS-1 --primary --mode 1366x768 --pos 554x1080 --rotate normal \
+      --output HDMI-1 --mode 1920x1080 --pos 0x0 --rotate normal \
+      --output VGA-1 --off; \
+  else \
+    xrandr --output DP-1 --off \
+      --output LVDS-1 --primary --mode 1366x768 --pos 0x0 --rotate normal \
+      --output VGA-1 --off \
+      --output HDMI-1 --off; \
+  fi; \
+  sleep 2; \
+done
 
 
 #### Keybinds ####################################
+
+## Window splitting
+bindsym $mod+h split h
+bindsym $mod+v split v
+
+## Fullscreen focused container
+bindsym $mod+f fullscreen toggle
+
+## Kill focused window
+bindsym $mod+Shift+q kill
+
+## Cycle frame layout
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
 
 ## Change focus
 bindsym $mod+j focus left
@@ -115,33 +130,6 @@ bindsym $mod+Shift+Left move left
 bindsym $mod+Shift+Down move down
 bindsym $mod+Shift+Up move up
 bindsym $mod+Shift+Right move right
-
-## Window splitting
-bindsym $mod+h split h
-bindsym $mod+v split v
-
-## Fullscreen focused container
-bindsym $mod+f fullscreen toggle
-
-## Kill focused window
-bindsym $mod+Shift+q kill
-
-## Cycle frame layout
-bindsym $mod+s layout stacking
-bindsym $mod+w layout tabbed
-bindsym $mod+e layout toggle split
-
-## Toggle floating on focused frame
-bindsym $mod+Shift+space floating toggle
-
-## Change focus between tiling / floating windows
-bindsym $mod+space focus mode_toggle
-
-## Drag floating windows with Mouse+$mod
-floating_modifier $mod
-
-## Focus the parent container
-bindsym $mod+a focus parent
 
 ## Switch to workspace
 bindsym $mod+1 workspace 1
@@ -166,6 +154,21 @@ bindsym $mod+Shift+7 move container to workspace 7
 bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
+
+## Focus the parent container
+bindsym $mod+a focus parent
+
+## Drag floating windows with Mouse+$mod
+floating_modifier $mod
+
+## Toggle floating on focused frame
+bindsym $mod+Shift+space floating toggle
+
+## Change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+## Floating rules
+for_window [window_role="pop-up"] floating enable
 
 ## Resize
 bindsym $mod+r mode "resize"
@@ -202,15 +205,15 @@ bindsym XF86AudioPause exec --no-startup-id pactl pause
 bindsym XF86AudioNext  exec --no-startup-id pactl next
 bindsym XF86AudioPrev  exec --no-startup-id pactl previous
 
-## Brightness (brightnessctl)
-bindsym XF86MonBrightnessUp   exec --no-startup-id brightnessctl set 5%+
-bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
-
 ## Audio (Alsa)
 # bindsym XF86AudioRaiseVolume exec --no-startup-id amixer set Master 5+
 # bindsym XF86AudioLowerVolume exec --no-startup-id amixer set Master 5-
 # bindsym XF86AudioMute        exec --no-startup-id amixer set Master toggle
 
+## Brightness (brightnessctl)
+# bindsym XF86MonBrightnessUp   exec --no-startup-id brightnessctl set 5%+
+# bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
 ## Brightness (xbacklight)
-# bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 15
-# bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 15
+bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 15
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 15
