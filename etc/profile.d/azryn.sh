@@ -2,9 +2,12 @@
 
 azryn() {
     if [ $EUID -ne 0 ]; then
+        echo "azryn: Current user has insufficient permissions"
         if [ -e $(command -v sudo) ]; then
+            echo "azryn: Found 'sudo' to proceed"
             SU="sudo"
         else
+            echo "azryn: Fallback to 'su' to proceed"
             SU="su -c"
         fi
     fi
@@ -24,7 +27,8 @@ azryn() {
             ;;
 
         update|-u)
-            $SU emerge -avuDU --keep-going --with-bdeps=y --quiet-build @world && \
+            $SU emerge -avuDU \
+                --keep-going --with-bdeps=y --quiet-build @world && \
             $SU revdep-rebuild -q
             ;;
 
