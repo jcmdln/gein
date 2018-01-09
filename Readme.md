@@ -1,44 +1,65 @@
-#### NOTE: This project has been deprecated by https://github.com/Azryn/AzrynOS
+`gein` is a Linux-based derivative of Gentoo. The primary goal is to
+automate the installation of my own ideal Gentoo setup though the
+current design allows for others to fork or submit PR's should it be
+desired. Keep in mind that this project is NOT a replacement for reading
+the Gentoo Handbook.
+
+You may review the source code at https://github.com/jcmdln/gein for
+more information if needed.
 
 
-```
-$ sh gein
-gein - GEntoo INstaller
+## FAQ
+- "How much about Gentoo will I need to know to use gein?"
+  - I would suggest reading the Gentoo Handbook and every file in this
+    project before proceeding.
+- "I keep getting boot failures after installing in a VirtualBox VM?"
+  - Remove the virtual disk drive from the boot order and restart.
+- "The display is lagging when using LXQT on my Nvidia GPU?"
+  - Run `eselect opengl set nvidia` as root.
 
-  -h help       Suggests to read the script and Gentoo documentation
 
-Required first step:
-  -b bootstrap  Bootstrap the stage3 tarball
+## Warnings
+- Read the warnings at the top of `install.sh` FIRST!
+- You must manually partition and mount your disks.
+  - Consult your Gentoo Handbook.
+- gein does not install a web browser or office suite.
 
-Post-bootstrap options:
-  -m minimal    Only install required gentoo packages
-  -d desktop    Install required and desktop packages
-  -l laptop     Install required, desktop, and laptop packages
-```
 
-0) Read the entire script, I may do things you won't like or want.
-1) Download and boot the Gentoo livecd of your choosing.
-2) Configure and mount your partitions.
-3) Download `gein` into `/mnt/gentoo`.
-```
-cd /mnt/gentoo
-wget https://raw.githubusercontent.com/jcmdln/gein/master/gein
-```
+## Getting Started
+1. Download a Gentoo LiveCD from https://www.gentoo.org/downloads/
 
-4) Bootstrap the Gentoo installation.
-```
-# Once this command completes, you should be in your new chroot
-sh /mnt/gentoo/gein -b
-```
+2. Write the ISO to a USB drive:
 
-5) From the new chroot, install your desired version
-```
-# Minimal install (only bare minimum packages)
-sh gein -m
+        $ dd if=~/Downloads/<iso> of=/dev/<usb>
 
-# Desktop install (a full desktop with baked-in configs)
-sh gein -d
+3. Boot from the USB drive on the target device
 
-# Laptop install (add power monitoring, wifi)
-sh gein -l
-```
+
+## Installing
+1. Partition and mount your disk(s)
+2. Download and run `install.sh`:
+
+        $ wget http://gein.jcmdln.net/install.sh
+        $ sh install.sh
+        gein: Linux-based derivative of Gentoo
+          -h help         Shows this output
+          -b bootstrap    Bootstrap the stage3 tarball
+
+        Post-bootstrap:
+          -m minimal      Perform a basic Gentoo installation
+          -d desktop      Install a complete gein desktop
+
+3. Read the information at the top of `install.sh` and modify the
+variables as needed:
+
+        $ vi install.sh
+
+4. Start the bootstrap:
+
+        $ sh install.sh bootstrap
+
+5. Install your desired variant:
+
+        $ sh install.sh desktop
+
+Enjoy your Gentoo installation!

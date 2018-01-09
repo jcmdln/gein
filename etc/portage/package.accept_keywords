@@ -1,0 +1,19 @@
+# /etc/portage/package.accept_keywords
+
+## General
+dev-util/bcc
+lxqt-base/*
+media-gfx/lximage-qt
+net-libs/libnsl
+sys-devel/gcc
+sys-kernel/gentoo-sources
+sys-kernel/linux-headers
+sys-libs/glibc
+x11-misc/obconf-qt
+x11-misc/pcmanfm-qt
+
+## amd64
+app-emulation/wine-mono ~amd64
+app-emulation/wine-staging ~amd64
+net-misc/cmst ~amd64
+sys-firmware/nvidia-firmware ~amd64

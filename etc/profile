@@ -1,52 +1,13 @@
 # /etc/profile
 
-## Set user file-creation mask
 umask 022
 
-## Load 'env-update' settings
-if [ -e /etc/profile.env ]; then
-    source /etc/profile.env
-fi
+[ -e /etc/profile.env ] && source /etc/profile.env
 
-## Load scripts in '/etc/profile.d/'
-for sh in /etc/profile.d/*.sh ; do
-    [ -r "$sh" ] && source "$sh"
+for sh in /etc/profile.d/*.sh; do
+    [ -r "$sh" ] && . "$sh"
 done
 
-## Give root a separate PATH including sbin
-if [ "${EUID-}" = "0" ] || [ "${USER-}" = "root" ]; then
-    PATH="${ROOTPATH}:/usr/share/bcc/tools/"
-    MANPATH="${MANPATH}:/usr/share/bcc/man/man8"
-fi
+[ -e $HOME/.profile ] && source $HOME/.profile
 
-## Exports
-export ARCHFLAGS="-arch x86_64"
-export EDITOR='vi'
-export HISTTIMEFORMAT="(%m/%d/%y) %T "
-export MANPATH
-export PAGER="${PAGER:-/usr/bin/less}"
-export PATH
-export PROMPT_COMMAND="history -a"
-export SSH_KEY_PATH="${HOME}/.ssh/rsa_id"
-export TERM="xterm-256color"
-export ZSH="${HOME}/.oh-my-zsh"
-export ZSH_THEME="gentoo"
-
-## Bash settings
-if [ -n "${BASH_VERSION-}" ]; then
-    [ -f /etc/bash/bashrc ] && source /etc/bash/bashrc
-    export PS1="[\u@\h \w]\$ "
-fi
-
-## Zsh settings
-if [ -n "${ZSH_VERSION-}" ]; then
-    [ -f /etc/zsh/zprofile ] && source /etc/zsh/zprofile
-    [ ! -e ${ZSH} ] && \
-      rawGH="https://raw.githubusercontent.com/robbyrussell/oh-my-zsh" && \
-      curl -fsSL $rawGH/master/tools/install.sh | sh
-    export PS1="[%n@%m %1d]$ "
-fi
-
-## Cleanup
-unset ROOTPATH
 unset sh
