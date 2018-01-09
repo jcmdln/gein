@@ -1,4 +1,4 @@
-`gein` is a Linux-based derivative of Gentoo. The primary goal is to
+`gein` is a script which installs Gentoo Linux. The primary goal is to
 automate the installation of my own ideal Gentoo setup though the
 current design allows for others to fork or submit PR's should it be
 desired. Keep in mind that this project is NOT a replacement for reading
