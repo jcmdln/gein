@@ -44,7 +44,7 @@ kde-plasma/systemsettings gtk
 lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage powermanagement sddm
 lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
-media-fonts/noto cjk
+media-fonts/noto -cjk
 media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sndfile valgrind
 media-gfx/feh curl exif cinerma xinerama
 media-gfx/gimp smp
