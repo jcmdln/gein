@@ -13,43 +13,46 @@ gein() {
     fi
 
     case $1 in
-        sync|-s)
-            $SU emerge -v --sync
-            ;;
-
-        install|-i)
+        -i|install)
+            $SU emerge -q --sync
             $SU emerge -av --quiet-build ${@:2}
             ;;
 
-        remove|-r)
-            $SU emerge -avc --quiet-build ${@:2} && \
+        -r|remove)
+            $SU emerge -q --sync
+            $SU emerge -avc --quiet-build ${@:2}
             $SU revdep-rebuild -q
             ;;
 
-        update|-u)
-            $SU emerge -avuDU \
-                --keep-going --with-bdeps=y --quiet-build @world && \
-            $SU revdep-rebuild -q
-            ;;
-
-        upgrade|-U)
-            $SU emerge -avuDN --quiet-build @system && \
-            $SU revdep-rebuild -q
-            ;;
-
-        clean|-c)
-            $SU emerge -avuDN --quiet-build @world && \
-            $SU eclean --deep distfiles && \
-            $SU revdep-rebuild -q
-            ;;
-
-        purge|-p)
+        -p|purge)
+            $SU emerge -q --sync
             $SU gein -r $(qlist -CI ${@:2})
             $SU revdep-rebuild -q
             ;;
 
-        reconfig|-R)
-            Source="https://raw.githubusercontent.com/Gein/GeinOS/master"
+        -c|clean)
+            $SU emerge -avuDN --quiet-build @world
+            $SU eclean --deep distfiles
+            $SU revdep-rebuild -q
+            ;;
+
+        -u|update)
+            $SU emerge -q --sync
+            $SU emerge -avuDU \
+                --keep-going --with-bdeps=y --quiet-build @world
+            $SU eclean --deep distfiles
+            $SU revdep-rebuild -q
+            ;;
+
+        -U|upgrade)
+            $SU emerge -q --sync
+            $SU emerge -avuDN --quiet-build @system
+            $SU eclean --deep distfiles
+            $SU revdep-rebuild -q
+            ;;
+
+        -c|configs)
+            Source="https://raw.githubusercontent.com/jcmdln/gein/master"
             Files="
                 /etc/portage/repos.conf/gentoo.conf
                 /etc/portage/make.conf
@@ -91,14 +94,13 @@ gein() {
 
         *)
             echo "gein: Available options:"
-            echo "  -c, clean      Remove unneeded packages"
             echo "  -i, install    Install a package"
-            echo "  -p, purge      Remove unneeded packages"
             echo "  -r, remove     Safely remove a package"
-            echo "  -s, sync       Sync portage"
+            echo "  -p, purge      Remove unneeded packages"
+            echo "  -c, clean      Remove unneeded packages"
             echo "  -u, update     Update @world without rebuild"
             echo "  -U, upgrade    Update @system and @world with rebuild"
-            echo "  -C config      Get latest configuration files"
+            echo "  -c, config     Get latest configuration files"
             ;;
     esac
 }
