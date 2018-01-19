@@ -332,6 +332,7 @@ DESKTOP() {
     done
 }
 
+
 # This section is for completing tasks after the installation is
 # complete. The user will have a complete system already installed and
 # may skip these steps if desired.
@@ -344,6 +345,7 @@ POSTINSTALL() {
         echo $Username:$Password | chpasswd
     fi
 }
+
 
 # This is the CLI that controls what will be run. Keep in mind that the
 # BOOTSTRAP() needs to be run to completion before running the MINIMAL()
