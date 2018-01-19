@@ -241,6 +241,9 @@ MINIMAL() {
             make defconfig
         fi
         make menuconfig
+    else
+	echo "gein: $AutoKernel value is invalid. Exiting..."
+	exit
     fi
 
     echo "gein: Compiling Linux kernel, modules, and initramfs..."
