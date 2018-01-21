@@ -4,12 +4,10 @@
 dev-util/bcc
 lxqt-base/*
 media-gfx/lximage-qt
-net-libs/libnsl
 sys-devel/binutils
 sys-devel/gcc
 sys-kernel/gentoo-sources
 sys-kernel/linux-headers
-sys-libs/glibc
 x11-misc/obconf-qt
 x11-misc/pcmanfm-qt
 
