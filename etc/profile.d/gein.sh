@@ -13,19 +13,20 @@ gein() {
     fi
 
     case $1 in
-        -i|install)
+        -s|sync)
             $SU emerge -q --sync
+            ;;
+
+        -i|install)
             $SU emerge -av --quiet-build ${@:2}
             ;;
 
         -r|remove)
-            $SU emerge -q --sync
             $SU emerge -avc --quiet-build ${@:2}
             $SU revdep-rebuild -q
             ;;
 
         -p|purge)
-            $SU emerge -q --sync
             $SU gein -r $(qlist -CI ${@:2})
             $SU revdep-rebuild -q
             ;;
@@ -37,7 +38,6 @@ gein() {
             ;;
 
         -u|update)
-            $SU emerge -q --sync
             $SU emerge -avuDU \
                 --keep-going --with-bdeps=y --quiet-build @world
             $SU eclean --deep distfiles
@@ -45,7 +45,6 @@ gein() {
             ;;
 
         -U|upgrade)
-            $SU emerge -q --sync
             $SU emerge -avuDN --quiet-build @system
             $SU eclean --deep distfiles
             $SU revdep-rebuild -q
@@ -94,6 +93,7 @@ gein() {
 
         *)
             echo "gein: Available options:"
+            echo "  -s, sync       Sync Portage"
             echo "  -i, install    Install a package"
             echo "  -r, remove     Safely remove a package"
             echo "  -p, purge      Remove unneeded packages"
