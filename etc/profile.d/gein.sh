@@ -50,7 +50,7 @@ gein() {
             $SU revdep-rebuild -q
             ;;
 
-        -c|configs)
+        -C|config)
             Source="https://raw.githubusercontent.com/jcmdln/gein/master"
             Files="
                 /etc/portage/repos.conf/gentoo.conf
@@ -100,7 +100,7 @@ gein() {
             echo "  -c, clean      Remove unneeded packages"
             echo "  -u, update     Update @world without rebuild"
             echo "  -U, upgrade    Update @system and @world with rebuild"
-            echo "  -c, config     Get latest configuration files"
+            echo "  -C, config     Get latest configuration files"
             ;;
     esac
 }
