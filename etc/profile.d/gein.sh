@@ -2,12 +2,9 @@
 
 gein() {
     if [ $EUID -ne 0 ]; then
-        echo "gein: Current user has insufficient permissions"
         if [ -e $(command -v sudo) ]; then
-            echo "gein: Found 'sudo' to proceed"
             SU="sudo"
         else
-            echo "gein: Fallback to 'su' to proceed"
             SU="su -c"
         fi
     fi
