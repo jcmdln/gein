@@ -232,18 +232,22 @@ MINIMAL() {
 
     echo "gein: Configuring Linux kernel..."
     cd /usr/src/linux
-    if [ "$AutoKernel" = "true" ] && [ -z $KernelConfig ]; then
-        make defconfig
-    elif [ "$AutoKernel" = "false" ]; then
-        if [ ! -z $KernelConfig ]; then
-            wget -q $KernelConfig -O /usr/src/linux/.config
+    if [ "$AutoKernel" = "true" ]; then
+        if [ -z $KernelConfig ]; then
+	    make defconfig
         else
-            make defconfig
+	    wget -q $KernelConfig -O /usr/src/linux/.config
         fi
-        make menuconfig
+    elif [ "$AutoKernel" = "false" ]; then
+        if [ -z $KernelConfig ]; then
+	    make defconfig
+	    make menuconfig
+        else
+	    wget -q $KernelConfig -O /usr/src/linux/.config
+	    make menuconfig
+        fi
     else
-	echo "gein: $AutoKernel value is invalid. Exiting..."
-	exit
+        echo "gein: Error: AutoKernel isn't true or false. Exiting..."
     fi
 
     echo "gein: Compiling Linux kernel, modules, and initramfs..."
