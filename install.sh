@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 #
 # Copyright (C) 2017 Johnathan C Maudlin <jcmdln@gmail.com>
+#
 # This software is licensed under the Azryn Software Labs Public License
 # of version 1.1.0 or later. You should have received a copy of the
 # Azryn Software Labs Public License along with this program. If not,
@@ -12,13 +13,6 @@
 # set though some example values have been provided. If you are unsure
 # how to proceed, consult the Gentoo Handbook.
 #
-
-
-# This script heavily relies on downloading configuration files from the
-# main repository. If you have cloned gein and made your own changes
-# to the configuration files, you may change the $Source URL as needed.
-
-Source="https://raw.githubusercontent.com/jcmdln/gein/master"
 
 
 # This section defines the basic variables needed in order to complete
@@ -41,6 +35,14 @@ TimeZone="America/New_York"
 #VideoCards="virtualbox vmware"
 
 
+# This script relies on downloading primary configuration files from both
+# the main repository and auxiliary configuration files from a separate
+# repository.
+
+Source="https://raw.githubusercontent.com/jcmdln/gein/master"
+Config="https://raw.githubusercontent.com/jcmdln/cfg/master"
+
+
 # By default, $AutoKernel is set to 'true' which means that the kernel
 # will be built using 'make defconfig'. If you want to run
 # 'make defconfig; make menuconfig' then set $AutoKernel to 'false'. You
@@ -56,7 +58,8 @@ AutoKernel="true"
 # interacting with Portage though this section simply creates easily
 # referenced variables that may be called later in this script. At the
 # time of writing, the Gentoo stage3 no longer includes 'git' which
-# prevents using the GitHub mirror. Please leave this commented for now.
+# prevents using the GitHub mirror. Please leave this commented unless
+# you plan to emerge git ahead of time.
 
 MakeConf="$Source/etc/portage/make.conf"
 PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
@@ -72,12 +75,12 @@ PackageUse="$Source/etc/portage/package.use"
 # errors when executing MINIMAL() or DESKTOP() due to cURL missing
 # after completing the BOOTSTRAP().
 
-S3Arch="amd64"
-S3Src="http://distfiles.gentoo.org/releases/$S3Arch/autobuilds"
-S3Txt="curl -s $S3Src/latest-stage3-$S3Arch.txt"
-[ -x "$(command -v curl)" ] && \
-    S3Cur="$($S3Txt|tail -1|awk '{print $1}')" && \
-    Stage3="$S3Src/$S3Cur"
+S3_Arch="amd64"
+S3_Source="http://distfiles.gentoo.org/releases/$S3_Arch/autobuilds"
+S3_Release="curl -s $S3_Source/latest-stage3-$S3_Arch.txt"
+[ -x "$(command -v curl)" ] &&
+    S3_Current="$($S3_Release|tail -1|awk '{print $1}')" &&
+    Stage3="$S3_Source/$S3_Current"
 
 
 # Bootstrapping a Gentoo stage3 archive is a fairly quick process though
@@ -103,8 +106,8 @@ BOOTSTRAP() {
     fi
 
     echo "gein: Ensuring we are in /mnt/gentoo..."
-    [ ! -e /mnt/gentoo/$(basename $0) ] && \
-        cp $0 /mnt/gentoo/ && \
+    [ ! -e /mnt/gentoo/$(basename $0) ] &&
+        cp $0 /mnt/gentoo/ &&
         cd /mnt/gentoo
 
     echo "gein: Setting system time via ntpd..."
@@ -126,9 +129,9 @@ BOOTSTRAP() {
         if [ -e /mnt/gentoo/$target ]; then
             case $target in
                 proc) mount -t proc /proc /mnt/gentoo/proc;;
-                sys ) mount --rbind /sys  /mnt/gentoo/sys
+                sys ) mount --rbind /sys  /mnt/gentoo/sys &&
                       mount --make-rslave /mnt/gentoo/sys;;
-                dev ) mount --rbind /dev  /mnt/gentoo/dev
+                dev ) mount --rbind /dev  /mnt/gentoo/dev &&
                       mount --make-rslave /mnt/gentoo/dev;;
                 *) echo "gein: $target: Improper hardware device"
                    exit
@@ -151,26 +154,38 @@ BOOTSTRAP() {
     cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "gein: Downloading portage configuration files..."
-    [ ! -z $MakeConf ] && \
+    [ ! -z $MakeConf ] &&
         wget -q $MakeConf \
              -O /mnt/gentoo/etc/portage/make.conf
-    [ ! -z $PackageAcceptKeywords ] && \
+    [ ! -z $PackageAcceptKeywords ] &&
         wget -q $PackageAcceptKeywords \
              -O /mnt/gentoo/etc/portage/package.accept_keywords
-    [ ! -z $PackageEnv ] && \
+    [ ! -z $PackageEnv ] &&
         wget -q $PackageEnv \
              -O /mnt/gentoo/etc/portage/package.env
-    [ ! -z $PackageLicense ] && \
+    [ ! -z $PackageLicense ] &&
         wget -q $PackageLicense \
              -O /mnt/gentoo/etc/portage/package.license
-    [ ! -z $PackageUse ] && \
-        rm -rf /mnt/gentoo/etc/portage/package.use && \
+    [ ! -z $PackageUse ] &&
+        rm -rf /mnt/gentoo/etc/portage/package.use &&
         wget -q $PackageUse \
              -O /mnt/gentoo/etc/portage/package.use
-    [ ! -z $ReposConf ] && \
-        mkdir -p /mnt/gentoo/etc/portage/repos.conf && \
+    [ ! -z $ReposConf ] &&
+        mkdir -p /mnt/gentoo/etc/portage/repos.conf &&
         wget -q $ReposConf \
              -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+
+    echo "gein: Downloading gein Portage package sets..."
+    PortageSets="
+        /etc/portage/sets/gein-base
+        /etc/portage/sets/gein-i3wm
+        /etc/portage/sets/gein-laptop
+        /etc/portage/sets/gein-lxqt
+        /etc/portage/sets/gein-steam
+    "
+    for Set in $PortageSets; do
+	wget -q $Source/$Set -0 $Set
+    done
 
     echo "gein: Chroot'ing into /mnt/gentoo..."
     chroot /mnt/gentoo /usr/bin/env -i \
@@ -208,22 +223,8 @@ MINIMAL() {
     eselect locale set $TargetLocale
     env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
-    echo "gein: Emerging base packages..."
-    emerge \
-        -v --quiet-build \
-        app-admin/sudo \
-        app-editors/vim \
-        app-misc/tmux \
-        dev-util/bcc \
-        dev-vcs/git \
-        net-misc/connman \
-        net-misc/dhcpcd \
-        sys-apps/pciutils \
-        sys-boot/grub:2 \
-        sys-kernel/gentoo-sources \
-        sys-kernel/linux-firmware \
-        sys-process/htop \
-        virtual/cron
+    echo "gein: Emerging minimal packages..."
+    emerge -v --quiet-build @gein-base
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "gein: emerging intel-microcode"
@@ -256,7 +257,6 @@ MINIMAL() {
 
     echo "gein: Adding services to OpenRC..."
     rc-update add dhcpcd default
-    rc-update add connman default
     rc-update add cronie default
 
     echo "gein: Setting hostname..."
@@ -268,14 +268,11 @@ MINIMAL() {
 
     echo "gein: Adding userland configurations..."
     CfgFiles="
-      /etc/bash/bashrc
-      /etc/profile
-      /etc/profile.d/alias.sh
-      /etc/profile.d/gein.sh
-      /etc/profile.d/env.sh
-      /etc/sudoers
-      /etc/tmux.conf
-      /etc/vimrc
+        /etc/bash/bashrc
+        /etc/profile
+        /etc/profile.d/alias.sh
+        /etc/profile.d/gein.sh
+        /etc/profile.d/env.sh
     "
     for cfg in $CfgFiles; do
         wget -q $Source/$cfg -O $cfg
@@ -297,58 +294,41 @@ DESKTOP() {
     env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
 
     echo "gein: Installing desktop packages..."
-    emerge \
-        -v --quiet-build \
-        app-editors/emacs \
-        app-laptop/laptop-mode-tools \
-        app-portage/gentoolkit \
-        app-text/aspell \
-        media-fonts/noto \
-        media-gfx/scrot \
-        media-libs/alsa-lib \
-        media-sound/alsa-utils \
-        media-sound/pavucontrol \
-        media-video/mpv \
-        net-misc/youtube-dl \
-        sys-apps/mlocate \
-        x11-apps/xbacklight \
-        x11-apps/xset \
-        x11-apps/xsetroot \
-        x11-misc/arandr \
-        x11-misc/dmenu \
-        x11-misc/i3lock \
-        x11-misc/i3status \
-        x11-misc/xclip \
-        x11-terms/gnome-terminal \
-        x11-wm/i3
+    emerge -v --quiet-build @gein-base $DesktopChoice
 
-    echo "gein: Add laptop_mode to OpenRC..."
+    if [ ! -z $DesktopConfig ]; then
+	echo "gein: Adding configuration files..."
+    fi
+}
+
+LAPTOP() {
+    echo "gein: Installing laptop packages..."
+    emerge -v --quiet-build @gein-laptop
+
+    echo "azryn: Add laptop_mode to OpenRC..."
     rc-update add laptop_mode default
-
-    echo "gein: Adding userland configuration files..."
-    CfgFiles="
-      /etc/Xresources
-      /etc/emacs/default.el
-      /etc/i3/config
-      /etc/i3status.conf
-      /etc/xinitrc
-    "
-    [ ! -d /etc/emacs ] && mkdir -p /etc/emacs
-    for cfg in $CfgFiles; do
-        wget -q $Source/$cfg -O $cfg
-    done
 }
 
 
 # This section is for completing tasks after the installation is
 # complete. The user will have a complete system already installed and
 # may skip these steps if desired.
+
 POSTINSTALL() {
+    echo "gein: Creating 'power' group"
+    groupadd power
+    # poweroff reboot shutdown
+
+    read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
+    if echo $SetupUser | grep -iq "^y"; then
+        emerge -v --quiet-build @gein-laptop
+    fi
+
     read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
     if echo $SetupUser | grep -iq "^y"; then
         read -ep "Username: " Username
         read -ep "Password: " Password
-        useradd -m -G wheel,audio,video -s /bin/bash $Username
+        useradd -m -G wheel,audio,video,power -s /bin/bash $Username
         echo $Username:$Password | chpasswd
     fi
 }
@@ -370,18 +350,49 @@ case $1 in
         ;;
 
     -d|desktop)
-        MINIMAL
-        DESKTOP
-        POSTINSTALL
+	case $2 in
+	    i3)
+		DesktopChoice="@gein-i3wm"
+		DesktopConfig="
+                    /etc/i3/config
+                    /etc/xinitrc
+                "
+		MINIMAL && DESKTOP && POSTINSTALL
+		;;
+
+	    lxqt)
+		DesktopChoice="@gein-lxqt"
+		MINIMAL && DESKTOP
+
+		echo "azryn: Set SDDM as the display manager"
+		sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
+		    /etc/conf.d/xdm
+		sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
+		    /usr/share/xsessions/lxqt.desktop
+		rc-update add xdm default
+		rc-update add dbus default
+
+	        POSTINSTALL
+		;;
+
+	    *)
+		echo "gein: $2 not an available desktop"
+		echo ""
+		echo "Available desktops:"
+		echo "  i3               A complete i3wm desktop"
+		echo "  lxqt             A complete LXQT desktop"
+	esac
         ;;
 
     *)
         echo "gein: Linux-based derivative of Gentoo"
-        echo "  -h help         Shows this output"
-        echo "  -b bootstrap    Bootstrap the stage3 tarball"
+        echo "  -h, help         Shows this output"
+        echo "  -b, bootstrap    Bootstrap the stage3 tarball"
         echo ""
         echo "Post-bootstrap:"
-        echo "  -m minimal      Perform a basic Gentoo installation"
-        echo "  -d desktop      Install a complete gein desktop"
+        echo "  -m, minimal      Perform a basic Gentoo installation"
+        echo "  -d, desktop      Install a gein desktop"
+	echo "    i3             A complete i3wm desktop"
+	echo "    lxqt           A complete LXQT desktop"
 esac
 shopt -u nocasematch
