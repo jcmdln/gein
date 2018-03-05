@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 #
-# Copyright (C) 2017 Johnathan C Maudlin <jcmdln@gmail.com>
+# Copyright (C) 2017, 2018
+# * Johnathan C Maudlin <jcmdln@gmail.com>
 #
 # This software is licensed under the Azryn Software Labs Public License
 # of version 1.1.0 or later. You should have received a copy of the
@@ -8,10 +9,10 @@
 # please see https://apl.azryn.org/ for a copy.
 #
 # This script does automate the install but you will need to adjust the
-# variables in 'Setup' to suit your desired install. The installation
-# process will not proceed unless 'PartitionBoot' and 'VideoCards' are
-# set though some example values have been provided. If you are unsure
-# how to proceed, consult the Gentoo Handbook.
+# variables in the following section to suit your desired install. The
+# installation process will not proceed unless 'PartitionBoot' and
+# 'VideoCards' are set though some example values have been provided. If
+# you are unsure how to proceed, consult the Gentoo Handbook.
 #
 
 
@@ -35,12 +36,11 @@ TimeZone="America/New_York"
 #VideoCards="virtualbox vmware"
 
 
-# This script relies on downloading primary configuration files from both
-# the main repository and auxiliary configuration files from a separate
-# repository.
+# This script relies on downloading configuration files from the main
+# repository. Here we will create the $Source variable to simplify
+# future sections.
 
 Source="https://raw.githubusercontent.com/jcmdln/gein/master"
-Config="https://raw.githubusercontent.com/jcmdln/cfg/master"
 
 
 # By default, $AutoKernel is set to 'true' which means that the kernel
@@ -175,7 +175,8 @@ BOOTSTRAP() {
         wget -q $ReposConf \
              -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 
-    echo "gein: Downloading gein Portage package sets..."
+    echo "gein: Downloading gein-specific Portage package sets..."
+    mkdir -p /mnt/etc/portage/sets
     PortageSets="
         /etc/portage/sets/gein-base
         /etc/portage/sets/gein-i3wm
@@ -184,12 +185,12 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-steam
     "
     for Set in $PortageSets; do
-	wget -q $Source/$Set -0 $Set
+	wget -q $Source/$Set -0 /mnt/$Set
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..."
     chroot /mnt/gentoo /usr/bin/env -i \
-           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w]$" \
+           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w] $ " \
            PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin" \
            /bin/bash --login
 }
@@ -271,8 +272,11 @@ MINIMAL() {
         /etc/bash/bashrc
         /etc/profile
         /etc/profile.d/alias.sh
+        /etc/profile.d/defaults.sh
         /etc/profile.d/gein.sh
-        /etc/profile.d/env.sh
+        /etc/profile.d/golang.sh
+        /etc/profile.d/kernel.sh
+        /etc/profile.d/racket.sh
     "
     for cfg in $CfgFiles; do
         wget -q $Source/$cfg -O $cfg
@@ -291,13 +295,16 @@ MINIMAL() {
 DESKTOP() {
     echo "gein: Installing Xorg drivers..."
     emerge -v --quiet-build x11-base/xorg-drivers
-    env-update && source /etc/profile && export PS1="[chroot \u@\h \w]$"
+    env-update && source /etc/profile && export PS1="[chroot \u@\h \w] $ "
 
     echo "gein: Installing desktop packages..."
     emerge -v --quiet-build @gein-base $DesktopChoice
 
     if [ ! -z $DesktopConfig ]; then
 	echo "gein: Adding configuration files..."
+	for cfg in $DesktopConfig; do
+            wget -q $Source/$cfg -O $cfg
+	done
     fi
 }
 
@@ -354,8 +361,10 @@ case $1 in
 	    i3)
 		DesktopChoice="@gein-i3wm"
 		DesktopConfig="
-                    /etc/i3/config
+                    /etc/i3status.conf
                     /etc/xinitrc
+                    /etc/Xresources
+                    /etc/i3/config
                 "
 		MINIMAL && DESKTOP && POSTINSTALL
 		;;
