@@ -47,28 +47,6 @@ gein() {
             $SU revdep-rebuild -q
             ;;
 
-        -C|config)
-            Source="https://raw.githubusercontent.com/jcmdln/gein/master"
-            Files="
-                /etc/portage/repos.conf/gentoo.conf
-                /etc/portage/make.conf
-                /etc/portage/package.accept_keywords
-                /etc/portage/package.env
-                /etc/portage/package.license
-                /etc/portage/package.use
-                /etc/profile
-                /etc/profile.d/alias.sh
-                /etc/profile.d/gein.sh
-                /etc/profile.d/environment.sh
-                /etc/Xresources
-                /etc/emacs/default.el
-                /etc/i3/config
-                /etc/sudoers
-                /etc/tmux.conf
-                /etc/vimrc
-                /etc/xinitrc
-            "
-
             echo "gein: WARNING: This will overwrite the following scripts:"
             for cfg in $Files; do echo $cfg; done
             read -ep "Proceed with replacing configurations? [Y/N]: " Proceed
@@ -97,7 +75,6 @@ gein() {
             echo "  -c, clean      Remove unneeded packages"
             echo "  -u, update     Update @world without rebuild"
             echo "  -U, upgrade    Update @system and @world with rebuild"
-            echo "  -C, config     Get latest configuration files"
             ;;
     esac
 }
