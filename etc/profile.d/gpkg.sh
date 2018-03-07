@@ -1,4 +1,4 @@
-# /etc/profile.d/gein.sh
+# /etc/profile.d/gpkg.sh
 
 gein() {
     if [ $EUID -ne 0 ]; then
@@ -47,27 +47,8 @@ gein() {
             $SU revdep-rebuild -q
             ;;
 
-            echo "gein: WARNING: This will overwrite the following scripts:"
-            for cfg in $Files; do echo $cfg; done
-            read -ep "Proceed with replacing configurations? [Y/N]: " Proceed
-            if echo $Proceed | grep -iq "^n"; then exit; fi
-
-            MakeOpts=`grep MAKEOPTS /etc/portage/make.conf|sed 's/.*MAKEOPTS=//'`
-            VideoCards=`grep VIDEO_CARDS /etc/portage/make.conf|sed 's/.*VIDEO_CARDS=//'`
-
-            for cfg in $Files; do
-                $SU wget -q $Source/$cfg -O $cfg
-            done
-
-            $SU sed -i "s/MAKEOPTS=.*/MAKEOPTS=$MakeOpts/g;
-                        s/VIDEO_CARDS=.*/VIDEO_CARDS=$VideoCards/g" \
-                            /etc/portage/make.conf
-
-            unset Source MakeOpts VideoCards
-            ;;
-
         *)
-            echo "gein: Available options:"
+            echo "gpkg: Available options:"
             echo "  -s, sync       Sync Portage"
             echo "  -i, install    Install a package"
             echo "  -r, remove     Safely remove a package"
