@@ -185,7 +185,7 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-steam
     "
     for Set in $PortageSets; do
-	wget -q $Source/$Set -0 /mnt/$Set
+	wget -q $Source/$Set -O /mnt/$Set
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..."
