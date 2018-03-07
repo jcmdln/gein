@@ -190,7 +190,7 @@ BOOTSTRAP() {
 
     echo "gein: Chroot'ing into /mnt/gentoo..."
     chroot /mnt/gentoo /usr/bin/env -i \
-           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \w] $ " \
+           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
            PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin" \
            PATH="$PATH:/sbin:/bin:/opt/bin" \
            MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
@@ -225,7 +225,7 @@ MINIMAL() {
     locale-gen && locale -a && eselect locale list
     read -ep "Target locale: " TargetLocale
     eselect locale set $TargetLocale
-    env-update && source /etc/profile && export PS1="[chroot \u@\h \w] $ "
+    env-update && source /etc/profile && export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Emerging minimal packages..."
     emerge -v --quiet-build @gein-base
@@ -298,7 +298,7 @@ MINIMAL() {
 DESKTOP() {
     echo "gein: Installing Xorg drivers..."
     emerge -v --quiet-build x11-base/xorg-drivers
-    env-update && source /etc/profile && export PS1="[chroot \u@\h \w] $ "
+    env-update && source /etc/profile && export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Installing desktop packages..."
     emerge -v --quiet-build @gein-base $DesktopChoice
