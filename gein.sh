@@ -93,29 +93,29 @@ BOOTSTRAP() {
     echo "  - Edited the environment variables at the top of this script."
     echo "  - Partitioned and mounted your disk(s)."
     read -ep "Proceed with installation? [Y/N]: " Proceed
-    if echo $Proceed | grep -iq "^y"; then
+    if echo "$Proceed" | grep -iq "^y"; then
         echo "gein: Proceeding with installation..."
     else
         echo "gein: Exiting as requested..."
         exit
     fi
 
-    if [ -z $VideoCards ] || [ -z $PartitionBoot ]; then
+    if [ -z "$VideoCards" ] || [ -z "$PartitionBoot" ]; then
         echo "gein: You didn't read $0 and adjust the variables! Exiting..."
         exit
     fi
 
     echo "gein: Ensuring we are in /mnt/gentoo..."
-    [ ! -e /mnt/gentoo/$(basename $0) ] &&
-        cp $0 /mnt/gentoo/ &&
+    [ ! -e /mnt/gentoo/$(basename "$0") ] &&
+        cp "$0" /mnt/gentoo/ &&
         cd /mnt/gentoo
 
     echo "gein: Setting system time via ntpd..."
     [ -x "$(command -v ntpd)" ] && ntpd -q -g
 
     echo "gein: Downloading and extracting Stage3 tarball..."
-    if [ ! -z $Stage3 ]; then
-        wget -q $Stage3
+    if [ ! -z "$Stage3" ]; then
+        wget -q "$Stage3"
         tar -xpf stage3-* --xattrs --numeric-owner
         rm -rf stage3-*
     else
@@ -125,9 +125,9 @@ BOOTSTRAP() {
 
     echo "gein: Mounting hardware devices..."
     HW="proc sys dev"
-    for target in $HW; do
-        if [ -e /mnt/gentoo/$target ]; then
-            case $target in
+    for target in "$HW"; do
+        if [ -e /mnt/gentoo/"$target" ]; then
+            case "$target" in
                 proc) mount -t proc /proc /mnt/gentoo/proc;;
                 sys ) mount --rbind /sys  /mnt/gentoo/sys &&
                             mount --make-rslave /mnt/gentoo/sys;;
@@ -144,9 +144,9 @@ BOOTSTRAP() {
 
     echo "gein: Setting up swapfile..."
     SwapFile="/mnt/gentoo/swapfile"
-    if [ ! -e $SwapFile ]; then
-        fallocate -l $SwapSize $SwapFile && chmod 0600 $SwapFile
-        mkswap $SwapFile && swapon $SwapFile
+    if [ ! -e "$SwapFile" ]; then
+        fallocate -l "$SwapSize" "$SwapFile" && chmod 0600 "$SwapFile"
+        mkswap "$SwapFile" && swapon "$SwapFile"
         echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
@@ -154,25 +154,25 @@ BOOTSTRAP() {
     cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "gein: Downloading Portage configuration files..."
-    [ ! -z $MakeConf ] &&
-        wget -q $MakeConf \
+    [ ! -z "$MakeConf" ] &&
+        wget -q "$MakeConf" \
              -O /mnt/gentoo/etc/portage/make.conf
-    [ ! -z $PackageAcceptKeywords ] &&
-        wget -q $PackageAcceptKeywords \
+    [ ! -z "$PackageAcceptKeywords" ] &&
+        wget -q "$PackageAcceptKeywords" \
              -O /mnt/gentoo/etc/portage/package.accept_keywords
-    [ ! -z $PackageEnv ] &&
-        wget -q $PackageEnv \
+    [ ! -z "$PackageEnv" ] &&
+        wget -q "$PackageEnv" \
              -O /mnt/gentoo/etc/portage/package.env
-    [ ! -z $PackageLicense ] &&
-        wget -q $PackageLicense \
+    [ ! -z "$PackageLicense" ] &&
+        wget -q "$PackageLicense" \
              -O /mnt/gentoo/etc/portage/package.license
-    [ ! -z $PackageUse ] &&
+    [ ! -z "$PackageUse" ] &&
         rm -rf /mnt/gentoo/etc/portage/package.use &&
-        wget -q $PackageUse \
+        wget -q "$PackageUse" \
              -O /mnt/gentoo/etc/portage/package.use
-    [ ! -z $ReposConf ] &&
+    [ ! -z "$ReposConf" ] &&
         mkdir -p /mnt/gentoo/etc/portage/repos.conf &&
-        wget -q $ReposConf \
+        wget -q "$ReposConf" \
              -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 
     echo "gein: Downloading gein Portage package sets..."
@@ -184,8 +184,8 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-lxqt
         /etc/portage/sets/gein-steam
     "
-    for Set in $PortageSets; do
-        wget -q $Source/$Set -O /mnt/gentoo/$Set
+    for Set in "$PortageSets"; do
+        wget -q "$Source"/"$Set" -O /mnt/gentoo/"$Set"
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..."
@@ -212,19 +212,19 @@ MINIMAL() {
     eselect profile list
     echo "gein: Hint: choose the latest 'default/linux/amd64/xx.x'"
     read -ep "Which profile?: " TargetProfile
-    [ -z $TargetProfile ] && TargetProfile="1"
-    eselect profile set $TargetProfile
+    [ -z "$TargetProfile" ] && TargetProfile="1"
+    eselect profile set "$TargetProfile"
     emerge -vuDN --quiet-build @world
 
     echo "gein: Setting timezone..."
-    echo $TimeZone > /etc/timezone
+    echo "$TimeZone" > /etc/timezone
     emerge -v --quiet-build --config sys-libs/timezone-data
 
     echo "gein: Setting locale..."
-    echo $Locale > /etc/locale.gen
+    echo "$Locale" > /etc/locale.gen
     locale-gen && locale -a && eselect locale list
     read -ep "Target locale: " TargetLocale
-    eselect locale set $TargetLocale
+    eselect locale set "$TargetLocale"
     env-update && source /etc/profile && export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Emerging minimal packages..."
@@ -238,17 +238,17 @@ MINIMAL() {
     echo "gein: Configuring Linux kernel..."
     cd /usr/src/linux
     if [ "$AutoKernel" = "true" ]; then
-        if [ -z $KernelConfig ]; then
+        if [ -z "$KernelConfig" ]; then
             make defconfig
         else
-            wget -q $KernelConfig -O /usr/src/linux/.config
+            wget -q "$KernelConfig" -O /usr/src/linux/.config
         fi
     elif [ "$AutoKernel" = "false" ]; then
-        if [ -z $KernelConfig ]; then
+        if [ -z "$KernelConfig" ]; then
             make defconfig
             make menuconfig
         else
-            wget -q $KernelConfig -O /usr/src/linux/.config
+            wget -q "$KernelConfig" -O /usr/src/linux/.config
             make menuconfig
         fi
     else
@@ -256,7 +256,7 @@ MINIMAL() {
     fi
 
     echo "gein: Compiling Linux kernel, modules, and initramfs..."
-    make -j$CPUCores && make modules_install && make install
+    make -j"$CPUCores" && make modules_install && make install
     cd /
 
     echo "gein: Adding services to OpenRC..."
@@ -267,7 +267,7 @@ MINIMAL() {
     echo "hostname=$Hostname" > /etc/conf.d/hostname
 
     echo "gein: Installing Grub to $PartitionBoot..."
-    grub-install $PartitionBoot
+    grub-install "$PartitionBoot"
     grub-mkconfig -o /boot/grub/grub.cfg
 
     echo "gein: Adding userland configurations..."
@@ -281,13 +281,13 @@ MINIMAL() {
         /etc/profile.d/kernel.sh
         /etc/profile.d/racket.sh
     "
-    for cfg in $CfgFiles; do
-        wget -q $Source/$cfg -O $cfg
+    for cfg in "$CfgFiles"; do
+        wget -q "$Source"/"$cfg" -O "$cfg"
     done
 
     echo "gein: Setting root password..."
     [ -x $(command -v chpasswd) ] && \
-        echo root:$Hostname | chpasswd
+        echo root:"$Hostname" | chpasswd
 }
 
 
@@ -301,12 +301,12 @@ DESKTOP() {
     env-update && source /etc/profile && export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Installing desktop packages..."
-    emerge -v --quiet-build @gein-base $DesktopChoice
+    emerge -v --quiet-build @gein-base "$DesktopChoice"
 
-    if [ ! -z $DesktopConfig ]; then
+    if [ ! -z "$DesktopConfig" ]; then
         echo "gein: Adding configuration files..."
-        for cfg in $DesktopConfig; do
-            wget -q $Source/$cfg -O $cfg
+        for cfg in "$DesktopConfig"; do
+            wget -q "$Source"/"$cfg" -O "$cfg"
         done
     fi
 }
@@ -330,16 +330,16 @@ POSTINSTALL() {
     #   poweroff reboot shutdown
 
     read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
-    if echo $SetupUser | grep -iq "^y"; then
+    if echo "$SetupUser" | grep -iq "^y"; then
         emerge -v --quiet-build @gein-laptop
     fi
 
     read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
-    if echo $SetupUser | grep -iq "^y"; then
+    if echo "$SetupUser" | grep -iq "^y"; then
         read -ep "Username: " Username
         read -ep "Password: " Password
-        useradd -m -G wheel,audio,video,power -s /bin/bash $Username
-        echo $Username:$Password | chpasswd
+        useradd -m -G wheel,audio,video,power -s /bin/bash "$Username"
+        echo "$Username":"$Password" | chpasswd
     fi
 
     echo "gein: Installation complete."
