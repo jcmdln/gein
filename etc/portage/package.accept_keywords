@@ -1,6 +1,7 @@
 # /etc/portage/package.accept_keywords
 
 ## General
+dev-lang/go
 dev-util/bcc
 lxqt-base/*
 media-gfx/lximage-qt
