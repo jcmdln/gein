@@ -185,7 +185,7 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-steam
     "
     for Set in $PortageSets; do
-	wget -q $Source/$Set -O /mnt/$Set
+	wget -q $Source/$Set -O /mnt/gentoo/$Set
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..."
@@ -376,7 +376,7 @@ case $1 in
 		echo "azryn: Set SDDM as the display manager"
 		sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
 		    /etc/conf.d/xdm
-		sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
+		sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
 		    /usr/share/xsessions/lxqt.desktop
 		rc-update add xdm default
 		rc-update add dbus default
