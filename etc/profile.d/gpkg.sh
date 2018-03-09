@@ -1,6 +1,6 @@
 # /etc/profile.d/gpkg.sh
 
-gein() {
+gpkg() {
     if [ $EUID -ne 0 ]; then
         if [ -e $(command -v sudo) ]; then
             SU="sudo"
