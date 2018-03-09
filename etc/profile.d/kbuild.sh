@@ -1,14 +1,23 @@
 # /etc/profile.d/kbuild.sh
 
 kbuild() {
-    KMake="make -s -j$(grep -c ^processor /proc/cpuinfo)"
-    cd /usr/src/linux
+    if [ $EUID -ne 0 ]; then
+        if [ -e $(command -v sudo) ]; then
+            SU="sudo"
+        else
+            SU="su -c"
+        fi
+    fi
 
-    make menuconfig &&
-	$KMake         && $KMake modules &&
-	$KMake install && $KMake modules install &&
-	grub-mkconfig -o /boot/grub/grub.cfg &&
-	emerge -av --quiet-build @module-rebuild
+    KMake="make -s -j$(grep -c ^processor /proc/cpuinfo)"
+    cd /usr/src/linux &&
+        $SU make menuconfig &&
+        $SU $KMake         &&
+        $SU $KMake modules &&
+        $SU $KMake install &&
+        $SU $KMake modules install &&
+        $SU grub-mkconfig -o /boot/grub/grub.cfg &&
+        $SU emerge -av --quiet-build @module-rebuild
 
     unset KMake
 }
