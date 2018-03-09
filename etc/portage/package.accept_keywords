@@ -1,6 +1,7 @@
 # /etc/portage/package.accept_keywords
 
 ## General
+app-editors/emacs
 dev-lang/go
 dev-util/bcc
 lxqt-base/*
