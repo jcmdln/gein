@@ -39,8 +39,8 @@ more information if needed.
 1. Partition and mount your disk(s)
 2. Download and run `install.sh`:
 
-        $ wget http://gein.jcmdln.net/install.sh
-        $ sh install.sh
+        $ wget http://gein.jcmdln.net/gein.sh
+        $ sh gein
         gein: Linux-based derivative of Gentoo
           -h help         Shows this output
           -b bootstrap    Bootstrap the stage3 tarball
