@@ -19,7 +19,7 @@ more information if needed.
 
 
 ## Warnings
-- Read the warnings at the top of `install.sh` FIRST!
+- Read the warnings at the top of `gein.sh` FIRST!
 - You must manually partition and mount your disks.
   - Consult your Gentoo Handbook.
 - gein does not install a web browser or office suite.
@@ -37,7 +37,7 @@ more information if needed.
 
 ## Installing
 1. Partition and mount your disk(s)
-2. Download and run `install.sh`:
+2. Download and run `gein.sh`:
 
         $ wget http://gein.jcmdln.net/gein.sh
         $ sh gein
