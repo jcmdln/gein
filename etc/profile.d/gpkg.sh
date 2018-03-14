@@ -21,17 +21,17 @@ gpkg() {
             ;;
 
         -r|remove)
-            $SU emerge -avc --quiet-build ${@:2}
+            $SU emerge -avc --quiet-build ${@:2} &&
             $SU revdep-rebuild -q
             ;;
 
         -p|purge)
-            $SU gpkg -r $(qlist -CI ${@:2})
+            $SU gpkg -r $(qlist -CI ${@:2}) &&
             $SU revdep-rebuild -q
             ;;
 
         -c|clean)
-            $SU eclean --deep distfiles
+            $SU eclean --deep distfiles &&
             $SU revdep-rebuild -q
             ;;
 
@@ -39,12 +39,12 @@ gpkg() {
             case $2 in
                 -w|world)
                     $SU emerge -avuDU --keep-going --with-bdeps=y \
-                        --quiet-build @world
+                        --quiet-build @world &&
                     $SU revdep-rebuild -q
                     ;;
 
                 -s|system)
-                    $SU emerge -avuDN --quiet-build @system
+                    $SU emerge -avuDN --quiet-build @system &&
                     $SU revdep-rebuild -q
                     ;;
 
