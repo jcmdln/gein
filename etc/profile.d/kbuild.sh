@@ -10,14 +10,23 @@ kbuild() {
     fi
 
     KMake="make -s -j$(grep -c ^processor /proc/cpuinfo)"
-    cd /usr/src/linux &&
+
+    eselect kernel list
+    TargetProfile=""
+    while [ -z "$TargetProfile" ]; do
+	read -ep "Which profile?: " TargetProfile
+    done
+
+    if [ -n "$TargetProfile" ]; then
+	$SU eselect profile set "$TargetProfile" &&
+	cd /usr/src/linux &&
         $SU make menuconfig &&
-        $SU $KMake         &&
-        $SU $KMake modules &&
-        $SU $KMake install &&
-        $SU $KMake modules install &&
+        $SU $KMake         && $SU $KMake modules &&
+        $SU $KMake install && $SU $KMake modules install &&
         $SU grub-mkconfig -o /boot/grub/grub.cfg &&
         $SU emerge -av --quiet-build @module-rebuild
+    fi
 
+    make clean
     unset KMake
 }
