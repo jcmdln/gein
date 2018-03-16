@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#/bin/env sh
 #
 # Copyright (C) 2017, 2018
 # * Johnathan C Maudlin <jcmdln@gmail.com>
@@ -34,6 +34,15 @@ TimeZone="America/New_York"
 #VideoCards="amdgpu radeonsi"
 #VideoCards="nouveau nvidia"
 #VideoCards="virtualbox vmware"
+
+
+# This section defines some command aliases that will be used later on,
+# and is primarily used as a mechanism to inhibit or control output in a
+# way that can be easily updated if needed.
+
+Emerge="emerge -v --quiet-build"
+Make="make -s -j$CPUCores"
+Wget="wget -q"
 
 
 # This script relies on downloading configuration files from the main
@@ -92,16 +101,18 @@ BOOTSTRAP() {
     echo "Please ensure that you have performed the following: "
     echo "  - Edited the environment variables at the top of this script."
     echo "  - Partitioned and mounted your disk(s)."
+
     read -ep "Proceed with installation? [Y/N]: " Proceed
     if echo "$Proceed" | grep -iq "^y"; then
         echo "gein: Proceeding with installation..."
     else
-        echo "gein: Exiting as requested..."
+        echo "gein: Exiting..."
         exit
     fi
 
     if [ -z "$VideoCards" ] || [ -z "$PartitionBoot" ]; then
-        echo "gein: You didn't read $0 and adjust the variables! Exiting..."
+        echo "gein: You didn't read $0 and adjust the variables!"
+	echo "gein: Exiting..."
         exit
     fi
 
@@ -111,13 +122,14 @@ BOOTSTRAP() {
         cd /mnt/gentoo
 
     echo "gein: Setting system time via ntpd..."
-    [ -x "$(command -v ntpd)" ] && ntpd -q -g
+    [ -x "$(command -v ntpd)" ] &&
+	ntpd -q -g
 
     echo "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$Stage3" ]; then
-        wget -q "$Stage3"
-        tar -xpf stage3-* --xattrs --numeric-owner
-        rm -rf stage3-*
+        $Wget "$Stage3" &&
+            tar -xpf stage3-* --xattrs --numeric-owner &&
+            rm -rf stage3-*
     else
         echo "gein: 'S3Tgt' is not set! Is cURL missing? Exiting..."
         exit
@@ -128,11 +140,20 @@ BOOTSTRAP() {
     for target in "$HW"; do
         if [ -e /mnt/gentoo/"$target" ]; then
             case "$target" in
-                proc) mount -t proc /proc /mnt/gentoo/proc;;
-                sys ) mount --rbind /sys  /mnt/gentoo/sys &&
-                            mount --make-rslave /mnt/gentoo/sys;;
-                dev ) mount --rbind /dev  /mnt/gentoo/dev &&
-                            mount --make-rslave /mnt/gentoo/dev;;
+                proc)
+		    mount -t proc /proc /mnt/gentoo/proc
+		    ;;
+
+                sys )
+		    mount --rbind /sys  /mnt/gentoo/sys &&
+			mount --make-rslave /mnt/gentoo/sys
+		    ;;
+
+                dev )
+		    mount --rbind /dev  /mnt/gentoo/dev &&
+			mount --make-rslave /mnt/gentoo/dev
+		    ;;
+
                 *) echo "gein: $target: Improper hardware device"
                    exit
             esac
@@ -142,38 +163,40 @@ BOOTSTRAP() {
         fi
     done
 
-    echo "gein: Setting up swapfile..."
     SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e "$SwapFile" ]; then
-        fallocate -l "$SwapSize" "$SwapFile" && chmod 0600 "$SwapFile"
-        mkswap "$SwapFile" && swapon "$SwapFile"
-        echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
+	echo "gein: Setting up swapfile..." &&
+            fallocate -l "$SwapSize" "$SwapFile" &&
+            chmod 0600 "$SwapFile" &&
+            mkswap "$SwapFile" &&
+	    swapon "$SwapFile" &&
+            echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
-    echo "gein: Copying '/etc/resolv.conf'..."
-    cp -L /etc/resolv.conf /mnt/gentoo/etc/
+    echo "gein: Copying '/etc/resolv.conf'..." &&
+	cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "gein: Downloading Portage configuration files..."
     [ -n "$MakeConf" ] &&
-        wget -q "$MakeConf" \
-             -O /mnt/gentoo/etc/portage/make.conf
+        $Wget "$MakeConf" \
+              -O /mnt/gentoo/etc/portage/make.conf
     [ -n "$PackageAcceptKeywords" ] &&
-        wget -q "$PackageAcceptKeywords" \
-             -O /mnt/gentoo/etc/portage/package.accept_keywords
+        $Wget "$PackageAcceptKeywords" \
+              -O /mnt/gentoo/etc/portage/package.accept_keywords
     [ -n "$PackageEnv" ] &&
-        wget -q "$PackageEnv" \
-             -O /mnt/gentoo/etc/portage/package.env
+        $Wget "$PackageEnv" \
+              -O /mnt/gentoo/etc/portage/package.env
     [ -n "$PackageLicense" ] &&
-        wget -q "$PackageLicense" \
-             -O /mnt/gentoo/etc/portage/package.license
+        $Wget "$PackageLicense" \
+              -O /mnt/gentoo/etc/portage/package.license
     [ -n "$PackageUse" ] &&
         rm -rf /mnt/gentoo/etc/portage/package.use &&
-        wget -q "$PackageUse" \
-             -O /mnt/gentoo/etc/portage/package.use
+        $Wget "$PackageUse" \
+              -O /mnt/gentoo/etc/portage/package.use
     [ -n "$ReposConf" ] &&
         mkdir -p /mnt/gentoo/etc/portage/repos.conf &&
-        wget -q "$ReposConf" \
-             -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+        $Wget "$ReposConf" \
+              -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 
     echo "gein: Downloading gein Portage package sets..."
     mkdir -p /mnt/etc/portage/sets
@@ -185,17 +208,17 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-steam
     "
     for Set in "$PortageSets"; do
-        wget -q "$Source"/"$Set" -O /mnt/gentoo/"$Set"
+        $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set"
     done
 
-    echo "gein: Chroot'ing into /mnt/gentoo..."
-    chroot /mnt/gentoo /usr/bin/env -i \
-           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
-           PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin" \
-           PATH="$PATH:/sbin:/bin:/opt/bin" \
-           MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
-           MANPATH="$MANPATH:/usr/local/share/man" \
-           /bin/bash --login
+    echo "gein: Chroot'ing into /mnt/gentoo..." &&
+	chroot /mnt/gentoo /usr/bin/env -i \
+               HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
+               PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin" \
+               PATH="$PATH:/sbin:/bin:/opt/bin" \
+               MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
+               MANPATH="$MANPATH:/usr/local/share/man" \
+               /bin/bash --login
 }
 
 
@@ -203,36 +226,39 @@ BOOTSTRAP() {
 # desired profile, compile the kernel, and install some basic packages.
 
 MINIMAL() {
-    echo "gein: Setting CPU cores and GPU type..."
-    sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
-        /etc/portage/make.conf
+    echo "gein: Setting CPU cores and GPU type..." &&
+	sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
+            /etc/portage/make.conf
 
-    echo "gein: Syncing Portage and selecting profile..."
-    emerge -q --sync
-    eselect profile list
-    echo "gein: Hint: choose the latest 'default/linux/amd64/xx.x'"
-    read -ep "Which profile?: " TargetProfile
-    [ -z "$TargetProfile" ] && TargetProfile="1"
-    eselect profile set "$TargetProfile"
-    emerge -vuDN --quiet-build @world
+    echo "gein: Syncing Portage and selecting profile..." &&
+	emerge -q --sync &&
+	eselect profile list &&
+	echo "gein: Hint: choose the latest 'default/linux/amd64/xx.x'" &&
+	TargetProfile="" &&
+	while [ -z "$TargetProfile" ]; do
+	    read -ep "Which profile?: " TargetProfile
+	done &&
+	eselect profile set "$TargetProfile" &&
+	$Emerge -uDN @world
 
-    echo "gein: Setting timezone..."
-    echo "$TimeZone" > /etc/timezone
-    emerge -v --quiet-build --config sys-libs/timezone-data
+    echo "gein: Setting timezone..." &&
+	echo "$TimeZone" > /etc/timezone &&
+	$Emerge --config sys-libs/timezone-data
 
-    echo "gein: Setting locale..."
-    echo "$Locale" > /etc/locale.gen
-    locale-gen && locale -a && eselect locale list
-    read -ep "Target locale: " TargetLocale
-    eselect locale set "$TargetLocale"
-    env-update && source /etc/profile && export PS1="[chroot \u@\h \W]$ "
+    echo "gein: Setting locale..." &&
+	echo "$Locale" > /etc/locale.gen &&
+	locale-gen && locale -a && eselect locale list &&
+	read -ep "Target locale: " TargetLocale &&
+	eselect locale set "$TargetLocale" &&
+	env-update && source /etc/profile &&
+	export PS1="[chroot \u@\h \W]$ "
 
-    echo "gein: Emerging minimal packages..."
-    emerge -v --quiet-build @gein-base
+    echo "gein: Emerging minimal packages..." &&
+	$Emerge @gein-base
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
-        echo "gein: emerging intel-microcode"
-        emerge -v --quiet-build intel-microcode
+        echo "gein: emerging intel-microcode" &&
+            $Emerge intel-microcode
     fi
 
     echo "gein: Configuring Linux kernel..."
@@ -241,34 +267,36 @@ MINIMAL() {
         if [ -z "$KernelConfig" ]; then
             make defconfig
         else
-            wget -q "$KernelConfig" -O /usr/src/linux/.config
+            $Wget "$KernelConfig" -O /usr/src/linux/.config
         fi
     elif [ "$AutoKernel" = "false" ]; then
         if [ -z "$KernelConfig" ]; then
-            make defconfig
-            make menuconfig
+            make defconfig &&
+		make menuconfig
         else
-            wget -q "$KernelConfig" -O /usr/src/linux/.config
-            make menuconfig
+            $Wget "$KernelConfig" -O /usr/src/linux/.config &&
+		make menuconfig
         fi
     else
         echo "gein: Error: AutoKernel isn't true or false. Exiting..."
     fi
 
-    echo "gein: Compiling Linux kernel, modules, and initramfs..."
-    make -j"$CPUCores" && make modules_install && make install
-    cd /
+    echo "gein: Compiling Linux kernel, modules, and initramfs..." &&
+	$Make && $Make modules &&
+	$Make install && $Make modules install &&
+	$Make distclean &&
+	cd /
 
-    echo "gein: Adding services to OpenRC..."
-    rc-update add dhcpcd default
-    rc-update add cronie default
+    echo "gein: Adding services to OpenRC..." &&
+	rc-update add dhcpcd default &&
+	rc-update add cronie default
 
-    echo "gein: Setting hostname..."
-    echo "hostname=$Hostname" > /etc/conf.d/hostname
+    echo "gein: Setting hostname..." &&
+	echo "hostname=$Hostname" > /etc/conf.d/hostname
 
-    echo "gein: Installing Grub to $PartitionBoot..."
-    grub-install "$PartitionBoot"
-    grub-mkconfig -o /boot/grub/grub.cfg
+    echo "gein: Installing Grub to $PartitionBoot..." &&
+	grub-install "$PartitionBoot" &&
+	grub-mkconfig -o /boot/grub/grub.cfg
 
     echo "gein: Adding userland configurations..."
     CfgFiles="
@@ -282,7 +310,7 @@ MINIMAL() {
         /etc/profile.d/racket.sh
     "
     for cfg in "$CfgFiles"; do
-        wget -q "$Source"/"$cfg" -O "$cfg"
+        $Wget "$Source"/"$cfg" -O "$cfg"
     done
 
     echo "gein: Setting root password..."
@@ -296,27 +324,28 @@ MINIMAL() {
 # as a convenience.
 
 DESKTOP() {
-    echo "gein: Installing Xorg drivers..."
-    emerge -v --quiet-build x11-base/xorg-drivers
-    env-update && source /etc/profile && export PS1="[chroot \u@\h \W]$ "
+    echo "gein: Installing Xorg drivers..." &&
+	$Emerge x11-base/xorg-drivers &&
+	env-update && source /etc/profile &&
+	export PS1="[chroot \u@\h \W]$ "
 
-    echo "gein: Installing desktop packages..."
-    emerge -v --quiet-build @gein-base "$DesktopChoice"
+    echo "gein: Installing desktop packages..." &&
+	$Emerge @gein-base "$DesktopChoice"
 
     if [ -n "$DesktopConfig" ]; then
         echo "gein: Adding configuration files..."
         for cfg in "$DesktopConfig"; do
-            wget -q "$Source"/"$cfg" -O "$cfg"
+            $Wget "$Source"/"$cfg" -O "$cfg"
         done
     fi
 }
 
 LAPTOP() {
-    echo "gein: Installing laptop packages..."
-    emerge -v --quiet-build @gein-laptop
+    echo "gein: Installing laptop packages..." &&
+	$Emerge @gein-laptop
 
-    echo "azryn: Add laptop_mode to OpenRC..."
-    rc-update add laptop_mode default
+    echo "azryn: Add laptop_mode to OpenRC..." &&
+	rc-update add laptop_mode default
 }
 
 
@@ -331,15 +360,17 @@ POSTINSTALL() {
 
     read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
-        emerge -v --quiet-build @gein-laptop
+        $Emerge @gein-laptop
     fi
 
     read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
-        read -ep "Username: " Username
-        read -ep "Password: " Password
-        useradd -m -G wheel,audio,video,power -s /bin/bash "$Username"
-        echo "$Username":"$Password" | chpasswd
+	echo "gein: Creating user account" &&
+	    read -ep "Username: " Username &&
+            read -ep "Password: " Password &&
+            useradd -m -G wheel,audio,video,power \
+		    -s /bin/bash "$Username" &&
+            echo "$Username":"$Password" | chpasswd
     fi
 
     echo "gein: Installation complete."
@@ -357,8 +388,7 @@ case $1 in
         ;;
 
     -m|minimal)
-        MINIMAL
-        POSTINSTALL
+        MINIMAL && POSTINSTALL
         ;;
 
     -d|desktop)
@@ -378,13 +408,13 @@ case $1 in
                 DesktopChoice="@gein-lxqt"
                 MINIMAL && DESKTOP
 
-                echo "azryn: Set SDDM as the display manager"
-                sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
-                    /etc/conf.d/xdm
-                sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
-                    /usr/share/xsessions/lxqt.desktop
-                rc-update add xdm default
-                rc-update add dbus default
+                echo "azryn: Set SDDM as the display manager" &&
+                    sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
+			/etc/conf.d/xdm &&
+                    sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
+			/usr/share/xsessions/lxqt.desktop &&
+                    rc-update add xdm default &&
+                    rc-update add dbus default
 
                 POSTINSTALL
                 ;;
