@@ -114,7 +114,7 @@ BOOTSTRAP() {
     [ -x "$(command -v ntpd)" ] && ntpd -q -g
 
     echo "gein: Downloading and extracting Stage3 tarball..."
-    if [ ! -z "$Stage3" ]; then
+    if [ -n "$Stage3" ]; then
         wget -q "$Stage3"
         tar -xpf stage3-* --xattrs --numeric-owner
         rm -rf stage3-*
@@ -154,23 +154,23 @@ BOOTSTRAP() {
     cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "gein: Downloading Portage configuration files..."
-    [ ! -z "$MakeConf" ] &&
+    [ -n "$MakeConf" ] &&
         wget -q "$MakeConf" \
              -O /mnt/gentoo/etc/portage/make.conf
-    [ ! -z "$PackageAcceptKeywords" ] &&
+    [ -n "$PackageAcceptKeywords" ] &&
         wget -q "$PackageAcceptKeywords" \
              -O /mnt/gentoo/etc/portage/package.accept_keywords
-    [ ! -z "$PackageEnv" ] &&
+    [ -n "$PackageEnv" ] &&
         wget -q "$PackageEnv" \
              -O /mnt/gentoo/etc/portage/package.env
-    [ ! -z "$PackageLicense" ] &&
+    [ -n "$PackageLicense" ] &&
         wget -q "$PackageLicense" \
              -O /mnt/gentoo/etc/portage/package.license
-    [ ! -z "$PackageUse" ] &&
+    [ -n "$PackageUse" ] &&
         rm -rf /mnt/gentoo/etc/portage/package.use &&
         wget -q "$PackageUse" \
              -O /mnt/gentoo/etc/portage/package.use
-    [ ! -z "$ReposConf" ] &&
+    [ -n "$ReposConf" ] &&
         mkdir -p /mnt/gentoo/etc/portage/repos.conf &&
         wget -q "$ReposConf" \
              -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
@@ -303,7 +303,7 @@ DESKTOP() {
     echo "gein: Installing desktop packages..."
     emerge -v --quiet-build @gein-base "$DesktopChoice"
 
-    if [ ! -z "$DesktopConfig" ]; then
+    if [ -n "$DesktopConfig" ]; then
         echo "gein: Adding configuration files..."
         for cfg in "$DesktopConfig"; do
             wget -q "$Source"/"$cfg" -O "$cfg"
