@@ -208,8 +208,7 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-steam
     "
     for Set in $PortageSets; do
-        $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set" || \
-	    echo "gein: Download failed. Exiting..." && exit
+        $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set"
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..." &&
