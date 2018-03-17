@@ -199,7 +199,7 @@ BOOTSTRAP() {
               -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 
     echo "gein: Downloading gein Portage package sets..."
-    mkdir -p /mnt/etc/portage/sets
+    mkdir -p /mnt/gentoo/etc/portage/sets
     PortageSets="
         /etc/portage/sets/gein-base
         /etc/portage/sets/gein-i3wm
@@ -208,7 +208,8 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-steam
     "
     for Set in $PortageSets; do
-        $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set"
+        $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set" || \
+	    echo "gein: Download failed. Exiting..." && exit
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..." &&
