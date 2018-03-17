@@ -137,7 +137,7 @@ BOOTSTRAP() {
 
     echo "gein: Mounting hardware devices..."
     HW="proc sys dev"
-    for target in "$HW"; do
+    for target in $HW; do
         if [ -e /mnt/gentoo/"$target" ]; then
             case "$target" in
                 proc)
@@ -207,7 +207,7 @@ BOOTSTRAP() {
         /etc/portage/sets/gein-lxqt
         /etc/portage/sets/gein-steam
     "
-    for Set in "$PortageSets"; do
+    for Set in $PortageSets; do
         $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set"
     done
 
@@ -247,9 +247,11 @@ MINIMAL() {
 
     echo "gein: Setting locale..." &&
 	echo "$Locale" > /etc/locale.gen &&
-	locale-gen && locale -a && eselect locale list &&
-	read -ep "Target locale: " TargetLocale &&
-	eselect locale set "$TargetLocale" &&
+	locale-gen && locale -a &&
+	LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
+	LocaleSet=$(eselect locale list | grep -i $LocaleMain| \
+			awk -F '[][]' '{print $2}') &&
+	eselect locale set $LocaleSet &&
 	env-update && source /etc/profile &&
 	export PS1="[chroot \u@\h \W]$ "
 
@@ -309,7 +311,7 @@ MINIMAL() {
         /etc/profile.d/kernel.sh
         /etc/profile.d/racket.sh
     "
-    for cfg in "$CfgFiles"; do
+    for cfg in $CfgFiles; do
         $Wget "$Source"/"$cfg" -O "$cfg"
     done
 
