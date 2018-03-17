@@ -33,9 +33,7 @@ fi
 # other shells if currently in use, and default to standard shell
 # semantics.
 
-if [ -e $BASH_VERSION ]; then
-    PS1="[\u@\h \W]\$ "
-elif [ -e $ZSH_VERSION ]; then
+if [ -n $ZSH_VERSION ]; then
     PS1="[%n@%M %d]$ "
 else
     PS1="[\u@\h \W]\$ "
@@ -57,7 +55,7 @@ MANPATH="$MANPATH:$HOME/.local/man:$HOME/.local/share/man"
 # that we defined in previous sections.
 
 export EDITOR="vi"
-#export HISTTIMEFORMAT= "(%m/%d/%y) %T "
+#export HISTTIMEFORMAT="(%m/%d/%y) %T "
 export LANG="en_US.UTF-8"
 export MANPATH
 export PAGER="$PAGER:-/usr/bin/less"
