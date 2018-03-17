@@ -249,7 +249,8 @@ MINIMAL() {
 	echo "$Locale" > /etc/locale.gen &&
 	locale-gen && locale -a &&
 	LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
-	LocaleSet=$(eselect locale list | grep -i $LocaleMain| \
+	LocaleSet=$(eselect locale list | \
+			grep -i $LocaleMain | \
 			awk -F '[][]' '{print $2}') &&
 	eselect locale set $LocaleSet &&
 	env-update && source /etc/profile &&
@@ -283,7 +284,7 @@ MINIMAL() {
         echo "gein: Error: AutoKernel isn't true or false. Exiting..."
     fi
 
-    echo "gein: Compiling Linux kernel, modules, and initramfs..." &&
+    echo "gein: Compiling Linux kernel and modules..." &&
 	$Make && $Make modules &&
 	$Make install && $Make modules install &&
 	$Make distclean &&
@@ -317,7 +318,7 @@ MINIMAL() {
 
     echo "gein: Setting root password..."
     [ -x $(command -v chpasswd) ] && \
-        echo root:"$Hostname" | chpasswd
+        echo "root:$Hostname" | chpasswd
 }
 
 
@@ -336,7 +337,7 @@ DESKTOP() {
 
     if [ -n "$DesktopConfig" ]; then
         echo "gein: Adding configuration files..."
-        for cfg in "$DesktopConfig"; do
+        for cfg in $DesktopConfig; do
             $Wget "$Source"/"$cfg" -O "$cfg"
         done
     fi
