@@ -24,33 +24,33 @@
 # record (MBR) of '/dev/sda'. You will also need to uncomment the line
 # pertaining to your GPU and modify it as needed.
 
-CPUCores=      "$(grep -c ^processor /proc/cpuinfo)"
-Hostname=      "gein"
-Locale=        "en_US.UTF-8 UTF-8"
-#PartitionBoot= "/dev/sda"
-SwapSize=      "2G"
-TimeZone=      "America/New_York"
-#VideoCards=    "i915 i965 intel"
-#VideoCards=    "amdgpu radeonsi"
-#VideoCards=    "nouveau nvidia"
-#VideoCards=    "virtualbox vmware"
+CPUCores="$(grep -c ^processor /proc/cpuinfo)"
+Hostname="gein"
+Locale="en_US.UTF-8 UTF-8"
+#PartitionBoot="/dev/sda"
+SwapSize="2G"
+TimeZone="America/New_York"
+#VideoCards="i915 i965 intel"
+#VideoCards="amdgpu radeonsi"
+#VideoCards="nouveau nvidia"
+#VideoCards="virtualbox vmware"
 
 
 # This section defines some command aliases that will be used later on,
 # and is primarily used as a mechanism to inhibit or control output in a
 # way that can be easily updated if needed.
 
-Emerge= "emerge -v --quiet-build"
-Make=   "make -s -j$CPUCores"
-Wget=   "wget -q"
+Emerge="emerge -v --quiet-build"
+Make="make -s -j$CPUCores"
+Wget="wget -q"
 
 
 # This script relies on downloading configuration files from the main
 # repository. Here we will create the $Source variable to simplify
 # future sections.
 
-Source= "https://raw.githubusercontent.com/jcmdln/gein/master"
-#Config= ""
+Source="https://raw.githubusercontent.com/jcmdln/gein/master"
+#Config=""
 
 
 # By default, $AutoKernel is set to 'true' which means that the kernel
@@ -60,8 +60,8 @@ Source= "https://raw.githubusercontent.com/jcmdln/gein/master"
 # $AutoKernel to 'false' to use a pre-built kernel config. An example
 # kernel config is provided though commented out.
 
-AutoKernel=    "true"
-#KernelConfig= "$Source/usr/src/linux/x.x.config"
+AutoKernel="true"
+#KernelConfig="$Source/usr/src/linux/x.x.config"
 
 
 # Much work has been done to simplify or in most cases fully automate
@@ -71,12 +71,12 @@ AutoKernel=    "true"
 # prevents using the GitHub mirror. Please leave this commented unless
 # you plan to emerge git ahead of time.
 
-MakeConf=              "$Source/etc/portage/make.conf"
-PackageAcceptKeywords= "$Source/etc/portage/package.accept_keywords"
-PackageEnv=            "$Source/etc/portage/package.env"
-PackageLicense=        "$Source/etc/portage/package.license"
-PackageUse=            "$Source/etc/portage/package.use"
-#ReposConf=             "$Source/etc/portage/repos.conf/gentoo.conf"
+MakeConf="$Source/etc/portage/make.conf"
+PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
+PackageEnv="$Source/etc/portage/package.env"
+PackageLicense="$Source/etc/portage/package.license"
+PackageUse="$Source/etc/portage/package.use"
+#ReposConf="$Source/etc/portage/repos.conf/gentoo.conf"
 
 
 # This section exists to automate identifying and downloading the latest
@@ -85,13 +85,13 @@ PackageUse=            "$Source/etc/portage/package.use"
 # errors when executing MINIMAL() or DESKTOP() due to cURL missing
 # after completing the BOOTSTRAP().
 
-S3_Arch=    "amd64"
-S3_Source=  "http://distfiles.gentoo.org/releases/$S3_Arch/autobuilds"
-S3_Release= "curl -s $S3_Source/latest-stage3-$S3_Arch.txt"
+S3_Arch="amd64"
+S3_Source="http://distfiles.gentoo.org/releases/$S3_Arch/autobuilds"
+S3_Release="curl -s $S3_Source/latest-stage3-$S3_Arch.txt"
 
 [ -x "$(command -v curl)" ] &&
-    S3_Current= "$($S3_Release|tail -1|awk '{print $1}')" &&
-    Stage3=     "$S3_Source/$S3_Current"
+    S3_Current="$($S3_Release|tail -1|awk '{print $1}')" &&
+    Stage3="$S3_Source/$S3_Current"
 
 
 # Bootstrapping a Gentoo stage3 archive is a fairly quick process though
@@ -207,11 +207,11 @@ BOOTSTRAP() {
 
     echo "gein: Chroot'ing into /mnt/gentoo..." &&
         chroot /mnt/gentoo /usr/bin/env -i \
-               HOME=    "/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
-               PATH=    "/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
-               PATH=    "$PATH:/usr/bin:/sbin:/bin:/opt/bin" \
-               MANPATH= "/usr/man:/usr/share/man:/usr/local/man" \
-               MANPATH= "$MANPATH:/usr/local/share/man" \
+               HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
+               PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
+               PATH="$PATH:/usr/bin:/sbin:/bin:/opt/bin" \
+               MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
+               MANPATH="$MANPATH:/usr/local/share/man" \
                /bin/bash --login
 }
 
@@ -242,10 +242,10 @@ MINIMAL() {
     echo "gein: Setting locale..." &&
         echo "$Locale" > /etc/locale.gen &&
         locale-gen && locale -a &&
-        LocaleMain= $(echo $Locale | awk -F '[-]' '{print $1}') &&
-        LocaleSet=  $(eselect locale list | \
-                          grep -i $LocaleMain | \
-                          awk -F '[][]' '{print $2}') &&
+        LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
+        LocaleSet=$(eselect locale list | \
+                        grep -i $LocaleMain | \
+                        awk -F '[][]' '{print $2}') &&
         eselect locale set $LocaleSet &&
         env-update && source /etc/profile &&
         export PS1="[chroot \u@\h \W]$ "
