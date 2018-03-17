@@ -24,32 +24,33 @@
 # record (MBR) of '/dev/sda'. You will also need to uncomment the line
 # pertaining to your GPU and modify it as needed.
 
-CPUCores="$(grep -c ^processor /proc/cpuinfo)"
-Hostname="gein"
-Locale="en_US.UTF-8 UTF-8"
-#PartitionBoot="/dev/sda"
-SwapSize="2G"
-TimeZone="America/New_York"
-#VideoCards="i915 i965 intel"
-#VideoCards="amdgpu radeonsi"
-#VideoCards="nouveau nvidia"
-#VideoCards="virtualbox vmware"
+CPUCores=      "$(grep -c ^processor /proc/cpuinfo)"
+Hostname=      "gein"
+Locale=        "en_US.UTF-8 UTF-8"
+#PartitionBoot= "/dev/sda"
+SwapSize=      "2G"
+TimeZone=      "America/New_York"
+#VideoCards=    "i915 i965 intel"
+#VideoCards=    "amdgpu radeonsi"
+#VideoCards=    "nouveau nvidia"
+#VideoCards=    "virtualbox vmware"
 
 
 # This section defines some command aliases that will be used later on,
 # and is primarily used as a mechanism to inhibit or control output in a
 # way that can be easily updated if needed.
 
-Emerge="emerge -v --quiet-build"
-Make="make -s -j$CPUCores"
-Wget="wget -q"
+Emerge= "emerge -v --quiet-build"
+Make=   "make -s -j$CPUCores"
+Wget=   "wget -q"
 
 
 # This script relies on downloading configuration files from the main
 # repository. Here we will create the $Source variable to simplify
 # future sections.
 
-Source="https://raw.githubusercontent.com/jcmdln/gein/master"
+Source= "https://raw.githubusercontent.com/jcmdln/gein/master"
+#Config= ""
 
 
 # By default, $AutoKernel is set to 'true' which means that the kernel
@@ -59,8 +60,8 @@ Source="https://raw.githubusercontent.com/jcmdln/gein/master"
 # $AutoKernel to 'false' to use a pre-built kernel config. An example
 # kernel config is provided though commented out.
 
-AutoKernel="true"
-#KernelConfig="$Source/usr/src/linux/x.x.config"
+AutoKernel=    "true"
+#KernelConfig= "$Source/usr/src/linux/x.x.config"
 
 
 # Much work has been done to simplify or in most cases fully automate
@@ -70,12 +71,12 @@ AutoKernel="true"
 # prevents using the GitHub mirror. Please leave this commented unless
 # you plan to emerge git ahead of time.
 
-MakeConf="$Source/etc/portage/make.conf"
-PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
-PackageEnv="$Source/etc/portage/package.env"
-PackageLicense="$Source/etc/portage/package.license"
-PackageUse="$Source/etc/portage/package.use"
-#ReposConf="$Source/etc/portage/repos.conf/gentoo.conf"
+MakeConf=              "$Source/etc/portage/make.conf"
+PackageAcceptKeywords= "$Source/etc/portage/package.accept_keywords"
+PackageEnv=            "$Source/etc/portage/package.env"
+PackageLicense=        "$Source/etc/portage/package.license"
+PackageUse=            "$Source/etc/portage/package.use"
+#ReposConf=             "$Source/etc/portage/repos.conf/gentoo.conf"
 
 
 # This section exists to automate identifying and downloading the latest
@@ -84,12 +85,13 @@ PackageUse="$Source/etc/portage/package.use"
 # errors when executing MINIMAL() or DESKTOP() due to cURL missing
 # after completing the BOOTSTRAP().
 
-S3_Arch="amd64"
-S3_Source="http://distfiles.gentoo.org/releases/$S3_Arch/autobuilds"
-S3_Release="curl -s $S3_Source/latest-stage3-$S3_Arch.txt"
+S3_Arch=    "amd64"
+S3_Source=  "http://distfiles.gentoo.org/releases/$S3_Arch/autobuilds"
+S3_Release= "curl -s $S3_Source/latest-stage3-$S3_Arch.txt"
+
 [ -x "$(command -v curl)" ] &&
-    S3_Current="$($S3_Release|tail -1|awk '{print $1}')" &&
-    Stage3="$S3_Source/$S3_Current"
+    S3_Current= "$($S3_Release|tail -1|awk '{print $1}')" &&
+    Stage3=     "$S3_Source/$S3_Current"
 
 
 # Bootstrapping a Gentoo stage3 archive is a fairly quick process though
@@ -112,7 +114,7 @@ BOOTSTRAP() {
 
     if [ -z "$VideoCards" ] || [ -z "$PartitionBoot" ]; then
         echo "gein: You didn't read $0 and adjust the variables!"
-	echo "gein: Exiting..."
+        echo "gein: Exiting..."
         exit
     fi
 
@@ -123,7 +125,7 @@ BOOTSTRAP() {
 
     echo "gein: Setting system time via ntpd..."
     [ -x "$(command -v ntpd)" ] &&
-	ntpd -q -g
+        ntpd -q -g
 
     echo "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$Stage3" ]; then
@@ -131,7 +133,8 @@ BOOTSTRAP() {
             tar -xpf stage3-* --xattrs --numeric-owner &&
             rm -rf stage3-*
     else
-        echo "gein: 'S3Tgt' is not set! Is cURL missing? Exiting..."
+        echo "gein: 'Stage3' variable is not set! Is cURL missing?"
+        echo "gein: Exiting..."
         exit
     fi
 
@@ -140,20 +143,11 @@ BOOTSTRAP() {
     for target in $HW; do
         if [ -e /mnt/gentoo/"$target" ]; then
             case "$target" in
-                proc)
-		    mount -t proc /proc /mnt/gentoo/proc
-		    ;;
-
-                sys )
-		    mount --rbind /sys  /mnt/gentoo/sys &&
-			mount --make-rslave /mnt/gentoo/sys
-		    ;;
-
-                dev )
-		    mount --rbind /dev  /mnt/gentoo/dev &&
-			mount --make-rslave /mnt/gentoo/dev
-		    ;;
-
+                proc) mount -t proc /proc /mnt/gentoo/proc ;;
+                sys ) mount --rbind /sys  /mnt/gentoo/sys &&
+                            mount --make-rslave /mnt/gentoo/sys ;;
+                dev ) mount --rbind /dev  /mnt/gentoo/dev &&
+                            mount --make-rslave /mnt/gentoo/dev ;;
                 *) echo "gein: $target: Improper hardware device"
                    exit
             esac
@@ -165,16 +159,16 @@ BOOTSTRAP() {
 
     SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e "$SwapFile" ]; then
-	echo "gein: Setting up swapfile..." &&
+        echo "gein: Setting up swapfile..." &&
             fallocate -l "$SwapSize" "$SwapFile" &&
             chmod 0600 "$SwapFile" &&
             mkswap "$SwapFile" &&
-	    swapon "$SwapFile" &&
+            swapon "$SwapFile" &&
             echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
     echo "gein: Copying '/etc/resolv.conf'..." &&
-	cp -L /etc/resolv.conf /mnt/gentoo/etc/
+        cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
     echo "gein: Downloading Portage configuration files..."
     [ -n "$MakeConf" ] &&
@@ -212,12 +206,12 @@ BOOTSTRAP() {
     done
 
     echo "gein: Chroot'ing into /mnt/gentoo..." &&
-	chroot /mnt/gentoo /usr/bin/env -i \
-               HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
-               PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin" \
-               PATH="$PATH:/sbin:/bin:/opt/bin" \
-               MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
-               MANPATH="$MANPATH:/usr/local/share/man" \
+        chroot /mnt/gentoo /usr/bin/env -i \
+               HOME=    "/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
+               PATH=    "/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
+               PATH=    "$PATH:/usr/bin:/sbin:/bin:/opt/bin" \
+               MANPATH= "/usr/man:/usr/share/man:/usr/local/man" \
+               MANPATH= "$MANPATH:/usr/local/share/man" \
                /bin/bash --login
 }
 
@@ -227,37 +221,37 @@ BOOTSTRAP() {
 
 MINIMAL() {
     echo "gein: Setting CPU cores and GPU type..." &&
-	sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
+        sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
             /etc/portage/make.conf
 
     echo "gein: Syncing Portage and selecting profile..." &&
-	emerge -q --sync &&
-	eselect profile list &&
-	echo "gein: Hint: choose the latest 'default/linux/amd64/xx.x'" &&
-	TargetProfile="" &&
-	while [ -z "$TargetProfile" ]; do
-	    read -ep "Which profile?: " TargetProfile
-	done &&
-	eselect profile set "$TargetProfile" &&
-	$Emerge -uDN @world
+        emerge -q --sync &&
+        eselect profile list &&
+        echo "gein: Hint: choose the latest 'default/linux/amd64/xx.x'" &&
+        TargetProfile="" &&
+        while [ -z "$TargetProfile" ]; do
+            read -ep "Which profile?: " TargetProfile
+        done &&
+        eselect profile set "$TargetProfile" &&
+        $Emerge -uDN @world
 
     echo "gein: Setting timezone..." &&
-	echo "$TimeZone" > /etc/timezone &&
-	$Emerge --config sys-libs/timezone-data
+        echo "$TimeZone" > /etc/timezone &&
+        $Emerge --config sys-libs/timezone-data
 
     echo "gein: Setting locale..." &&
-	echo "$Locale" > /etc/locale.gen &&
-	locale-gen && locale -a &&
-	LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
-	LocaleSet=$(eselect locale list | \
-			grep -i $LocaleMain | \
-			awk -F '[][]' '{print $2}') &&
-	eselect locale set $LocaleSet &&
-	env-update && source /etc/profile &&
-	export PS1="[chroot \u@\h \W]$ "
+        echo "$Locale" > /etc/locale.gen &&
+        locale-gen && locale -a &&
+        LocaleMain= $(echo $Locale | awk -F '[-]' '{print $1}') &&
+        LocaleSet=  $(eselect locale list | \
+                          grep -i $LocaleMain | \
+                          awk -F '[][]' '{print $2}') &&
+        eselect locale set $LocaleSet &&
+        env-update && source /etc/profile &&
+        export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Emerging minimal packages..." &&
-	$Emerge @gein-base
+        $Emerge @gein-base
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "gein: emerging intel-microcode" &&
@@ -275,31 +269,31 @@ MINIMAL() {
     elif [ "$AutoKernel" = "false" ]; then
         if [ -z "$KernelConfig" ]; then
             make defconfig &&
-		make menuconfig
+                make menuconfig
         else
             $Wget "$KernelConfig" -O /usr/src/linux/.config &&
-		make menuconfig
+                make menuconfig
         fi
     else
         echo "gein: Error: AutoKernel isn't true or false. Exiting..."
     fi
 
     echo "gein: Compiling Linux kernel and modules..." &&
-	$Make && $Make modules &&
-	$Make install && $Make modules install &&
-	$Make distclean &&
-	cd /
+        $Make && $Make modules &&
+        $Make install && $Make modules install &&
+        $Make distclean &&
+        cd /
 
     echo "gein: Adding services to OpenRC..." &&
-	rc-update add dhcpcd default &&
-	rc-update add cronie default
+        rc-update add dhcpcd default &&
+        rc-update add cronie default
 
     echo "gein: Setting hostname..." &&
-	echo "hostname=$Hostname" > /etc/conf.d/hostname
+        echo "hostname=$Hostname" > /etc/conf.d/hostname
 
     echo "gein: Installing Grub to $PartitionBoot..." &&
-	grub-install "$PartitionBoot" &&
-	grub-mkconfig -o /boot/grub/grub.cfg
+        grub-install "$PartitionBoot" &&
+        grub-mkconfig -o /boot/grub/grub.cfg
 
     echo "gein: Adding userland configurations..."
     CfgFiles="
@@ -328,12 +322,12 @@ MINIMAL() {
 
 DESKTOP() {
     echo "gein: Installing Xorg drivers..." &&
-	$Emerge x11-base/xorg-drivers &&
-	env-update && source /etc/profile &&
-	export PS1="[chroot \u@\h \W]$ "
+        $Emerge x11-base/xorg-drivers &&
+        env-update && source /etc/profile &&
+        export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Installing desktop packages..." &&
-	$Emerge @gein-base "$DesktopChoice"
+        $Emerge @gein-base "$DesktopChoice"
 
     if [ -n "$DesktopConfig" ]; then
         echo "gein: Adding configuration files..."
@@ -345,10 +339,10 @@ DESKTOP() {
 
 LAPTOP() {
     echo "gein: Installing laptop packages..." &&
-	$Emerge @gein-laptop
+        $Emerge @gein-laptop
 
     echo "azryn: Add laptop_mode to OpenRC..." &&
-	rc-update add laptop_mode default
+        rc-update add laptop_mode default
 }
 
 
@@ -368,10 +362,10 @@ POSTINSTALL() {
 
     read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
-	echo "gein: Creating user account" &&
-	    read -ep "Username: " Username &&
+        echo "gein: Creating user account" &&
+            read -ep "Username: " Username &&
             useradd -m -G wheel,audio,video \
-		    -s /bin/bash "$Username" &&
+                    -s /bin/bash "$Username" &&
             passwd $Username
     fi
 
@@ -412,9 +406,9 @@ case $1 in
 
                 echo "azryn: Set SDDM as the display manager" &&
                     sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
-			/etc/conf.d/xdm &&
+                        /etc/conf.d/xdm &&
                     sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
-			/usr/share/xsessions/lxqt.desktop &&
+                        /usr/share/xsessions/lxqt.desktop &&
                     rc-update add xdm default &&
                     rc-update add dbus default
 
