@@ -357,23 +357,22 @@ LAPTOP() {
 # may skip these steps if desired.
 
 POSTINSTALL() {
-    # echo "gein: Creating 'power' group"
-    # groupadd power
-    #   poweroff reboot shutdown
-
     read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
         $Emerge @gein-laptop
     fi
 
+    # echo "gein: Creating 'power' group"
+    # groupadd power
+    #   poweroff reboot shutdown
+
     read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
 	echo "gein: Creating user account" &&
 	    read -ep "Username: " Username &&
-            read -ep "Password: " Password &&
-            useradd -m -G wheel,audio,video,power \
+            useradd -m -G wheel,audio,video \
 		    -s /bin/bash "$Username" &&
-            echo "$Username":"$Password" | chpasswd
+            passwd $Username
     fi
 
     echo "gein: Installation complete."
