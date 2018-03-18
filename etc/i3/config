@@ -10,7 +10,7 @@ set $mod Mod4
 
 ## Applications
 bindsym $mod+d      exec --no-startup-id dmenu_run
-bindsym $mod+Return exec --no-startup-id st
+bindsym $mod+Return exec --no-startup-id st -f 'Noto Mono:10pt'
 
 
 ### Appearance ###################################

@@ -13,7 +13,7 @@ gpkg() {
         -S|sync)
             echo "gpkg: syncing Portage..."
             $SU emerge -q --sync &&
-            echo "gpkg: Portage sync completed"
+                echo "gpkg: Portage sync completed"
             ;;
 
         -i|install)
@@ -56,7 +56,7 @@ gpkg() {
             echo "  -S, --sync       Sync Portage"
             echo "  -i, --install    Install a package"
             echo "  -r, --remove     Safely remove a package"
-            echo "  -p, --purge      Remove unneeded packages"
+            echo "  -p, --purge      Purge package and dependencies"
             echo "  -c, --clean      Remove unneeded packages"
             echo "  -u, --update     Update packages"
             echo "    -w, --world    Update world packages"
