@@ -58,7 +58,7 @@ export EDITOR="vi"
 #export HISTTIMEFORMAT="(%m/%d/%y) %T "
 export LANG="en_US.UTF-8"
 export MANPATH
-export PAGER="$PAGER:-/usr/bin/less"
+export PAGER="/usr/bin/less"
 export PATH
 export PROMPT_COMMAND="history -a"
 export PS1
