@@ -11,11 +11,11 @@ esac
 
 if [ $INTERACTIVE = false ]; then
     if [ $UID -gt 199 ] && [ "`id -gn`" = "`id -un`" ]; then
-	# Mask current process as a daemon
-	umask 002
+        # Mask current process as a daemon
+        umask 002
     else
-	# Mask current process as an initscript
-	umask 022
+        # Mask current process as an initscript
+        umask 022
     fi
 
     return
@@ -33,7 +33,7 @@ fi
 # other shells if currently in use, and default to standard shell
 # semantics.
 
-if [ -n $ZSH_VERSION ]; then
+if [ ! -n $ZSH_VERSION ]; then
     PS1="[%n@%M %d]$ "
 else
     PS1="[\u@\h \W]\$ "
