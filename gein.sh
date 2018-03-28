@@ -197,6 +197,7 @@ BOOTSTRAP() {
               -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
 
     echo "gein: Downloading gein Portage package sets..."
+    rm -rf /mnt/gentoo/etc/portage/package.use
     mkdir -p /mnt/gentoo/etc/portage/package.use
     PackageUse="
         /etc/portage/package.use/defaults
