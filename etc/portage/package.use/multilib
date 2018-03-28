@@ -1,143 +1,10 @@
-# /etc/portage/package.use
-
-### Global #######################################
-
-## Blacklist
-*/* -avahi -bindist -cairo -doc -games -gnome-keyring -gtk -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -wayland
-
-## Whitelist
-*/* alsa bzip2 dbus deblob ffmpeg gif gnutls imagemagick jpeg jpeg2k minimal png pulseaudio svg threads tiff unicode xft xpm zlib
-
-*/* X egl gles openal opengl sdl sdl2 vaapi vdpau
-
-
-### Packages #####################################
-
-app-admin/sudo -gcrypt -openssl sendmail
-
-app-arch/zip -bzip2
-
-app-editors/emacs -athena acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
-app-editors/vim -X -minimal -perl -python -racket -tcl
-
-app-emacs/emacs-common-gentoo -games
-
-app-emulation/qemu usb
-
-app-laptop/laptop-mode-tools acpi bluetooth
-
-app-misc/screenfetch -X
-
-app-office/libreoffice collada gltf gstreamer gtk mysql pdfimport postgres
-
-app-text/ghostscript-gpl cups
-app-text/poppler -qt5
-app-text/xmlto text
-
-dev-games/ogre examples ois
-dev-games/openscenegraph truetype
-
-dev-lang/python:2.7 sqlite
-dev-libs/libpcre pcre16
-dev-libs/libxml2 icu python
-
-dev-qt/qtcore icu
-dev-qt/qtmultimedia gstreamer qml
-dev-qt/qtnetwork connman
-
-dev-util/cmake -ncurses -qt5
-dev-util/geany gtk3 vte
-
-dev-vcs/git -gpg
-
-kde-frameworks/kidletime xscreensaver
-
-kde-plasma/kde-cli-tools -X
-kde-plasma/kwin multimedia
-kde-plasma/systemsettings gtk
-
-lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage powermanagement sddm
-lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
-
-mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
-
-media-fonts/noto -cjk
-
-media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sndfile valgrind
-media-gfx/feh curl exif cinerma xinerama
-media-gfx/gimp smp
-media-gfx/imagemagick corefonts cxx djvu fontconfig fpx fttw hdri jbig lcms lzma openexr raw opencl truetype webp wmf xml
-media-gfx/inkscape latex
-media-gfx/pstoedit plotutils
-
-media-libs/harfbuzz icu
-media-libs/libpng apng
-media-libs/mesa -vaapi gles2
-media-libs/phonon -vlc gstreamer
-
-media-plugins/gst-plugins-meta ogg vorbis
-
-media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss vorbis wavpack
-
-media-video/ffmpeg aac amr blueray cdio encode gme hevc libass mp3 network ogg openh264 openssl opus rtmp theora vorbis vpx wavpack x264 x265 xvid
-media-video/mpv libass libmpv
-
-net-misc/connman bluetooth ethernet iptables openvpn wifi
-net-misc/openssh -X
-
-net-vpn/openvpn lz4 lzo plugins
-
-net-wireless/wpa_supplicant -qt5
-
-sys-apps/openrc -netifrc
-
-sys-auth/consolekit policykit
-sys-auth/pambase consolekit
-
-sys-devel/gcc cxx nls nplt
-sys-devel/llvm clang
-
-sys-libs/libcxx libcxxabi
-sys-libs/zlib minizip
-
-www-client/chromium hangouts proprietary-codecs system-ffmpeg system-icu system-libvpx
-www-client/w3m -X
-
-www-plugins/adobe-flash ppapi
-
-x11-base/xorg-drivers libinput
-x11-base/xorg-server -minimal
-
-x11-drivers/nvidia-drivers x86_video_abi multilib
-x11-drivers/xf86-video-amdgpu glamor
-x11-drivers/xf86-video-ati glamor
-x11-drivers/xf86-video-intel dri3 sna
-x11-drivers/xf86-video-virtualbox dri
-
-x11-libs/cairo xcb
-x11-libs/libfm vala
-x11-libs/libva -egl
-x11-libs/libxcb xkb
-
-x11-misc/dmenu xinerama
-x11-misc/i3status filecaps
-x11-misc/sddm consolekit
-
-x11-terms/gnome-terminal -gnome-shell -nautilus
-x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3
-
-
-### Multilib #####################################
+# /etc/portage/package.use/multilib
 
 # app-accessibility/at-spi2-atk abi_x86_32
 # app-accessibility/at-spi2-core abi_x86_32
-
 # app-arch/bzip2 abi_x86_32
-
 # app-emulation/wine-gecko abi_x86_32
-
 # dev-db/sqlite abi_x86_32
-
 # dev-libs/atk abi_x86_32
 # dev-libs/expat abi_x86_32
 # dev-libs/glib abi_x86_32
@@ -159,13 +26,9 @@ x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl
 # dev-libs/nss abi_x86_32
 # dev-libs/openssl abi_x86_32
 # dev-libs/wayland abi_x86_32
-
 # dev-util/pkgconfig abi_x86_32
-
 # gnome-base/librsvg abi_x86_32
-
 # media-gfx/graphite2 abi_x86_32
-
 # media-libs/alsa-lib abi_x86_32
 # media-libs/fontconfig abi_x86_32
 # media-libs/freeglut abi_x86_32
@@ -181,35 +44,25 @@ x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl
 # media-libs/mesa abi_x86_32
 # media-libs/openal abi_x86_32
 # media-libs/tiff abi_x86_32
-
 # media-plugins/alsa-plugins abi_x86_32
-
 # media-sound/pulseaudio abi_x86_32
-
 # net-dns/libidn2 abi_x86_32
-
 # net-libs/gnutls abi_x86_32
 # net-libs/libasyncns abi_x86_32
-
 # net-misc/curl abi_x86_32
-
 # sys-apps/attr abi_x86_32
 # sys-apps/dbus abi_x86_32
 # sys-apps/tcp-wrappers abi_x86_32
 # sys-apps/util-linux abi_x86_32
-
 # sys-devel/gettext abi_x86_32
-
 # sys-fs/eudev abi_x86_32
 # sys-fs/udev abi_x86_32
-
 # sys-libs/binutils-libs abi_x86_32
 # sys-libs/gpm abi_x86_32
 # sys-libs/libcap abi_x86_32
 # sys-libs/ncurses abi_x86_32
 # sys-libs/readline abi_x86_32
 # sys-libs/zlib abi_x86_32
-
 # virtual/glu abi_x86_32
 # virtual/jpeg abi_x86_32
 # virtual/libffi abi_x86_32
@@ -218,7 +71,6 @@ x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl
 # virtual/libudev abi_x86_32 x32
 # virtual/opengl abi_x86_32
 # virtual/pkgconfig abi_x86_32
-
 # x11-libs/cairo abi_x86_32
 # x11-libs/gdk-pixbuf abi_x86_32
 # x11-libs/libICE abi_x86_32
@@ -250,7 +102,6 @@ x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl
 # x11-libs/libxshmfence abi_x86_32
 # x11-libs/pango abi_x86_32
 # x11-libs/pixman abi_x86_32
-
 # x11-proto/compositeproto abi_x86_32
 # x11-proto/damageproto abi_x86_32
 # x11-proto/dri2proto abi_x86_32

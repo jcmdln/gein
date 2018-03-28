@@ -1,0 +1,14 @@
+# /etc/portage/package.use/default
+
+*/* -aqua -avahi -bindist -cairo -doc -games -gnome-keyring -gtk -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -wayland
+
+## Base
+*/* deblob gnutls minimal threads unicode
+
+## Minimal
+*/* bzip2 zlib
+
+## Desktop
+# */* alsa bluetooth dbus pulseaudio
+# */* ffmpeg gif imagemagick jpeg jpeg2k motif png svg tiff xpm
+# */* X egl gles openal opengl sdl sdl2 vaapi vdpau xft

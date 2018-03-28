@@ -50,7 +50,6 @@ Wget="wget -q"
 # future sections.
 
 Source="https://raw.githubusercontent.com/jcmdln/gein/master"
-#Config=""
 
 
 # By default, $AutoKernel is set to 'true' which means that the kernel
@@ -174,23 +173,39 @@ BOOTSTRAP() {
     [ -n "$MakeConf" ] &&
         $Wget "$MakeConf" \
               -O /mnt/gentoo/etc/portage/make.conf
+
     [ -n "$PackageAcceptKeywords" ] &&
         $Wget "$PackageAcceptKeywords" \
               -O /mnt/gentoo/etc/portage/package.accept_keywords
+
     [ -n "$PackageEnv" ] &&
         $Wget "$PackageEnv" \
               -O /mnt/gentoo/etc/portage/package.env
+
     [ -n "$PackageLicense" ] &&
         $Wget "$PackageLicense" \
               -O /mnt/gentoo/etc/portage/package.license
+
     [ -n "$PackageUse" ] &&
         rm -rf /mnt/gentoo/etc/portage/package.use &&
         $Wget "$PackageUse" \
               -O /mnt/gentoo/etc/portage/package.use
+
     [ -n "$ReposConf" ] &&
         mkdir -p /mnt/gentoo/etc/portage/repos.conf &&
         $Wget "$ReposConf" \
               -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
+
+    echo "gein: Downloading gein Portage package sets..."
+    mkdir -p /mnt/gentoo/etc/portage/package.use
+    PackageUse="
+        /etc/portage/package.use/defaults
+        /etc/portage/package.use/multilib
+        /etc/portage/package.use/packages
+    "
+    for File in $PackageUse; do
+        $Wget "$Source"/"$File" -O /mnt/gentoo/"$File"
+    done
 
     echo "gein: Downloading gein Portage package sets..."
     mkdir -p /mnt/gentoo/etc/portage/sets
