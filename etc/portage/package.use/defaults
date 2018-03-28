@@ -6,9 +6,9 @@
 */* deblob gnutls minimal threads unicode
 
 ## Minimal
-*/* bzip2 zlib
+*/* dbus bzip2 zlib
 
 ## Desktop
-# */* alsa bluetooth dbus pulseaudio
+# */* alsa bluetooth pulseaudio
 # */* ffmpeg gif imagemagick jpeg jpeg2k motif png svg tiff xpm
 # */* X egl gles openal opengl sdl sdl2 vaapi vdpau xft
