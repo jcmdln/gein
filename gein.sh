@@ -90,8 +90,8 @@ case "$(uname -m)" in
     amd64|x86_64) CPUArch="amd64" ;;
 
     *)
-	echo "gein: CPU arch has not been defined yet"
-	exit
+        echo "gein: CPU arch has not been defined yet"
+        exit
 esac
 
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
@@ -218,8 +218,8 @@ BOOTSTRAP() {
 
 MINIMAL() {
     echo "gein: getting configuration files from 'cfg'..." &&
-	$Wget $Config/cfg.sh &&
-	source cfg.sh &&
+        $Wget $Config/cfg.sh &&
+        source cfg.sh &&
 
     echo "gein: Setting CPU cores and GPU type..." &&
         sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
