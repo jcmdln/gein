@@ -1,4 +1,4 @@
-#/bin/env sh
+#!/usr/bin/env sh
 #
 # Copyright (C) 2017, 2018
 # * Johnathan C Maudlin <jcmdln@gmail.com>
@@ -8,43 +8,33 @@
 # Azryn Software Labs Public License along with this program. If not,
 # please see https://apl.azryn.org/ for a copy.
 #
-# This script does automate the install but you will need to adjust the
-# variables in the following section to suit your desired install. The
-# installation process will not proceed unless 'PartitionBoot' and
-# 'VideoCards' are set though some example values have been provided. If
-# you are unsure how to proceed, consult the Gentoo Handbook.
+
+
+## Grub installation path
 #
+# The 'PartitionBoot' variable *MUST* be set to proceed with the
+# installation. The example uses '/dev/sda' which will later install
+# GRUB to the MBR rather than a partition. Change this to your desired
+# '/boot' partition.
 
-
-# This section defines the basic variables needed in order to complete
-# the installation. Your root password is set to the value of $Hostname
-# for simplicity. Change your root password with 'passwd' after the
-# installation completes. Be sure to set $PartitionBoot to your intended
-# Grub destination. The default value will install to the master boot
-# record (MBR) of '/dev/sda'. You will also need to uncomment the line
-# pertaining to your GPU and modify it as needed.
-
-CPUCores="$(grep -c ^processor /proc/cpuinfo)"
-Hostname="gein"
-Locale="en_US.UTF-8 UTF-8"
 #PartitionBoot="/dev/sda"
-SwapSize="2G"
-TimeZone="America/New_York"
+
+
+## GPU/VGA drivers
+#
+# The 'VideoCards' variable *MUST* be set to proceed with the
+# installation. Several examples have been provided based on brand or
+# target, though if you have any specific needs then set this variable
+# accordingly.
+
 #VideoCards="i915 i965 intel"
 #VideoCards="amdgpu radeonsi"
 #VideoCards="nouveau nvidia"
 #VideoCards="virtualbox vmware"
 
 
-# This section defines some command aliases that will be used later on,
-# and is primarily used as a mechanism to inhibit or control output in a
-# way that can be easily updated if needed.
-
-Emerge="emerge -v --quiet-build"
-Make="make -s -j$CPUCores"
-Wget="wget -q"
-
-
+## Configuration
+#
 # This script relies on downloading configuration files from the main
 # repository. Here we will create the $Source variable to simplify
 # future sections.
@@ -52,23 +42,66 @@ Wget="wget -q"
 Source="https://raw.githubusercontent.com/jcmdln/gein/master"
 
 
-# By default, $AutoKernel is set to 'true' which means that the kernel
+## System
+#
+# The 'Hostname' is used to set the 'Hostname' and the default root
+# password so that the installation completes without user interaction.
+# I realize this is a security risk.
+#
+# Change 'Locale' to your language and encoding of choice as needed.
+#
+# A 2G 'SwapSize' seems to be plenty, even for compiling chromium or
+# firefox. Make this larger if needed.
+#
+# Change 'TimeZone' as needed. 'ls /usr/share/zoneinfo' for your region
+# and so on.
+#
+# By default, 'AutoKernel' is set to 'true' which means that the kernel
 # will be built using 'make defconfig'. If you want to run
 # 'make defconfig; make menuconfig' then set $AutoKernel to 'false'. You
 # may also supply your own URL to $KernelConfig while setting
-# $AutoKernel to 'false' to use a pre-built kernel config. An example
+# 'AutoKernel' to 'false' to use a pre-built kernel config. An example
 # kernel config is provided though commented out.
+
+Hostname="gein"
+Locale="en_US.UTF-8 UTF-8"
+SwapSize="2G"
+TimeZone="America/New_York"
 
 AutoKernel="true"
 #KernelConfig="$Source/usr/src/linux/x.x.config"
 
 
+## Portage
+#
+# Leave 'CPUCores' as-is. It will count the number of available cores
+# which will be used during this script and set in the 'make.conf'.
+# Changing this to 'Cores + 1', despite this being suggested in many
+# corners of the web, is not a good idea and will actually increase the
+# total time needed to compile.
+#
+# 'ProfileFilter' will filter out any Portage profiles that are marked
+# as 'dev' or 'exp', though if you want to see all profiles then comment
+# this out.
+#
 # Much work has been done to simplify or in most cases fully automate
 # interacting with Portage though this section simply creates easily
 # referenced variables that may be called later in this script. At the
 # time of writing, the Gentoo stage3 no longer includes 'git' which
-# prevents using the GitHub mirror. Please leave this commented unless
+# prevents using the GitHub mirror, though this is still available
+# using the 'ReposConf' variable. Please leave this commented unless
 # you plan to emerge git ahead of time.
+
+case "$(uname -m)" in
+    amd64|x86_64) CPUArch="amd64" ;;
+
+    *)
+	echo "gein: CPU arch has not been defined yet"
+	exit
+esac
+
+CPUCores="$(grep -c ^processor /proc/cpuinfo)"
+ProfileFilter="| grep -Evi 'dev|exp'"
 
 MakeConf="$Source/etc/portage/make.conf"
 PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
@@ -78,6 +111,19 @@ PackageUse="$Source/etc/portage/package.use"
 #ReposConf="$Source/etc/portage/repos.conf/gentoo.conf"
 
 
+## Command Aliases
+#
+# This section defines some command aliases that will be used later on,
+# and is primarily used as a mechanism to inhibit or control output in a
+# way that can be easily updated or changed if needed.
+
+Emerge="emerge -v --quiet-build"
+Make="make -s -j$CPUCores"
+Wget="wget -q"
+
+
+## Gentoo Stage3
+#
 # This section exists to automate identifying and downloading the latest
 # stage3 archive under the condition that cURL is present. This is not
 # an issue when using the Gentoo installation CD's though prevents
@@ -242,8 +288,8 @@ MINIMAL() {
 
     echo "gein: Syncing Portage and selecting profile..." &&
         emerge -q --sync &&
-        eselect profile list &&
-        echo "gein: Hint: choose the latest 'default/linux/amd64/xx.x'" &&
+        eselect profile list $ProfileFilter &&
+        echo "gein: choose the latest stable release" &&
         TargetProfile="" &&
         while [ -z "$TargetProfile" ]; do
             read -ep "Which profile?: " TargetProfile
