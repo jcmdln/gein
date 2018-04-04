@@ -36,10 +36,12 @@
 ## Configuration
 #
 # This script relies on downloading configuration files from the main
-# repository. Here we will create the $Source variable to simplify
-# future sections.
+# repository. Here we will create the 'Source' variable which points to
+# the main repository, and a 'Config' variable which is where all
+# custom configuration lives.
 
 Source="https://raw.githubusercontent.com/jcmdln/gein/master"
+Config="https://raw.githubusercontent.com/jcmdln/cfg/master"
 
 
 ## System
@@ -83,14 +85,6 @@ AutoKernel="true"
 # 'ProfileFilter' will filter out any Portage profiles that are marked
 # as 'dev' or 'exp', though if you want to see all profiles then comment
 # this out.
-#
-# Much work has been done to simplify or in most cases fully automate
-# interacting with Portage though this section simply creates easily
-# referenced variables that may be called later in this script. At the
-# time of writing, the Gentoo stage3 no longer includes 'git' which
-# prevents using the GitHub mirror, though this is still available
-# using the 'ReposConf' variable. Please leave this commented unless
-# you plan to emerge git ahead of time.
 
 case "$(uname -m)" in
     amd64|x86_64) CPUArch="amd64" ;;
@@ -102,13 +96,6 @@ esac
 
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
 ProfileFilter="| grep -Evi 'dev|exp'"
-
-MakeConf="$Source/etc/portage/make.conf"
-PackageAcceptKeywords="$Source/etc/portage/package.accept_keywords"
-PackageEnv="$Source/etc/portage/package.env"
-PackageLicense="$Source/etc/portage/package.license"
-PackageUse="$Source/etc/portage/package.use"
-#ReposConf="$Source/etc/portage/repos.conf/gentoo.conf"
 
 
 ## Command Aliases
@@ -130,13 +117,13 @@ Wget="wget -q"
 # errors when executing MINIMAL() or DESKTOP() due to cURL missing
 # after completing the BOOTSTRAP().
 
-S3_Arch="amd64"
-S3_Source="http://distfiles.gentoo.org/releases/$S3_Arch/autobuilds"
-S3_Release="curl -s $S3_Source/latest-stage3-$S3_Arch.txt"
+S3_Source="http://distfiles.gentoo.org/releases/$CPUArch/autobuilds"
+S3_Release="curl -s $S3_Source/latest-stage3-$CPUArch.txt"
 
-[ -x "$(command -v curl)" ] &&
-    S3_Current="$($S3_Release|tail -1|awk '{print $1}')" &&
+if [ -x "$(command -v curl)" ]; then
+    S3_Current="$($S3_Release|tail -1|awk '{print $1}')"
     Stage3="$S3_Source/$S3_Current"
+fi
 
 
 # Bootstrapping a Gentoo stage3 archive is a fairly quick process though
@@ -166,11 +153,11 @@ BOOTSTRAP() {
     echo "gein: Ensuring we are in /mnt/gentoo..."
     [ ! -e /mnt/gentoo/$(basename "$0") ] &&
         cp "$0" /mnt/gentoo/ &&
-        cd /mnt/gentoo
+        cd /mnt/gentoo &&
 
     echo "gein: Setting system time via ntpd..."
     [ -x "$(command -v ntpd)" ] &&
-        ntpd -q -g
+        ntpd -q -g &&
 
     echo "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$Stage3" ]; then
@@ -213,59 +200,7 @@ BOOTSTRAP() {
     fi
 
     echo "gein: Copying '/etc/resolv.conf'..." &&
-        cp -L /etc/resolv.conf /mnt/gentoo/etc/
-
-    echo "gein: Downloading Portage configuration files..."
-    [ -n "$MakeConf" ] &&
-        $Wget "$MakeConf" \
-              -O /mnt/gentoo/etc/portage/make.conf
-
-    [ -n "$PackageAcceptKeywords" ] &&
-        $Wget "$PackageAcceptKeywords" \
-              -O /mnt/gentoo/etc/portage/package.accept_keywords
-
-    [ -n "$PackageEnv" ] &&
-        $Wget "$PackageEnv" \
-              -O /mnt/gentoo/etc/portage/package.env
-
-    [ -n "$PackageLicense" ] &&
-        $Wget "$PackageLicense" \
-              -O /mnt/gentoo/etc/portage/package.license
-
-    [ -n "$PackageUse" ] &&
-        rm -rf /mnt/gentoo/etc/portage/package.use &&
-        $Wget "$PackageUse" \
-              -O /mnt/gentoo/etc/portage/package.use
-
-    [ -n "$ReposConf" ] &&
-        mkdir -p /mnt/gentoo/etc/portage/repos.conf &&
-        $Wget "$ReposConf" \
-              -O /mnt/gentoo/etc/portage/repos.conf/gentoo.conf
-
-    echo "gein: Downloading gein Portage package sets..."
-    rm -rf /mnt/gentoo/etc/portage/package.use
-    mkdir -p /mnt/gentoo/etc/portage/package.use
-    PackageUse="
-        /etc/portage/package.use/defaults
-        /etc/portage/package.use/multilib
-        /etc/portage/package.use/packages
-    "
-    for File in $PackageUse; do
-        $Wget "$Source"/"$File" -O /mnt/gentoo/"$File"
-    done
-
-    echo "gein: Downloading gein Portage package sets..."
-    mkdir -p /mnt/gentoo/etc/portage/sets
-    PortageSets="
-        /etc/portage/sets/gein-base
-        /etc/portage/sets/gein-i3wm
-        /etc/portage/sets/gein-laptop
-        /etc/portage/sets/gein-lxqt
-        /etc/portage/sets/gein-steam
-    "
-    for Set in $PortageSets; do
-        $Wget "$Source"/"$Set" -O /mnt/gentoo/"$Set"
-    done
+        cp -L /etc/resolv.conf /mnt/gentoo/etc/ &&
 
     echo "gein: Chroot'ing into /mnt/gentoo..." &&
         chroot /mnt/gentoo /usr/bin/env -i \
@@ -282,9 +217,13 @@ BOOTSTRAP() {
 # desired profile, compile the kernel, and install some basic packages.
 
 MINIMAL() {
+    echo "gein: getting configuration files from 'cfg'..." &&
+	$Wget $Config/cfg.sh &&
+	source cfg.sh &&
+
     echo "gein: Setting CPU cores and GPU type..." &&
         sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
-            /etc/portage/make.conf
+            /etc/portage/make.conf &&
 
     echo "gein: Syncing Portage and selecting profile..." &&
         emerge -q --sync &&
@@ -295,25 +234,24 @@ MINIMAL() {
             read -ep "Which profile?: " TargetProfile
         done &&
         eselect profile set "$TargetProfile" &&
-        $Emerge -uDN @world
+        $Emerge -uDN @world &&
 
     echo "gein: Setting timezone..." &&
         echo "$TimeZone" > /etc/timezone &&
-        $Emerge --config sys-libs/timezone-data
+        $Emerge --config sys-libs/timezone-data &&
 
     echo "gein: Setting locale..." &&
         echo "$Locale" > /etc/locale.gen &&
         locale-gen && locale -a &&
         LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
-        LocaleSet=$(eselect locale list | \
-                        grep -i $LocaleMain | \
+        LocaleSet=$(eselect locale list | grep -i $LocaleMain | \
                         awk -F '[][]' '{print $2}') &&
         eselect locale set $LocaleSet &&
         env-update && source /etc/profile &&
         export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Emerging minimal packages..." &&
-        $Emerge @gein-base
+        $Emerge @gein-base &&
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "gein: emerging intel-microcode" &&
@@ -344,33 +282,18 @@ MINIMAL() {
         $Make && $Make modules &&
         $Make install && $Make modules install &&
         $Make distclean &&
-        cd /
+        cd / &&
 
     echo "gein: Adding services to OpenRC..." &&
         rc-update add dhcpcd default &&
-        rc-update add cronie default
+        rc-update add cronie default &&
 
     echo "gein: Setting hostname..." &&
-        echo "hostname=$Hostname" > /etc/conf.d/hostname
+        echo "hostname=$Hostname" > /etc/conf.d/hostname &&
 
     echo "gein: Installing Grub to $PartitionBoot..." &&
         grub-install "$PartitionBoot" &&
-        grub-mkconfig -o /boot/grub/grub.cfg
-
-    echo "gein: Adding userland configurations..."
-    CfgFiles="
-        /etc/bash/bashrc
-        /etc/profile
-        /etc/profile.d/alias.sh
-        /etc/profile.d/defaults.sh
-        /etc/profile.d/gein.sh
-        /etc/profile.d/golang.sh
-        /etc/profile.d/kernel.sh
-        /etc/profile.d/racket.sh
-    "
-    for cfg in $CfgFiles; do
-        $Wget "$Source"/"$cfg" -O "$cfg"
-    done
+        grub-mkconfig -o /boot/grub/grub.cfg &&
 
     echo "gein: Setting root password..."
     [ -x $(command -v chpasswd) ] && \
@@ -390,13 +313,6 @@ DESKTOP() {
 
     echo "gein: Installing desktop packages..." &&
         $Emerge @gein-base "$DesktopChoice"
-
-    if [ -n "$DesktopConfig" ]; then
-        echo "gein: Adding configuration files..."
-        for cfg in $DesktopConfig; do
-            $Wget "$Source"/"$cfg" -O "$cfg"
-        done
-    fi
 }
 
 LAPTOP() {
@@ -453,18 +369,12 @@ case $1 in
         case $2 in
             i3wm)
                 DesktopChoice="@gein-i3wm"
-                DesktopConfig="
-                    /etc/i3status.conf
-                    /etc/xinitrc
-                    /etc/Xresources
-                    /etc/i3/config
-                "
                 MINIMAL && DESKTOP && POSTINSTALL
                 ;;
 
             lxqt)
                 DesktopChoice="@gein-lxqt"
-                MINIMAL && DESKTOP
+                MINIMAL && DESKTOP &&
 
                 echo "azryn: Set SDDM as the display manager" &&
                     sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
