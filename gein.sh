@@ -82,9 +82,6 @@ AutoKernel="true"
 # corners of the web, is not a good idea and will actually increase the
 # total time needed to compile.
 #
-# 'ProfileFilter' will filter out any Portage profiles that are marked
-# as 'dev' or 'exp', though if you want to see all profiles then comment
-# this out.
 
 case "$(uname -m)" in
     amd64|x86_64) CPUArch="amd64" ;;
@@ -95,7 +92,6 @@ case "$(uname -m)" in
 esac
 
 CPUCores="$(grep -c ^processor /proc/cpuinfo)"
-ProfileFilter="| grep -Evi 'dev|exp'"
 
 
 ## Command Aliases
@@ -227,7 +223,7 @@ MINIMAL() {
 
         echo "gein: Syncing Portage and selecting profile..." &&
         emerge -q --sync &&
-        eselect profile list $ProfileFilter &&
+        eselect profile list | grep -Evi "dev|exp" &&
         echo "gein: choose the latest stable release" &&
         TargetProfile="" &&
         while [ -z "$TargetProfile" ]; do
