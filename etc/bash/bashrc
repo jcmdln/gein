@@ -1,0 +1,9 @@
+# /etc/bash/bashrc
+
+[ -e /etc/profile ] && source /etc/profile
+
+shopt -s checkwinsize
+shopt -s no_empty_cmd_completion
+shopt -s histappend
+
+unset sh

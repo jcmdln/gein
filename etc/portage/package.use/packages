@@ -1,0 +1,76 @@
+# /etc/portage/package.use/packages
+
+app-admin/sudo -gcrypt -openssl sendmail
+app-arch/zip -bzip2
+app-editors/emacs -athena acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
+app-editors/vim -X -minimal -perl -python -racket -tcl
+app-emulation/qemu usb
+app-laptop/laptop-mode-tools acpi
+app-misc/screenfetch -X
+app-office/libreoffice collada gltf gstreamer gtk mysql pdfimport postgres
+app-text/ghostscript-gpl cups
+app-text/poppler -qt5
+app-text/xmlto text
+dev-games/ogre examples ois
+dev-games/openscenegraph truetype
+dev-lang/python:2.7 sqlite
+dev-libs/libpcre pcre16
+dev-libs/libxml2 icu python
+dev-qt/qtcore icu
+dev-qt/qtmultimedia gstreamer qml
+dev-qt/qtnetwork connman
+dev-util/cmake -ncurses -qt5
+dev-util/geany gtk3 vte
+dev-vcs/git -gpg
+kde-frameworks/kidletime xscreensaver
+kde-plasma/kde-cli-tools -X
+kde-plasma/kwin multimedia
+kde-plasma/systemsettings gtk
+lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage powermanagement sddm
+lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
+mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
+media-fonts/noto -cjk
+media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sndfile valgrind
+media-gfx/feh curl exif cinerma xinerama
+media-gfx/gimp smp
+media-gfx/imagemagick corefonts cxx djvu fontconfig fpx fttw hdri jbig lcms lzma openexr raw opencl truetype webp wmf xml
+media-gfx/inkscape latex
+media-gfx/pstoedit plotutils
+media-libs/harfbuzz icu
+media-libs/libpng apng
+media-libs/mesa -vaapi gles2
+media-libs/phonon -vlc gstreamer
+media-plugins/gst-plugins-meta ogg vorbis
+media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss vorbis wavpack
+media-video/ffmpeg aac amr blueray cdio encode gme hevc libass mp3 network ogg openh264 openssl opus rtmp theora vorbis vpx wavpack x264 x265 xvid
+media-video/mpv libass libmpv
+net-misc/connman bluetooth ethernet iptables openvpn wifi
+net-misc/openssh -X
+net-vpn/openvpn lz4 lzo plugins
+net-wireless/wpa_supplicant -qt5
+sys-apps/openrc -netifrc
+sys-auth/consolekit policykit
+sys-auth/pambase consolekit
+sys-devel/gcc cxx nls nplt
+sys-devel/llvm clang
+sys-libs/libcxx libcxxabi
+sys-libs/zlib minizip
+www-client/chromium hangouts proprietary-codecs system-ffmpeg system-icu system-libvpx
+www-client/w3m -X
+www-plugins/adobe-flash ppapi
+x11-base/xorg-drivers libinput
+x11-base/xorg-server -minimal
+x11-drivers/nvidia-drivers x86_video_abi multilib
+x11-drivers/xf86-video-amdgpu glamor
+x11-drivers/xf86-video-ati glamor
+x11-drivers/xf86-video-intel dri3 sna
+x11-drivers/xf86-video-virtualbox dri
+x11-libs/cairo xcb
+x11-libs/libfm vala
+x11-libs/libva -egl
+x11-libs/libxcb xkb
+x11-misc/dmenu xinerama
+x11-misc/i3status filecaps
+x11-misc/sddm consolekit
+x11-terms/gnome-terminal -gnome-shell -nautilus
+x11-terms/rxvt-unicode 256-color blink fading-colors font-styles mousewheel perl pixbuf unicode3

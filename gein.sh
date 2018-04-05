@@ -25,23 +25,80 @@
 # The 'VideoCards' variable *MUST* be set to proceed with the
 # installation. Several examples have been provided based on brand or
 # target, though if you have any specific needs then set this variable
-# accordingly.
+# accordingly. If you don't need any video support, then set
+# 'VideoCards' to false like the last example.
 
 #VideoCards="i915 i965 intel"
 #VideoCards="amdgpu radeonsi"
 #VideoCards="nouveau nvidia"
 #VideoCards="virtualbox vmware"
+#VideoCards="false"
 
 
 ## Configuration
 #
 # This script relies on downloading configuration files from the main
 # repository. Here we will create the 'Source' variable which points to
-# the main repository, and a 'Config' variable which is where all
-# custom configuration lives.
+# the main repository, and 'Config' is the list of all configuration
+# files that will be installed.
 
 Source="https://raw.githubusercontent.com/jcmdln/gein/master"
-Config="https://raw.githubusercontent.com/jcmdln/cfg/master"
+
+CONFIG() {
+    # This is a list of all config files that need to be downloaded and
+    # moved into place.
+    Configs="
+        /etc/portage/make.conf
+        /etc/portage/package.accept_keywords
+        /etc/portage/package.env
+        /etc/portage/package.license
+        /etc/portage/package.use/defaults
+        /etc/portage/package.use/multilib
+        /etc/portage/package.use/packages
+        /etc/portage/sets/gein-base
+        /etc/portage/sets/gein-i3wm
+        /etc/portage/sets/gein-laptop
+        /etc/portage/sets/gein-lxqt
+        /etc/portage/sets/gein-steam
+
+        /etc/profile
+        /etc/profile.d/alias.sh
+        /etc/profile.d/defaults.sh
+        /etc/profile.d/golang.sh
+        /etc/profile.d/gpkg.sh
+        /etc/profile.d/racket.sh
+
+        /etc/emacs/default.el
+        /etc/i3/config
+
+        /etc/Xresources
+        /etc/i3status.conf
+        /etc/tmux.conf
+        /etc/vimrc
+        /etc/xinitrc
+    "
+
+    # Files/Folders that need to be removed and re-created. Sometimes
+    # 'package.use' is a file, sometimes it's a folder. We need it to
+    # be a folder so we'll remove it outright and create what we need.
+    # Sure, this is wasting a little time, I know.
+    ConfigFolders="
+       /etc/portage/package.use
+       /etc/portage/sets
+       /etc/profile.d
+       /etc/emacs
+       /etc/i3
+    "
+
+    for Folder in $ConfigFolders; do
+        rm -rf $Folder
+        mkdir -p $Folder
+    done
+
+    for File in $Configs; do
+        wget -q "$Source/$File" -O "$File"
+    done
+}
 
 
 ## System
@@ -211,10 +268,6 @@ BOOTSTRAP() {
 # desired profile, compile the kernel, and install some basic packages.
 
 MINIMAL() {
-    echo "gein: getting configuration files from 'cfg'..." &&
-        $Wget $Config/cfg.sh &&
-        source ./cfg.sh -g
-
     echo "gein: Setting CPU cores and GPU type..." &&
         sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
             /etc/portage/make.conf
@@ -349,23 +402,30 @@ case $1 in
         ;;
 
     -m|minimal)
-        MINIMAL && POSTINSTALL
+        CONFIG
+        MINIMAL
+        POSTINSTALL
         ;;
 
     -d|desktop)
         case $2 in
             i3wm)
+                DesktopChoice="@gein-i3wm"
                 sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
 
-                DesktopChoice="@gein-i3wm"
-                MINIMAL && DESKTOP && POSTINSTALL
+                CONFIG
+                MINIMAL
+                DESKTOP
+                POSTINSTALL
                 ;;
 
             lxqt)
+                DesktopChoice="@gein-lxqt"
                 sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
 
-                DesktopChoice="@gein-lxqt"
-                MINIMAL && DESKTOP
+                CONFIG
+                MINIMAL
+                DESKTOP
 
                 echo "azryn: Set SDDM as the display manager" &&
                     sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
