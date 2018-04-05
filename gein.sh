@@ -46,9 +46,7 @@ Config="https://raw.githubusercontent.com/jcmdln/cfg/master"
 
 ## System
 #
-# The 'Hostname' is used to set the 'Hostname' and the default root
-# password so that the installation completes without user interaction.
-# I realize this is a security risk.
+# The 'Hostname' is used to set the 'Hostname'.
 #
 # Change 'Locale' to your language and encoding of choice as needed.
 #
@@ -196,9 +194,9 @@ BOOTSTRAP() {
     fi
 
     echo "gein: Copying '/etc/resolv.conf'..." &&
-        cp -L /etc/resolv.conf /mnt/gentoo/etc/ &&
+        cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
-        echo "gein: Chroot'ing into /mnt/gentoo..." &&
+    echo "gein: Chroot'ing into /mnt/gentoo..." &&
         chroot /mnt/gentoo /usr/bin/env -i \
                HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
                PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
@@ -215,28 +213,29 @@ BOOTSTRAP() {
 MINIMAL() {
     echo "gein: getting configuration files from 'cfg'..." &&
         $Wget $Config/cfg.sh &&
-        source ./cfg.sh -g &&
+        source ./cfg.sh -g
 
-        echo "gein: Setting CPU cores and GPU type..." &&
+    echo "gein: Setting CPU cores and GPU type..." &&
         sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
-            /etc/portage/make.conf &&
+            /etc/portage/make.conf
 
-        echo "gein: Syncing Portage and selecting profile..." &&
+    echo "gein: Syncing Portage and selecting profile..." &&
         emerge -q --sync &&
-        eselect profile list | grep -Evi "dev|exp" &&
-        echo "gein: choose the latest stable release" &&
+        eselect profile list | grep -Evi "dev|exp"
+
+    echo "gein: choose the latest stable release" &&
         TargetProfile="" &&
         while [ -z "$TargetProfile" ]; do
             read -ep "Which profile?: " TargetProfile
         done &&
         eselect profile set "$TargetProfile" &&
-        $Emerge -uDN @world &&
+        $Emerge -uDN @world
 
-        echo "gein: Setting timezone..." &&
+    echo "gein: Setting timezone..." &&
         echo "$TimeZone" > /etc/timezone &&
-        $Emerge --config sys-libs/timezone-data &&
+        $Emerge --config sys-libs/timezone-data
 
-        echo "gein: Setting locale..." &&
+    echo "gein: Setting locale..." &&
         echo "$Locale" > /etc/locale.gen &&
         locale-gen && locale -a &&
         LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
@@ -247,12 +246,12 @@ MINIMAL() {
         export PS1="[chroot \u@\h \W]$ "
 
     echo "gein: Emerging minimal packages..." &&
-        $Emerge @gein-base &&
+        $Emerge @gein-base
 
-        if grep -Rqi 'intel' /proc/cpuinfo; then
-            echo "gein: emerging intel-microcode" &&
-                $Emerge intel-microcode
-        fi
+    if grep -Rqi 'intel' /proc/cpuinfo; then
+        echo "gein: emerging intel-microcode" &&
+            $Emerge intel-microcode
+    fi
 
     echo "gein: Configuring Linux kernel..."
     cd /usr/src/linux
@@ -278,22 +277,18 @@ MINIMAL() {
         $Make && $Make modules &&
         $Make install && $Make modules install &&
         $Make distclean &&
-        cd / &&
+        cd /
 
-        echo "gein: Adding services to OpenRC..." &&
+    echo "gein: Adding services to OpenRC..." &&
         rc-update add dhcpcd default &&
-        rc-update add cronie default &&
+        rc-update add cronie default
 
-        echo "gein: Setting hostname..." &&
-        echo "hostname=$Hostname" > /etc/conf.d/hostname &&
+    echo "gein: Setting hostname..." &&
+        echo "hostname=$Hostname" > /etc/conf.d/hostname
 
-        echo "gein: Installing Grub to $PartitionBoot..." &&
+    echo "gein: Installing Grub to $PartitionBoot..." &&
         grub-install "$PartitionBoot" &&
-        grub-mkconfig -o /boot/grub/grub.cfg &&
-
-        echo "gein: Setting root password..."
-    [ -x $(command -v chpasswd) ] && \
-        echo "root:$Hostname" | chpasswd
+        grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 
@@ -309,14 +304,12 @@ DESKTOP() {
 
     echo "gein: Installing desktop packages..." &&
         $Emerge @gein-base "$DesktopChoice"
-}
 
-LAPTOP() {
-    echo "gein: Installing laptop packages..." &&
+    read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
+    if echo "$SetupUser" | grep -iq "^y"; then
         $Emerge @gein-laptop
-
-    echo "azryn: Add laptop_mode to OpenRC..." &&
         rc-update add laptop_mode default
+    fi
 }
 
 
@@ -325,10 +318,8 @@ LAPTOP() {
 # may skip these steps if desired.
 
 POSTINSTALL() {
-    read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
-    if echo "$SetupUser" | grep -iq "^y"; then
-        $Emerge @gein-laptop
-    fi
+    echo "gein: Setting root password..."
+    passwd
 
     # echo "gein: Creating 'power' group"
     # groupadd power
@@ -370,9 +361,9 @@ case $1 in
 
             lxqt)
                 DesktopChoice="@gein-lxqt"
-                MINIMAL && DESKTOP &&
+                MINIMAL && DESKTOP
 
-                    echo "azryn: Set SDDM as the display manager" &&
+                echo "azryn: Set SDDM as the display manager" &&
                     sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
                         /etc/conf.d/xdm &&
                     sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
