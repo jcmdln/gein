@@ -355,11 +355,15 @@ case $1 in
     -d|desktop)
         case $2 in
             i3wm)
+                sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
+
                 DesktopChoice="@gein-i3wm"
                 MINIMAL && DESKTOP && POSTINSTALL
                 ;;
 
             lxqt)
+                sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
+
                 DesktopChoice="@gein-lxqt"
                 MINIMAL && DESKTOP
 
