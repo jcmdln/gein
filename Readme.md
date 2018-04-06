@@ -82,17 +82,9 @@ then set `VideoCards` to false.
         $ sh ./gein.sh desktop i3wm
 
 8. Wait a few hours. You will be prompted as few times as possible, and
-as close to the beginning or end of the process. You will be prompted to:
-  * Choose your Portage profile (Hint: the one with `*` at the end). You 
-    could choose another profile, which is why I don't set it automatically. 
-    I only test the latest stable profile, which at the time of writing is:
+as close to the beginning or end of the process.
 
-        [12]  default/linux/amd64/17.0 (stable) *
-
-  * If performing a desktop install, you will be asked if you would like
-    to install desktop packages.
-  * Set your `root` password
-  * Setup a standard user
+9. Enjoy your new Gentoo installation!
 
 
 ## Customizing
