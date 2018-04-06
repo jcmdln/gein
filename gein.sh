@@ -68,6 +68,7 @@ CONFIG() {
         /etc/profile.d/defaults.sh
         /etc/profile.d/golang.sh
         /etc/profile.d/gpkg.sh
+        /etc/profile.d/kbuild.sh
         /etc/profile.d/racket.sh
 
         /etc/emacs/default.el
