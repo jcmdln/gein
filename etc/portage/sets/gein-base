@@ -1,21 +1,15 @@
-# gein-base
+# /etc/portage/sets/gein-base
 
 app-admin/sudo
+app-editors/emacs
 app-editors/vim
 app-misc/tmux
 app-text/aspell
 dev-vcs/git
-media-fonts/noto
-media-libs/alsa-lib
-media-sound/alsa-utils
 net-misc/dhcpcd
 sys-apps/mlocate
 sys-apps/pciutils
 sys-boot/grub:2
 sys-kernel/gentoo-sources
 sys-kernel/linux-firmware
-sys-process/htop
 virtual/cron
-x11-apps/xset
-x11-apps/xsetroot
-x11-misc/xclip

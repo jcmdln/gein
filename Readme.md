@@ -20,14 +20,14 @@ my ideal Gentoo Linux system. This repository contains the following:
 
 ## FAQ
 
-### "How much about Gentoo will I need to know to use gein?"
+#### "How much about Gentoo will I need to know to use gein?"
 I would suggest reading the Gentoo Handbook and every file in this
 project before proceeding.
 
-### "I keep getting boot failures after installing in a VirtualBox VM?"
+#### "I keep getting boot failures after installing in a VirtualBox VM?"
 Remove the virtual disk drive from the boot order and restart.
 
-### "The display is lagging when using LXQT on my Nvidia GPU?"
+#### "The display is lagging when using LXQT on my Nvidia GPU?"
 Run `eselect opengl set nvidia` as root.
 
 
@@ -54,16 +54,14 @@ MBR.
 4. Download and run `gein.sh`
 
         $ wget https://raw.githubusercontent.com/jcmdln/gein/master/gein.sh
-        $ sh ./gein.sh
+        $ sh gein.sh
         gein: Linux-based derivative of Gentoo
-          -h, help         Shows this output
-          -b, bootstrap    Bootstrap the stage3 tarball
+          bootstrap    Bootstrap the stage3 tarball
 
         Post-bootstrap:
-          -m, minimal      Perform a basic Gentoo installation
-          -d, desktop      Install a gein desktop
-            i3wm           A complete i3wm desktop
-            lxqt           A complete LXQT desktop
+          base         Basic headless server & development
+          minimal      X, i3wm, and base packages
+          complete     A complete LXQT Gentoo desktop
 
 5. Uncomment and set the `PartitionBoot` & `VideoCards` variables. Both
 MUST be set or `gein.sh` will exit. If you don't need any video support,
@@ -79,7 +77,7 @@ then set `VideoCards` to false.
 
 7. Install the desired target:
 
-        $ sh ./gein.sh desktop i3wm
+        $ sh ./gein.sh minimal
 
 8. Wait a few hours. You will be prompted as few times as possible, and
 as close to the beginning or end of the process.

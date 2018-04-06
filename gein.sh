@@ -49,17 +49,19 @@ CONFIG() {
     # moved into place.
     Configs="
         /etc/portage/make.conf
+
         /etc/portage/package.accept_keywords
         /etc/portage/package.env
         /etc/portage/package.license
+
         /etc/portage/package.use/defaults
         /etc/portage/package.use/multilib
         /etc/portage/package.use/packages
+
         /etc/portage/sets/gein-base
-        /etc/portage/sets/gein-i3wm
+        /etc/portage/sets/gein-minimal
+        /etc/portage/sets/gein-complete
         /etc/portage/sets/gein-laptop
-        /etc/portage/sets/gein-lxqt
-        /etc/portage/sets/gein-steam
 
         /etc/profile
         /etc/profile.d/alias.sh
@@ -69,10 +71,11 @@ CONFIG() {
         /etc/profile.d/racket.sh
 
         /etc/emacs/default.el
+
+        /etc/i3status.conf
         /etc/i3/config
 
         /etc/Xresources
-        /etc/i3status.conf
         /etc/tmux.conf
         /etc/vimrc
         /etc/xinitrc
@@ -202,19 +205,21 @@ BOOTSTRAP() {
     fi
 
     echo "gein: Ensuring we are in /mnt/gentoo..."
-    [ ! -e /mnt/gentoo/$(basename "$0") ] &&
-        cp "$0" /mnt/gentoo/ &&
-        cd /mnt/gentoo &&
+    if [ ! -e /mnt/gentoo/$(basename "$0") ]; then
+        cp "$0" /mnt/gentoo/
+        cd /mnt/gentoo
+    fi
 
-        echo "gein: Setting system time via ntpd..."
-    [ -x "$(command -v ntpd)" ] &&
-        ntpd -q -g &&
+    echo "gein: Setting system time via ntpd..."
+    if [ -x "$(command -v ntpd)" ]; then
+        ntpd -q -g
+    fi
 
-        echo "gein: Downloading and extracting Stage3 tarball..."
+    echo "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$Stage3" ]; then
-        $Wget "$Stage3" &&
-            tar -xpf stage3-* --xattrs --numeric-owner &&
-            rm -rf stage3-*
+        $Wget "$Stage3"
+        tar -xpf stage3-* --xattrs --numeric-owner
+        rm -rf stage3-*
     else
         echo "gein: 'Stage3' variable is not set! Is cURL missing?"
         echo "gein: Exiting..."
@@ -227,10 +232,10 @@ BOOTSTRAP() {
         if [ -e /mnt/gentoo/"$target" ]; then
             case "$target" in
                 proc) mount -t proc /proc /mnt/gentoo/proc ;;
-                sys ) mount --rbind /sys  /mnt/gentoo/sys &&
-                            mount --make-rslave /mnt/gentoo/sys ;;
-                dev ) mount --rbind /dev  /mnt/gentoo/dev &&
-                            mount --make-rslave /mnt/gentoo/dev ;;
+                sys ) mount --rbind /sys  /mnt/gentoo/sys
+                      mount --make-rslave /mnt/gentoo/sys ;;
+                dev ) mount --rbind /dev  /mnt/gentoo/dev
+                      mount --make-rslave /mnt/gentoo/dev ;;
                 *) echo "gein: $target: Improper hardware device"
                    exit
             esac
@@ -242,68 +247,69 @@ BOOTSTRAP() {
 
     SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e "$SwapFile" ]; then
-        echo "gein: Setting up swapfile..." &&
-            fallocate -l "$SwapSize" "$SwapFile" &&
-            chmod 0600 "$SwapFile" &&
-            mkswap "$SwapFile" &&
-            swapon "$SwapFile" &&
-            echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
+        echo "gein: Setting up swapfile..."
+        fallocate -l "$SwapSize" "$SwapFile"
+        chmod 0600 "$SwapFile"
+        mkswap "$SwapFile"
+        swapon "$SwapFile"
+        echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
-    echo "gein: Copying '/etc/resolv.conf'..." &&
-        cp -L /etc/resolv.conf /mnt/gentoo/etc/
+    echo "gein: Copying '/etc/resolv.conf'..."
+    cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
-    echo "gein: Chroot'ing into /mnt/gentoo..." &&
-        chroot /mnt/gentoo /usr/bin/env -i \
-               HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
-               PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
-               PATH="$PATH:/usr/bin:/sbin:/bin:/opt/bin" \
-               MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
-               MANPATH="$MANPATH:/usr/local/share/man" \
-               /bin/bash --login
+    echo "gein: Chroot'ing into /mnt/gentoo..."
+    chroot /mnt/gentoo /usr/bin/env -i \
+           HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
+           PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
+           PATH="$PATH:/usr/bin:/sbin:/bin:/opt/bin" \
+           MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
+           MANPATH="$MANPATH:/usr/local/share/man" \
+           /bin/bash --login
 }
 
 
 # In this section we will update various configuration files, select the
 # desired profile, compile the kernel, and install some basic packages.
 
-MINIMAL() {
-    echo "gein: Setting CPU cores and GPU type..." &&
-        sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
-            /etc/portage/make.conf
+BASE() {
+    CONFIG
 
-    echo "gein: Syncing Portage and selecting profile..." &&
-        emerge -q --sync &&
-        eselect profile list | grep -Evi "dev|exp"
+    echo "gein: Setting CPU cores and GPU type..."
+    sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
+        /etc/portage/make.conf
 
-    echo "gein: choose the latest stable release" &&
-        TargetProfile="" &&
-        while [ -z "$TargetProfile" ]; do
-            read -ep "Which profile?: " TargetProfile
-        done &&
-        eselect profile set "$TargetProfile" &&
-        $Emerge -uDN @world
+    echo "gein: Syncing Portage and selecting profile..."
+    emerge -q --sync
+    eselect profile list | grep -Evi "dev|exp"
 
-    echo "gein: Setting timezone..." &&
-        echo "$TimeZone" > /etc/timezone &&
-        $Emerge --config sys-libs/timezone-data
+    echo "gein: choose the latest stable release"
+    TargetProfile=""
+    while [ -z "$TargetProfile" ]; do
+        read -ep "Which profile?: " TargetProfile
+    done
+    eselect profile set "$TargetProfile"
+    $Emerge -uDN @world
 
-    echo "gein: Setting locale..." &&
-        echo "$Locale" > /etc/locale.gen &&
-        locale-gen && locale -a &&
-        LocaleMain=$(echo $Locale | awk -F '[-]' '{print $1}') &&
-        LocaleSet=$(eselect locale list | grep -i $LocaleMain | \
-                        awk -F '[][]' '{print $2}') &&
-        eselect locale set $LocaleSet &&
-        env-update && source /etc/profile &&
-        export PS1="[chroot \u@\h \W]$ "
+    echo "gein: Setting timezone..."
+    echo "$TimeZone" > /etc/timezone
+    $Emerge --config sys-libs/timezone-data
 
-    echo "gein: Emerging minimal packages..." &&
-        $Emerge @gein-base
+    echo "gein: Setting locale..."
+    echo "$Locale" > /etc/locale.gen
+    locale-gen
+    L=$(echo $Locale | awk -F '[-]' '{print $1}')
+    LSet=$(eselect locale list|grep -i $L|awk -F '[][]' '{print $2}')
+    eselect locale set $LSet
+    env-update && source /etc/profile
+    export PS1="[chroot \u@\h \W]$ "
+
+    echo "gein: Emerging base system packages..."
+    $Emerge @gein-base
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
-        echo "gein: emerging intel-microcode" &&
-            $Emerge intel-microcode
+        echo "gein: Emerging intel-microcode"
+        $Emerge intel-microcode
     fi
 
     echo "gein: Configuring Linux kernel..."
@@ -316,32 +322,31 @@ MINIMAL() {
         fi
     elif [ "$AutoKernel" = "false" ]; then
         if [ -z "$KernelConfig" ]; then
-            make defconfig &&
-                make menuconfig
+            make defconfig
+            make menuconfig
         else
-            $Wget "$KernelConfig" -O /usr/src/linux/.config &&
-                make menuconfig
+            $Wget "$KernelConfig" -O /usr/src/linux/.config
+            make menuconfig
         fi
     else
         echo "gein: Error: AutoKernel isn't true or false. Exiting..."
     fi
 
-    echo "gein: Compiling Linux kernel and modules..." &&
-        $Make && $Make modules &&
-        $Make install && $Make modules install &&
-        $Make distclean &&
-        cd /
+    echo "gein: Compiling Linux kernel and modules..."
+    $Make && $Make modules && $Make install && $Make modules install
+    $Make distclean
+    cd /
 
-    echo "gein: Adding services to OpenRC..." &&
-        rc-update add dhcpcd default &&
-        rc-update add cronie default
+    echo "gein: Adding services to OpenRC..."
+    rc-update add dhcpcd default
+    rc-update add cronie default
 
-    echo "gein: Setting hostname..." &&
-        echo "hostname=$Hostname" > /etc/conf.d/hostname
+    echo "gein: Setting hostname..."
+    echo "hostname=$Hostname" > /etc/conf.d/hostname
 
-    echo "gein: Installing Grub to $PartitionBoot..." &&
-        grub-install "$PartitionBoot" &&
-        grub-mkconfig -o /boot/grub/grub.cfg
+    echo "gein: Installing Grub to $PartitionBoot..."
+    grub-install "$PartitionBoot"
+    grub-mkconfig -o /boot/grub/grub.cfg
 }
 
 
@@ -350,13 +355,26 @@ MINIMAL() {
 # as a convenience.
 
 DESKTOP() {
-    echo "gein: Installing Xorg drivers..." &&
-        $Emerge x11-base/xorg-drivers &&
-        env-update && source /etc/profile &&
-        export PS1="[chroot \u@\h \W]$ "
+    echo "gein: Enabling X in '/etc/portage/package.use/defaults'..."
+    sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
 
-    echo "gein: Installing desktop packages..." &&
-        $Emerge @gein-base "$DesktopChoice"
+    echo "gein: Installing Xorg drivers..."
+    $Emerge x11-base/xorg-drivers
+    env-update && source /etc/profile
+    export PS1="[chroot \u@\h \W]$ "
+
+    echo "gein: Installing desktop packages..."
+    $Emerge "$DesktopChoice"
+
+    if echo "$DesktopChoice" | grep -iq "^y"; then
+        echo "azryn: Set SDDM as the display manager"
+        sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
+            /etc/conf.d/xdm
+        sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
+            /usr/share/xsessions/lxqt.desktop
+        rc-update add xdm default
+        rc-update add dbus default
+    fi
 
     read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
@@ -380,11 +398,11 @@ POSTINSTALL() {
 
     read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
-        echo "gein: Creating user account" &&
-            read -ep "Username: " Username &&
-            useradd -m -G wheel,audio,video \
-                    -s /bin/bash "$Username" &&
-            passwd $Username
+        echo "gein: Creating user account"
+        read -ep "Username: " Username
+        useradd -m -G wheel,audio,video \
+                -s /bin/bash "$Username"
+        passwd $Username
     fi
 
     echo "gein: Installation complete."
@@ -397,65 +415,20 @@ POSTINSTALL() {
 
 shopt -s nocasematch
 case $1 in
-    -b|bootstrap)
-        BOOTSTRAP
-        ;;
-
-    -m|minimal)
-        CONFIG
-        MINIMAL
-        POSTINSTALL
-        ;;
-
-    -d|desktop)
-        case $2 in
-            i3wm)
-                DesktopChoice="@gein-i3wm"
-                sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
-
-                CONFIG
-                MINIMAL
-                DESKTOP
-                POSTINSTALL
-                ;;
-
-            lxqt)
-                DesktopChoice="@gein-lxqt"
-                sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
-
-                CONFIG
-                MINIMAL
-                DESKTOP
-
-                echo "azryn: Set SDDM as the display manager" &&
-                    sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
-                        /etc/conf.d/xdm &&
-                    sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
-                        /usr/share/xsessions/lxqt.desktop &&
-                    rc-update add xdm default &&
-                    rc-update add dbus default
-
-                POSTINSTALL
-                ;;
-
-            *)
-                echo "gein: $2 not an available desktop"
-                echo ""
-                echo "Available desktops:"
-                echo "  i3wm             A complete i3wm desktop"
-                echo "  lxqt             A complete LXQT desktop"
-        esac
-        ;;
+    bootstrap) BOOTSTRAP ;;
+    base)      BASE && POSTINSTALL;;
+    minimal)   DesktopChoice="@gein-i3wm"
+               BASE && DESKTOP && POSTINSTALL;;
+    complete)  DesktopChoice="@gein-lxqt"
+               BASE && DESKTOP && POSTINSTALL;;
 
     *)
         echo "gein: Linux-based derivative of Gentoo"
-        echo "  -h, help         Shows this output"
-        echo "  -b, bootstrap    Bootstrap the stage3 tarball"
+        echo "  bootstrap    Bootstrap the stage3 tarball"
         echo ""
         echo "Post-bootstrap:"
-        echo "  -m, minimal      Perform a basic Gentoo installation"
-        echo "  -d, desktop      Install a gein desktop"
-        echo "    i3wm           A complete i3wm desktop"
-        echo "    lxqt           A complete LXQT desktop"
+        echo "  base         Basic headless server & development"
+        echo "  minimal      X, i3wm, and base packages"
+        echo "  complete     A complete LXQT Gentoo desktop"
 esac
 shopt -u nocasematch

@@ -20,6 +20,10 @@ gpkg() {
             $SU emerge -av --quiet-build ${@:2}
             ;;
 
+	-d|depends)
+	    $SU equery
+	    ;;
+
         -r|--remove)
             $SU emerge -avc --quiet-build ${@:2}
             ;;
