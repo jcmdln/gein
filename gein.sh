@@ -130,7 +130,7 @@ SwapSize="2G"
 TimeZone="America/New_York"
 
 AutoKernel="true"
-#KernelConfig="$Source/usr/src/linux/x.x.config"
+KernelConfig="$Source/usr/src/linux/4.16.config"
 
 
 ## Portage
@@ -367,7 +367,7 @@ DESKTOP() {
     echo "gein: Installing desktop packages..."
     $Emerge "$DesktopChoice"
     rc-update add consolekit default
-    
+
     if echo "$DesktopChoice" | grep -iq "@gein-complete"; then
         echo "azryn: Set SDDM as the display manager"
         sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
