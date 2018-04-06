@@ -372,7 +372,7 @@ DESKTOP() {
         echo "azryn: Set SDDM as the display manager"
         sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
             /etc/conf.d/xdm
-        sed -i 's/startl|xqt/"ck-launch-session dbus-launch startlxqt"/g' \
+        sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
             /usr/share/xsessions/lxqt.desktop
         rc-update add xdm default
         rc-update add dbus default
