@@ -366,8 +366,9 @@ DESKTOP() {
 
     echo "gein: Installing desktop packages..."
     $Emerge "$DesktopChoice"
-
-    if echo "$DesktopChoice" | grep -iq "^y"; then
+    rc-update add consolekit default
+    
+    if echo "$DesktopChoice" | grep -iq "@gein-complete"; then
         echo "azryn: Set SDDM as the display manager"
         sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
             /etc/conf.d/xdm
@@ -418,9 +419,9 @@ shopt -s nocasematch
 case $1 in
     bootstrap) BOOTSTRAP ;;
     base)      BASE && POSTINSTALL;;
-    minimal)   DesktopChoice="@gein-i3wm"
+    minimal)   DesktopChoice="@gein-minimal"
                BASE && DESKTOP && POSTINSTALL;;
-    complete)  DesktopChoice="@gein-lxqt"
+    complete)  DesktopChoice="@gein-complete"
                BASE && DESKTOP && POSTINSTALL;;
 
     *)
