@@ -69,9 +69,8 @@ MBR.
 MUST be set or `gein.sh` will exit. If you don't need any video support,
 then set `VideoCards` to false.
 
-    PartitionBoot="/dev/sda"
-    ...
-    VideoCards="i915 i965 intel"
+        PartitionBoot="/dev/sda"
+        VideoCards="i915 i965 intel"
 
 6. Start the bootstrap. Upon completion, the script will chroot into
 `/mnt/gentoo` so we may proceed to the next step.
@@ -84,16 +83,16 @@ then set `VideoCards` to false.
 
 8. Wait a few hours. You will be prompted as few times as possible, and
 as close to the beginning or end of the process. You will be prompted to:
-* Choose your Portage profile (Hint: the one with `*` at the end). You 
-  could choose another profile, which is why I don't set it automatically. 
-  I only test the latest stable profile, which at the time of writing is:
+  * Choose your Portage profile (Hint: the one with `*` at the end). You 
+    could choose another profile, which is why I don't set it automatically. 
+    I only test the latest stable profile, which at the time of writing is:
 
         [12]  default/linux/amd64/17.0 (stable) *
 
-* If performing a desktop install, you will be asked if you would like
-  to install desktop packages.
-* Set your `root` password
-* Setup a standard user
+  * If performing a desktop install, you will be asked if you would like
+    to install desktop packages.
+  * Set your `root` password
+  * Setup a standard user
 
 
 ## Customizing
