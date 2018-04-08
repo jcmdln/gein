@@ -73,21 +73,6 @@ mode "$System" {
 }
 
 
-### Display ######################################
-
-## Auto-enable/disable displays when connected
-# exec --no-startup-id \
-# while :; do \
-#   Displays=$(xrandr | grep 'connected' | awk '{print $1}');\
-#   for display in $Displays; do \
-#     if [ $(xrandr | grep $display | awk '{print $2}') == "connected" ]; then \
-#         xrandr --output $display --auto; \
-#     fi; \
-#   done; \
-#   sleep 10; \
-# done
-
-
 #### Keybinds ####################################
 
 ## Window splitting
