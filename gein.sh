@@ -143,7 +143,9 @@ KernelConfig="$Source/usr/src/linux/4.16.config"
 #
 
 case "$(uname -m)" in
-    amd64|x86_64) CPUArch="amd64" ;;
+    x86_64)    CPUArch="amd64";;
+    i386|i486) CPUArch="i486";;
+    i686|x86)  CPUArch="i686";;
 
     *)
         echo "gein: CPU arch has not been defined yet"
