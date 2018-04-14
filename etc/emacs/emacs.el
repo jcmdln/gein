@@ -473,6 +473,8 @@
 
 (use-package magit)
 
+(use-package meson-mode)
+
 (use-package no-littering
   :config
   (setq auto-save-file-name-transforms
