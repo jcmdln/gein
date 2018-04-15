@@ -18,6 +18,9 @@ exec --no-startup-id "bash /etc/srandr.sh"
 
 ### Appearance ###################################
 
+## Xresources
+exec --no-startup-id "xrdb /etc/Xresources"
+
 ## Font
 font pango:Noto Mono Regular 9.5
 
