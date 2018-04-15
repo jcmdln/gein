@@ -10,7 +10,10 @@ set $mod Mod4
 
 ## Applications
 bindsym $mod+d      exec --no-startup-id dmenu_run
-bindsym $mod+Return exec st
+bindsym $mod+Return exec --no-startup-id st -f 'Noto Mono:10pt'
+
+## Display
+exec --no-startup-id "bash /etc/srandr.sh"
 
 
 ### Appearance ###################################
@@ -181,16 +184,16 @@ bindsym Shift+Print --release exec --no-startup-id \
 # bindsym XF86AudioMute        exec --no-startup-id amixer set Master toggle
 
 ## Audio (PulseAudio)
-# bindsym XF86AudioRaiseVolume exec --no-startup-id \
-#   pactl set-sink-volume @DEFAULT_SINK@ +5%
-# bindsym XF86AudioLowerVolume exec --no-startup-id \
-#   pactl set-sink-volume @DEFAULT_SINK@ -5%
-# bindsym XF86AudioMute exec --no-startup-id \
-#   pactl set-sink-mute @DEFAULT_SINK@ toggle
-# bindsym XF86AudioPlay  exec --no-startup-id pactl play-pause
-# bindsym XF86AudioPause exec --no-startup-id pactl pause
-# bindsym XF86AudioNext  exec --no-startup-id pactl next
-# bindsym XF86AudioPrev  exec --no-startup-id pactl previous
+bindsym XF86AudioRaiseVolume exec --no-startup-id \
+  pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id \
+  pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec --no-startup-id \
+  pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86AudioPlay  exec --no-startup-id pactl play-pause
+bindsym XF86AudioPause exec --no-startup-id pactl pause
+bindsym XF86AudioNext  exec --no-startup-id pactl next
+bindsym XF86AudioPrev  exec --no-startup-id pactl previous
 
 ## Audio (Sndio)
 # bindsym XF86AudioRaiseVolume exec --no-startup-id mixerctl
@@ -203,5 +206,5 @@ bindsym Shift+Print --release exec --no-startup-id \
 # bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 
 ## Brightness (xbacklight)
-# bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 15
-# bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 15
+bindsym XF86MonBrightnessUp   exec --no-startup-id xbacklight -inc 5
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5

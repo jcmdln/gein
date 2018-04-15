@@ -77,6 +77,7 @@ CONFIG() {
         /etc/i3/config
 
         /etc/Xresources
+        /etc/srandr.sh
         /etc/tmux.conf
         /etc/vimrc
         /etc/xinitrc
@@ -149,7 +150,7 @@ case "$(uname -m)" in
 
     *)
         echo "gein: CPU arch has not been defined yet"
-	echo "gein: Submit an issue with the output of 'uname -m'"
+        echo "gein: Submit an issue with the output of 'uname -m'"
         exit
 esac
 
