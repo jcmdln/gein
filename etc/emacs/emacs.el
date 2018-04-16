@@ -75,8 +75,7 @@
    (add-hook 'python-mode-hook
              (lambda()
                (add-hook 'before-save-hook
-                         (lambda() (untabify (point-min)(point-max))))
-               (linum-mode)))
+                         (lambda() (untabify (point-min)(point-max))))))
 
    (setq
     ;; Cut/Paste
@@ -379,6 +378,8 @@
 (use-package cmake-ide
   :config (cmake-ide-setup))
 
+(use-package cmake-mode)
+
 (use-package company
   :config
   (add-hook 'prog-mode-hook 'company-mode)
@@ -412,6 +413,8 @@
   (add-hook 'prog-mode-hook 'diff-hl-mode)
   (add-hook 'text-mode-hook 'diff-hl-mode))
 
+(use-package dockerfile-mode)
+
 (use-package elfeed
   :bind ("C-x w" . elfeed)
   :config
@@ -438,6 +441,10 @@
   (add-hook 'prog-mode-hook 'flyspell-prog-mode)
   (add-hook 'text-mode-hook 'flyspell-mode))
 
+(use-package gist)
+
+(use-package gitconfig-mode)
+
 (use-package go-mode
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -445,6 +452,8 @@
             (lambda()
               (setq tab-width 4
                     indent-tabs-mode 1))))
+
+(use-package haml-mode)
 
 (use-package highlight-indent-guides
   :config
@@ -461,6 +470,7 @@
   (define-key irony-mode-map [remap completion-at-point] 'counsel-irony)
   (define-key irony-mode-map [remap complete-symbol]     'counsel-irony)
 
+
   (setq irony-additional-clang-options '("-std=c++14")))
 
 (use-package ivy
@@ -471,9 +481,17 @@
   (setq ivy-use-virtual-buffers t
         enable-recursive-minibuffers t))
 
+(use-package json-mode)
+
+(use-package less-css-mode)
+
+(use-package lua-mode)
+
 (use-package magit)
 
 (use-package meson-mode)
+
+(use-package nginx-mode)
 
 (use-package no-littering
   :config
@@ -485,13 +503,21 @@
 
 (use-package pdf-tools)
 
+(use-package php-mode)
+
 (use-package rainbow-delimiters
   :config
   (add-hook 'markdown-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'prog-mode-hook     'rainbow-delimiters-mode)
   (add-hook 'text-mode-hook     'rainbow-delimiters-mode))
 
+(use-package realgud)
+
+(use-package rjsx-mode)
+
 (use-package ranger)
+
+(use-package scss-mode)
 
 (use-package smartparens
   :config
@@ -506,5 +532,9 @@
 (use-package swiper
   :bind ("C-s" . swiper))
 
+(use-package systemd)
+
 (use-package undo-tree
   :config (global-undo-tree-mode))
+
+(use-package yaml-mode)
