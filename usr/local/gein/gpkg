@@ -1,0 +1,50 @@
+#!/usr/bin/env sh
+
+if [ $EUID -ne 0 ]; then
+    if [ -e $(command -v sudo) ]; then
+        SU="sudo"
+    else
+        SU="su -c"
+    fi
+fi
+
+case $@ in
+    -s|sync)
+        echo "gpkg: syncing Portage..."
+        $SU emerge -q --sync &&
+            echo "gpkg: Portage sync completed"
+        ;;
+
+    -i|install)
+        $SU emerge -av --quiet-build ${@:2}
+        ;;
+
+    -r|remove)
+        $SU emerge -avc --quiet-build ${@:2}
+        ;;
+
+    -p|purge)
+        $SU gpkg -r $(qlist -CI ${@:2})
+        ;;
+
+    -u|update)
+        $SU emerge -avuDU --keep-going --quiet-build @world &&
+            $SU emerge -av --depclean --quiet-build
+        ;;
+
+    -U|upgrade)
+        $SU emerge -avuDN --quiet-build @system &&
+            $SU emerge -av --depclean --quiet-build
+        ;;
+
+    *)
+        echo "gpkg: Available options:"
+        echo "  -s, sync       Sync Portage"
+        echo "  -i, install    Install a package"
+        echo "  -r, remove     Safely remove a package"
+        echo "  -p, purge      Purge package and dependencies"
+        echo "  -c, clean      Remove unneeded packages"
+        echo "  -u, update     Update @world packages"
+        echo "  -U, upgrade    Update @system packages"
+        ;;
+esac
