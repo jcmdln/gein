@@ -67,8 +67,6 @@ CONFIG() {
         /etc/profile.d/alias.sh
         /etc/profile.d/defaults.sh
         /etc/profile.d/golang.sh
-        /etc/profile.d/gpkg.sh
-        /etc/profile.d/kbuild.sh
         /etc/profile.d/racket.sh
 
         /etc/emacs/default.el
@@ -77,10 +75,13 @@ CONFIG() {
         /etc/i3/config
 
         /etc/Xresources
-        /etc/srandr.sh
         /etc/tmux.conf
         /etc/vimrc
         /etc/xinitrc
+
+        /usr/local/gein/gpkg
+        /usr/local/gein/kbuild
+        /usr/local/gein/srandr
     "
 
     # Files/Folders that need to be removed and re-created. Sometimes
@@ -93,11 +94,12 @@ CONFIG() {
        /etc/profile.d
        /etc/emacs
        /etc/i3
+       /usr/local/gein
     "
 
     for Folder in $ConfigFolders; do
-        rm -rf $Folder
-        mkdir -p $Folder
+        [ -d "$Folder" ]  && rm    -rf "$Folder"
+        [ ! -d "$Folder"] && mkdir -p  "$Folder"
     done
 
     for File in $Configs; do

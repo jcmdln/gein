@@ -13,7 +13,7 @@ bindsym $mod+d      exec --no-startup-id dmenu_run
 bindsym $mod+Return exec --no-startup-id st -f 'Noto Mono:10pt'
 
 ## Display
-exec --no-startup-id "sh /etc/srandr.sh"
+exec --no-startup-id "srandr"
 
 
 ### Appearance ###################################
