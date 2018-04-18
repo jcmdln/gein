@@ -421,12 +421,35 @@ POSTINSTALL() {
 
 shopt -s nocasematch
 case $1 in
-    bootstrap) BOOTSTRAP ;;
-    base)      BASE && POSTINSTALL;;
-    minimal)   DesktopChoice="@gein-minimal"
-               BASE && DESKTOP && POSTINSTALL;;
-    complete)  DesktopChoice="@gein-complete"
-               BASE && DESKTOP && POSTINSTALL;;
+    bootstrap)
+        BOOTSTRAP
+        ;;
+
+    base)
+        BASE && POSTINSTALL
+        ;;
+
+    minimal)
+        if [ $VideoCards == 'false' ]; then
+            echo "gein: VideoCards is false, though this requires xorg drivers"
+            echo "gein: Exiting..."
+            exit
+        fi
+
+        DesktopChoice="@gein-minimal"
+        BASE && DESKTOP && POSTINSTALL
+        ;;
+
+    complete)
+        if [ $VideoCards == 'false' ]; then
+            echo "gein: VideoCards is false, though this requires xorg drivers"
+            echo "gein: Exiting..."
+            exit
+        fi
+
+        DesktopChoice="@gein-complete"
+        BASE && DESKTOP && POSTINSTALL
+        ;;
 
     *)
         echo "gein: Linux-based derivative of Gentoo"
