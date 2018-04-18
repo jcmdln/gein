@@ -2,7 +2,7 @@
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/zip -bzip2
-app-editors/emacs -athena acl dynamic-loading gtk3 gzip-el inotify libxml2 sound ssl xwidgets
+app-editors/emacs dynamic-loading gtk3 gzip-el libxml2 mailutils sound ssl xwidgets
 app-editors/vim -X -minimal -perl -python -racket -tcl
 app-emulation/qemu usb
 app-laptop/laptop-mode-tools acpi
@@ -29,7 +29,7 @@ kde-plasma/systemsettings gtk
 lxqt-base/lxqt-meta -oxygen about admin filemanager icons lximage powermanagement sddm
 lxqt-base/lxqt-panel clock colorpicker cpuload desktopswitch kbindicator mainmenu mount quicklaunch sensors showdesktop statusnotifier sysstat taskbar tray volume
 mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system-jpeg system-libevent system-libvpx system-sqlite
-media-fonts/noto -cjk
+media-fonts/noto cjk
 media-gfx/blender boost bullet collada colorio cuda cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sndfile valgrind
 media-gfx/feh curl exif cinerma xinerama
 media-gfx/gimp smp
@@ -45,6 +45,7 @@ media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss vorbis wavpack
 media-video/ffmpeg aac amr blueray cdio encode gme hevc libass mp3 network ogg openh264 openssl opus rtmp theora vorbis vpx wavpack x264 x265 xvid
 media-video/mpv libass libmpv
 net-misc/connman bluetooth ethernet iptables openvpn wifi
+net-misc/iputils -ipv6 abi_x86_64
 net-misc/openssh -X
 net-vpn/openvpn lz4 lzo plugins
 net-wireless/wpa_supplicant -qt5
