@@ -8,25 +8,11 @@
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode   -1))
 
-(load-theme 'tango-dark)
-
-(set-face-attribute
- 'default nil
- :family "Monospace" :weight 'normal
- :width 'normal      :height 96)
-
 (setq
- ;; Misc
  initial-scratch-message nil
  inhibit-splash-screen t
  inhibit-startup-buffer-menu t
- custom-file "~/.emacs.d/custom.el"
-
- ;; Encoding
- prefer-coding-system 'utf-8
- set-default-coding-systems 'utf-8
- set-language-environment "UTF-8"
- set-locale-environment "en_US.UTF-8")
+ custom-file "~/.emacs.d/custom.el")
 
 ;; Environment Variables
 (setenv "EDITOR"         "emacsclient")
@@ -37,6 +23,17 @@
 (setenv "PROMPT_COMMAND" "")
 (setenv "SHELL"          (getenv "SHELL"))
 (setenv "TERM"           (getenv "TERM"))
+
+;;;
+;;; Appearance
+;;;
+
+(load-theme 'tango-dark)
+
+(set-face-attribute
+ 'default nil
+ :family "Monospace" :weight 'normal
+ :width 'normal      :height 96)
 
 
 ;;;
@@ -52,25 +49,29 @@
  ;; Display
  column-number-mode t
  visible-bell t
+ show-paren-delay 0
+
+ ;; Encoding
+ prefer-coding-system 'utf-8
+ set-default-coding-systems 'utf-8
+ set-language-environment "UTF-8"
+ set-locale-environment "en_US.UTF-8"
 
  ;; Indentation
- c-basic-offset 4
- cperl-indent-level 4
- js-indent-level 4
- tab-width 4
+ c-basic-offset 2
+ cperl-indent-level 2
+ js-indent-level 2
+ tab-width 2
  indent-tabs-mode nil)
 
-(fset 'yes-or-no-p 'y-or-n-p) ;; Shorter y/n prompts
-(global-visual-line-mode t)   ;; Globally enable word-wrap
-(show-paren-mode t)           ;; Highlight matching parenthesis
+(global-visual-line-mode t)
+(show-paren-mode t)
+(fset 'yes-or-no-p 'y-or-n-p)
 
 
 ;;;
 ;;; Input
 ;;;
-
-;; Enable mouse support in terminal
-(xterm-mouse-mode t)
 
 (setq
  ;; Mouse
@@ -78,6 +79,7 @@
  mouse-wheel-progressive-speed nil
  mouse-wheel-scroll-amount '(3 ((shift) . 3))
  mouse-yank-at-point t
+ xterm-mouse-mode t
 
  ;; Scrolling
  auto-window-vscroll nil
@@ -167,6 +169,10 @@
   (add-hook 'prog-mode-hook 'company-mode)
   (add-hook 'text-mode-hook 'company-mode))
 
+;; (use-package company-ansible)
+;; (use-package company-emoji)
+(use-package company-go)
+
 (use-package company-irony
   :config (add-to-list 'company-backends 'company-irony))
 
@@ -174,6 +180,12 @@
   :config
   (add-to-list 'company-backends
                '(company-irony-c-headers company-irony)))
+
+;; (use-package company-jedi)
+;; (use-package company-php)
+;; (use-package company-rtags)
+;; (use-package company-shell)
+;; (use-package company-web)
 
 (use-package counsel
   :bind (("<f1> f"  . counsel-describe-function)
@@ -310,57 +322,56 @@
 ;;; Applications
 ;;;
 
-(use-package circe
-  :config
-  (if (file-exists-p "~/.emacs.d/circe.el")
-      (load-file "~/.emacs.d/circe.el"))
+;; (use-package circe
+;;   :config
+;;   (if (file-exists-p "~/.emacs.d/circe.el")
+;;       (load-file "~/.emacs.d/circe.el"))
+;;   (require 'circe-chanop)
+;;   (enable-circe-color-nicks)
+;;   (defun my-circe-set-margin() (setq left-margin-width 9))
+;;   (setf (cdr (assoc 'continuation fringe-indicator-alist)) nil)
 
-  (setq
-   circe-default-part-message ""
-   circe-default-quit-message ""
-   circe-format-server-topic "*** Topic change by {userhost}: {topic-diff}"
-   circe-reduce-lurker-spam t
-   circe-use-cycle-completion t
-   lui-fill-type nil
-   lui-flyspell-alist '((".*" "american"))
-   lui-flyspell-p t
-   lui-time-stamp-format "%H:%M:%S"
-   lui-time-stamp-position 'left-margin)
+;;   (setq
+;;    circe-default-part-message ""
+;;    circe-default-quit-message ""
+;;    circe-format-server-topic "*** Topic change by {userhost}: {topic-diff}"
+;;    circe-reduce-lurker-spam t
+;;    circe-use-cycle-completion t
+;;    lui-fill-type nil
+;;    lui-flyspell-alist '((".*" "american"))
+;;    lui-flyspell-p t
+;;    lui-time-stamp-format "%H:%M:%S"
+;;    lui-time-stamp-position 'left-margin)
 
-  (require 'circe-chanop)
-  (enable-circe-color-nicks)
-  (defun my-circe-set-margin() (setq left-margin-width 9))
-  (setf (cdr (assoc 'continuation fringe-indicator-alist)) nil)
+;;   (defun my-lui-setup()
+;;     (setq fringes-outside-margins t
+;;           left-margin-width 9
+;;           word-wrap t
+;;           wrap-prefix ""))
 
-  (defun my-lui-setup()
-    (setq fringes-outside-margins t
-          left-margin-width 9
-          word-wrap t
-          wrap-prefix ""))
+;;   (defun my-circe-prompt()
+;;     (lui-set-prompt
+;;      (concat (propertize
+;;               (concat (buffer-name) ">")
+;;               'face 'circe-prompt-face) " ")))
 
-  (defun my-circe-prompt()
-    (lui-set-prompt
-     (concat (propertize
-              (concat (buffer-name) ">")
-              'face 'circe-prompt-face) " ")))
+;;   (defun my-circe-message-option-chanserv (nick user host command args)
+;;     (when (and (string= "ChanServ" nick)
+;;                (string-match "^\\[#.+?\\]" (cadr args)))
+;;       '((dont-display . t))))
 
-  (defun my-circe-message-option-chanserv (nick user host command args)
-    (when (and (string= "ChanServ" nick)
-               (string-match "^\\[#.+?\\]" (cadr args)))
-      '((dont-display . t))))
+;;   (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
+;;   (add-hook 'circe-message-option-functions 'my-circe-message-option-chanserv)
+;;   (add-hook 'lui-mode-hook (lambda() (my-lui-setup) (my-circe-set-margin))))
 
-  (add-hook 'circe-chat-mode-hook 'my-circe-prompt)
-  (add-hook 'circe-message-option-functions 'my-circe-message-option-chanserv)
-  (add-hook 'lui-mode-hook (lambda() (my-lui-setup) (my-circe-set-margin))))
-
-(use-package elfeed
-  :bind ("C-x w" . elfeed)
-  :config
-  (setq
-   elfeed-search-filter "@1-week-ago +unread "
-   url-queue-timeout 30)
-  (if (file-exists-p "~/.emacs.d/elfeed.el")
-      (load-file "~/.emacs.d/elfeed.el")))
+;; (use-package elfeed
+;;   :bind ("C-x w" . elfeed)
+;;   :config
+;;   (setq
+;;    elfeed-search-filter "@1-week-ago +unread "
+;;    url-queue-timeout 30)
+;;   (if (file-exists-p "~/.emacs.d/elfeed.el")
+;;       (load-file "~/.emacs.d/elfeed.el")))
 
 (use-package eshell
   :config
@@ -420,27 +431,32 @@
       (eww-mode)
       (eww url))))
 
-(use-package gist)
+;; (use-package gist)
 
-(use-package gnus
-  :config
-  (gnus-add-configuration
-   '(article
-     (horizontal 1.0
-                 (vertical 25 (group 1.0))
-                 (vertical 1.0
-                           (summary 0.25 point)
-                           (article 1.0)))))
-  (gnus-add-configuration
-   '(summary
-     (horizontal 1.0
-                 (vertical 25  (group 1.0))
-                 (vertical 1.0 (summary 1.0 point))))))
+;; (use-package gnus
+;;   :config
+;;   (gnus-add-configuration
+;;    '(article
+;;      (horizontal 1.0
+;;                  (vertical 25 (group 1.0))
+;;                  (vertical 1.0
+;;                            (summary 0.25 point)
+;;                            (article 1.0)))))
+;;   (gnus-add-configuration
+;;    '(summary
+;;      (horizontal 1.0
+;;                  (vertical 25  (group 1.0))
+;;                  (vertical 1.0 (summary 1.0 point))))))
 
 (use-package magit)
-(use-package pdf-tools)
-(use-package ranger)
-(use-package realgud)
+
+;; (use-package nov
+;;   :config
+;;   (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
+
+;; (use-package pdf-tools)
+;; (use-package ranger)
+;; (use-package realgud)
 
 (use-package scratch
   :config
@@ -479,8 +495,23 @@
             (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
             (setq indent-tabs-mode 1)))
 
+;; (use-package ahk-mode)
+;; (use-package android-mode)
+;; (use-package angular-mode)
+;; (use-package ansible-vault)
+;; (use-package apache-mode)
 (use-package cmake-mode)
-(use-package dockerfile-mode)
+;; (use-package coffee-mode)
+;; (use-package csharp-mode)
+;; (use-package cuda-mode)
+;; (use-package d-mode)
+;; (use-package dart-mode)
+;; (use-package docker-compose-mode)
+;; (use-package dockerfile-mode)
+(use-package dotenv-mode)
+;; (use-package es-mode)
+;; (use-package fsharp-mode)
+(use-package gitattributes-mode)
 (use-package gitconfig-mode)
 (use-package gitignore-mode)
 
@@ -492,11 +523,25 @@
               (setq tab-width 4
                     indent-tabs-mode 1))))
 
+;; (use-package gradle-mode)
 (use-package json-mode)
-(use-package less-css-mode)
-(use-package lua-mode)
-(use-package meson-mode)
-(use-package nginx-mode)
-(use-package scss-mode)
-(use-package systemd)
-(use-package yaml-mode)
+;; (use-package jsx-mode)
+;; (use-package less-css-mode)
+;; (use-package lua-mode)
+;; (use-package markdown-mode)
+;; (use-package markdown-preview-mode)
+;; (use-package meson-mode)
+;; (use-package nginx-mode)
+;; (use-package ninja-mode)
+;; (use-package npm-mode)
+;; (use-package php-mode)
+;; (use-package protobuf-mode)
+;; (use-package python-mode)
+;; (use-package qml-mode)
+;; (use-package rust-mode)
+;; (use-package sass-mode)
+;; (use-package swift-mode)
+;; (use-package systemd)
+;; (use-package typescript-mode)
+;; (use-package vue-mode)
+;; (use-package yaml-mode)
