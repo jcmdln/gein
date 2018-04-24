@@ -2,7 +2,7 @@
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/zip -bzip2
-app-editors/emacs dynamic-loading gtk3 gzip-el libxml2 mailutils sound ssl xwidgets
+app-editors/emacs dynamic-loading gtk3 gzip-el libxml2 mailutils ssl
 app-editors/vim -X -minimal -perl -python -racket -tcl
 app-emulation/qemu usb
 app-laptop/laptop-mode-tools acpi
