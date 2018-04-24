@@ -495,6 +495,8 @@
 (use-package gitconfig-mode)
 (use-package gitignore-mode)
 
+;; (use-package go-eldoc)
+
 ;; (use-package go-mode
 ;;   :config
 ;;   (add-hook 'before-save-hook 'gofmt-before-save)
