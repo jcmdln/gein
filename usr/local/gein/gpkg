@@ -8,7 +8,7 @@ if [ $EUID -ne 0 ]; then
     fi
 fi
 
-case $@ in
+case $1 in
     -s|sync)
         echo "gpkg: syncing Portage..."
         $SU emerge -q --sync &&
@@ -20,11 +20,13 @@ case $@ in
         ;;
 
     -r|remove)
-        $SU emerge -avc --quiet-build ${@:2}
+        $SU emerge -avc --quiet-build ${@:2} &&
+            $SU emerge -av --depclean --quiet-build
         ;;
 
     -p|purge)
-        $SU gpkg -r $(qlist -CI ${@:2})
+        $SU gpkg -r $(qlist -CI ${@:2}) &&
+            $SU emerge -av --depclean --quiet-build
         ;;
 
     -u|update)
@@ -43,7 +45,6 @@ case $@ in
         echo "  -i, install    Install a package"
         echo "  -r, remove     Safely remove a package"
         echo "  -p, purge      Purge package and dependencies"
-        echo "  -c, clean      Remove unneeded packages"
         echo "  -u, update     Update @world packages"
         echo "  -U, upgrade    Update @system packages"
         ;;
