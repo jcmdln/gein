@@ -1,15 +1,12 @@
 # /etc/portage/sets/gein-complete
 
 ## Desktop
-app-office/libreoffice
 media-fonts/noto
 media-libs/alsa-lib
 media-sound/alsa-utils
 media-sound/pavucontrol
 media-sound/pulseaudio
-media-video/mpv
 sys-apps/mlocate
-www-client/chromium
 x11-apps/xset
 x11-apps/xsetroot
 x11-misc/xclip

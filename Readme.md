@@ -59,16 +59,15 @@ MBR.
           bootstrap    Bootstrap the stage3 tarball
 
         Post-bootstrap:
-          base         Basic headless server & development
-          minimal      X, i3wm, and base packages
-          complete     A complete LXQT Gentoo desktop
+          minimal      Headless installation
+          desktop      Desktop installation
 
 5. Uncomment and set the `PartitionBoot` & `VideoCards` variables. Both
 MUST be set or `gein.sh` will exit. If you don't need any video support,
 then set `VideoCards` to false.
 
         PartitionBoot="/dev/sda"
-        VideoCards="i915 i965 intel"
+        VideoCards="false"
 
 6. Start the bootstrap. Upon completion, the script will chroot into
 `/mnt/gentoo` so we may proceed to the next step.
@@ -79,8 +78,8 @@ then set `VideoCards` to false.
 
         $ sh ./gein.sh minimal
 
-8. Wait a few hours. You will be prompted as few times as possible, and
-as close to the beginning or end of the process.
+8. Wait a few hours. You will be prompted as few times as possible though
+prompts are at the very beginning or end of the process.
 
 9. Enjoy your new Gentoo installation!
 

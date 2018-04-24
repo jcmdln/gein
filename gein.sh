@@ -55,9 +55,10 @@ CONFIG() {
         /etc/portage/package.use/defaults
         /etc/portage/package.use/multilib
         /etc/portage/package.use/packages
+
         /etc/portage/sets/gein-base
-        /etc/portage/sets/gein-minimal
-        /etc/portage/sets/gein-complete
+        /etc/portage/sets/gein-i3wm
+        /etc/portage/sets/gein-lxqt
         /etc/portage/sets/gein-laptop
 
         /etc/profile
@@ -281,7 +282,7 @@ BOOTSTRAP() {
 # In this section we will update various configuration files, select the
 # desired profile, compile the kernel, and install some basic packages.
 
-BASE() {
+MINIMAL() {
     CONFIG
 
     echo "gein: Setting CPU cores and GPU type..."
@@ -376,16 +377,6 @@ DESKTOP() {
     $Emerge "$DesktopChoice"
     rc-update add consolekit default
 
-    if echo "$DesktopChoice" | grep -iq "@gein-complete"; then
-        echo "azryn: Set SDDM as the display manager"
-        sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
-            /etc/conf.d/xdm
-        sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
-            /usr/share/xsessions/lxqt.desktop
-        rc-update add xdm default
-        rc-update add dbus default
-    fi
-
     read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
         $Emerge @gein-laptop
@@ -429,30 +420,43 @@ case $1 in
         BOOTSTRAP
         ;;
 
-    base)
-        BASE && POSTINSTALL
-        ;;
-
     minimal)
-        if [ $VideoCards == 'false' ]; then
-            echo "gein: VideoCards is false, though this requires xorg drivers"
-            echo "gein: Exiting..."
-            exit
-        fi
-
-        DesktopChoice="@gein-minimal"
-        BASE && DESKTOP && POSTINSTALL
+        MINIMAL && POSTINSTALL
         ;;
 
-    complete)
-        if [ $VideoCards == 'false' ]; then
+    desktop)
+        if [ "$VideoCards" == 'false' ]; then
             echo "gein: VideoCards is false, though this requires xorg drivers"
             echo "gein: Exiting..."
             exit
         fi
 
-        DesktopChoice="@gein-complete"
-        BASE && DESKTOP && POSTINSTALL
+        case $2 in
+            i3wm)
+                DesktopChoice="@gein-i3wm"
+                MINIMAL && DESKTOP && POSTINSTALL
+                ;;
+
+            lxqt)
+                DesktopChoice="@gein-lxqt"
+                MINIMAL && DESKTOP
+
+                echo "azryn: Set SDDM as the display manager"
+                sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
+                    /etc/conf.d/xdm
+                sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
+                    /usr/share/xsessions/lxqt.desktop
+                rc-update add xdm default
+                rc-update add dbus default
+
+                POSTINSTALL
+                ;;
+
+            *)
+                echo "gein desktop: Available options"
+                echo "  i3wm         i3wm desktop"
+                echo "  lxqt         LXQT desktop"
+        esac
         ;;
 
     *)
@@ -460,8 +464,7 @@ case $1 in
         echo "  bootstrap    Bootstrap the stage3 tarball"
         echo ""
         echo "Post-bootstrap:"
-        echo "  base         Basic headless server & development"
-        echo "  minimal      X, i3wm, and base packages"
-        echo "  complete     A complete LXQT Gentoo desktop"
+        echo "  minimal      Headless installation"
+        echo "  desktop      Desktop installation"
 esac
 shopt -u nocasematch
