@@ -161,7 +161,7 @@
 
 ;; (use-package company-ansible)
 ;; (use-package company-emoji)
-(use-package company-go)
+;; (use-package company-go)
 
 (use-package company-irony
   :config (add-to-list 'company-backends 'company-irony))
@@ -504,6 +504,9 @@
 ;;                     indent-tabs-mode 1)
 ;;               (set (make-local-variable 'company-backends) '(company-go))
 ;;               (company-mode t))))
+
+
+;; (use-package go-rename)
 
 ;; (use-package gradle-mode)
 ;; (use-package json-mode)
