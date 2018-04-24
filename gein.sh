@@ -49,15 +49,12 @@ CONFIG() {
     # moved into place.
     Configs="
         /etc/portage/make.conf
-
         /etc/portage/package.accept_keywords
         /etc/portage/package.env
         /etc/portage/package.license
-
         /etc/portage/package.use/defaults
         /etc/portage/package.use/multilib
         /etc/portage/package.use/packages
-
         /etc/portage/sets/gein-base
         /etc/portage/sets/gein-minimal
         /etc/portage/sets/gein-complete
@@ -69,15 +66,15 @@ CONFIG() {
         /etc/profile.d/golang.sh
         /etc/profile.d/racket.sh
 
-        /etc/emacs/default.el
-
-        /etc/i3status.conf
-        /etc/i3/config
-
         /etc/Xresources
+        /etc/bash/bashrc
+        /etc/emacs/default.el
+        /etc/i3/config
+        /etc/i3status.conf
         /etc/tmux.conf
-        /etc/vimrc
+        /etc/vim/vimrc
         /etc/xinitrc
+        /etc/zsh/zshrc
 
         /usr/local/gein/gpkg
         /usr/local/gein/kbuild
@@ -89,11 +86,13 @@ CONFIG() {
     # be a folder so we'll remove it outright and create what we need.
     # Sure, this is wasting a little time, I know.
     ConfigFolders="
+       /etc/bash
+       /etc/emacs
+       /etc/i3
        /etc/portage/package.use
        /etc/portage/sets
        /etc/profile.d
-       /etc/emacs
-       /etc/i3
+       /etc/zshrc
        /usr/local/gein
     "
 
@@ -146,9 +145,12 @@ KernelConfig="$Source/usr/src/linux/4.16.config"
 #
 
 case "$(uname -m)" in
-    i386|i486) CPUArch="i486";;
-    i686|x86)  CPUArch="i686";;
-    x86_64)    CPUArch="amd64";;
+    i486|i586)
+        CPUArch="i486";;
+    i686|x86|x86_32)
+        CPUArch="i686";;
+    amd64|x86_64)
+        CPUArch="amd64";;
 
     *)
         echo "gein: CPU arch has not been defined yet"
