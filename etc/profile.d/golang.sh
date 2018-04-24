@@ -1,6 +1,6 @@
 # /etc/profile.d/golang.sh
 
-GOPATH="$HOME/.go:$HOME/Projects"
+GOPATH="$HOME/.go"
 GOBIN="$GOPATH/bin"
 GODOC="$GOPATH/doc"
 
