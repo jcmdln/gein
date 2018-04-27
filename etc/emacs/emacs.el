@@ -1,125 +1,25 @@
 ;; /etc/emacs/default.el
 
-;;;
-;;; Startup
-;;;
-
 (when (fboundp 'menu-bar-mode)   (menu-bar-mode   -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (when (fboundp 'tool-bar-mode)   (tool-bar-mode   -1))
+(load-theme 'tango-dark)
 
 (setq initial-scratch-message     nil
       inhibit-splash-screen       t
       inhibit-startup-buffer-menu t
-      custom-file                 "~/.emacs.d/custom.el")
+      custom-file                 "~/.emacs.d/custom.el"
 
-;; Environment Variables
-(setenv "EDITOR"         "emacsclient")
-(setenv "GIT_EDITOR"     "emacsclient")
-(setenv "GOPATH"         (getenv "GOPATH"))
-(setenv "GOBIN"          (getenv "GOBIN"))
-(setenv "MANPATH"        (getenv "MANPATH"))
-(setenv "PATH"           (getenv "PATH"))
-(setenv "PROMPT_COMMAND" "")
-(setenv "SHELL"          (getenv "SHELL"))
-(setenv "TERM"           (getenv "TERM"))
+      prefer-coding-system        'utf-8
+      set-default-coding-systems  'utf-8
+      set-language-environment    "UTF-8"
+      set-locale-environment      "en_US.UTF-8")
 
-
-;;;
-;;; Appearance
-;;;
-
-(load-theme 'tango-dark)
-
-(set-face-attribute
- 'default nil
- :family "Monospace" :weight 'normal
- :width 'normal      :height 96)
-
-
-;;;
-;;; Normalization
-;;;
-
-(setq auto-window-vscroll                 nil
-      c-basic-offset                      2
-      column-number-mode                  t
-      cperl-indent-level                  2
-      indent-tabs-mode                    nil
-      js-indent-level                     2
-      prefer-coding-system                'utf-8
-      require-final-newline               t
-      save-interprogram-paste-before-kill t
-      scroll-conservatively               101
-      scroll-down-aggressively            0.0
-      scroll-margin                       0
-      scroll-preserve-screen-position     1
-      scroll-step                         1
-      scroll-up-aggressively              0.0
-      select-enable-primary               nil
-      set-default-coding-systems          'utf-8
-      set-language-environment            "UTF-8"
-      set-locale-environment              "en_US.UTF-8"
-      show-paren-delay                    0
-      tab-width                           2
-      visible-bell                        t)
-
-(global-visual-line-mode t)
-(show-paren-mode         t)
-(fset 'yes-or-no-p       'y-or-n-p)
-
-
-;;;
-;;; Input
-;;;
-
-(setq mouse-wheel-follow-mouse      't
-      mouse-wheel-progressive-speed nil
-      mouse-wheel-scroll-amount     '(3 ((shift) . 3))
-      mouse-yank-at-point           t
-      xterm-mouse-mode              t)
-
-;; Buffers
-(global-set-key (kbd "C-x x")           'kill-buffer-and-window)
-(global-set-key (kbd "<C-tab>")         'next-buffer)
-(global-set-key (kbd "<C-iso-lefttab>") 'previous-buffer)
-(global-set-key (kbd "M--")             (lambda() (interactive)
-                                          (split-window-vertically)
-                                          (other-window 1 nil)
-                                          (switch-to-next-buffer)))
-(global-set-key (kbd "M-=")             (lambda() (interactive)
-                                          (split-window-horizontally)
-                                          (other-window 1 nil)
-                                          (switch-to-next-buffer)))
-
-;; Comment or uncomment the highlighted region
-(global-set-key (kbd "C-c c")           'comment-or-uncomment-region)
-
-;; Mouse
-(global-set-key (kbd "<mouse-4>")       (lambda() (interactive)
-                                          (scroll-down 3)))
-(global-set-key (kbd "<mouse-5>")       (lambda() (interactive)
-                                          (scroll-up 3)))
-
-;; Movement
-(global-set-key (kbd "<M-down>")        'windmove-down)
-(global-set-key (kbd "<M-left>")        'windmove-left)
-(global-set-key (kbd "<M-right>")       'windmove-right)
-(global-set-key (kbd "<M-up>")          'windmove-up)
-(global-set-key (kbd "C-c <down>")      'windmove-down)
-(global-set-key (kbd "C-c <left>")      'windmove-left)
-(global-set-key (kbd "C-c <right>")     'windmove-right)
-(global-set-key (kbd "C-c <up>")        'windmove-up)
-
-
-;;;
-;;; Package Management
-;;;
-
+;; Package Management
 (require 'package)
 (setq package-user-dir "~/.emacs.d/pkg/"
       package-archives
-      '(("GNU ELPA"     . "http://elpa.gnu.org/packages/")
+      '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
         ("MELPA Stable" . "https://stable.melpa.org/packages/")
         ("MELPA"        . "https://melpa.org/packages/"))
       package-archive-priorities
@@ -133,7 +33,101 @@
   (package-install 'use-package))
 
 (require 'use-package)
-(setq use-package-always-ensure t)
+(setq use-package-always-defer      nil
+      use-package-always-ensure     t
+      use-package-check-before-init t)
+
+
+;;;
+;;; Normalization
+;;;
+
+(add-hook
+ 'after-init-hook
+ (lambda()
+   (setq
+    show-paren-delay                    0
+    visible-bell                        t
+
+    require-final-newline               t
+    save-interprogram-paste-before-kill t
+    select-enable-primary               nil
+
+    c-basic-offset                      2
+    column-number-mode                  t
+    cperl-indent-level                  2
+    indent-tabs-mode                    nil
+    js-indent-level                     2
+    tab-width                           2
+
+    auto-window-vscroll                 nil
+    mouse-wheel-progressive-speed       nil
+    mouse-wheel-follow-mouse            1
+    scroll-conservatively               101
+    scroll-margin                       0
+    scroll-preserve-screen-position     1
+    scroll-step                         1
+    scroll-up-aggressively              0.0
+    scroll-down-aggressively            0.0)
+
+   ;; Appearance
+   (set-face-attribute
+    'default nil
+    :family "Monospace" :weight 'normal
+    :width 'normal      :height 96)
+   (global-visual-line-mode t)
+   (show-paren-mode         t)
+   (fset 'yes-or-no-p       'y-or-n-p)
+
+   ;; Mouse
+   (setq mouse-wheel-follow-mouse       't
+         mouse-wheel-progressive-speed  nil
+         mouse-wheel-scroll-amount      '(1 ((shift) . 1))
+         mouse-yank-at-point            t
+         xterm-mouse-mode               t)
+
+   ;; Buffers
+   (global-set-key (kbd "C-x x")           'kill-buffer-and-window)
+   (global-set-key (kbd "<C-tab>")         'next-buffer)
+   (global-set-key (kbd "<C-iso-lefttab>") 'previous-buffer)
+   (global-set-key (kbd "M--")             (lambda() (interactive)
+                                             (split-window-vertically)
+                                             (other-window 1 nil)
+                                             (switch-to-next-buffer)))
+   (global-set-key (kbd "M-=")             (lambda() (interactive)
+                                             (split-window-horizontally)
+                                             (other-window 1 nil)
+                                             (switch-to-next-buffer)))
+
+   ;; Comment or uncomment the highlighted region
+   (global-set-key (kbd "C-c c")           'comment-or-uncomment-region)
+
+   ;; Mouse
+   (global-set-key (kbd "<mouse-4>")       (lambda() (interactive)
+                                             (scroll-down-line 3)))
+   (global-set-key (kbd "<mouse-5>")       (lambda() (interactive)
+                                             (scroll-up-line 3)))
+
+   ;; Movement
+   (global-set-key (kbd "<M-down>")        'windmove-down)
+   (global-set-key (kbd "<M-left>")        'windmove-left)
+   (global-set-key (kbd "<M-right>")       'windmove-right)
+   (global-set-key (kbd "<M-up>")          'windmove-up)
+   (global-set-key (kbd "C-c <down>")      'windmove-down)
+   (global-set-key (kbd "C-c <left>")      'windmove-left)
+   (global-set-key (kbd "C-c <right>")     'windmove-right)
+   (global-set-key (kbd "C-c <up>")        'windmove-up)
+
+   ;; Environment Variables
+   (setenv "EDITOR"         "emacsclient")
+   (setenv "GIT_EDITOR"     "emacsclient")
+   (setenv "GOPATH"         (getenv "GOPATH"))
+   (setenv "GOBIN"          (getenv "GOBIN"))
+   (setenv "MANPATH"        (getenv "MANPATH"))
+   (setenv "PATH"           (getenv "PATH"))
+   (setenv "PROMPT_COMMAND" "")
+   (setenv "SHELL"          (getenv "SHELL"))
+   (setenv "TERM"           (getenv "TERM"))))
 
 
 ;;;
@@ -150,32 +144,60 @@
 
 (use-package auto-dictionary)
 
-(use-package company
+(use-package eshell
   :config
-  (add-hook 'prog-mode-hook 'company-mode)
-  (add-hook 'text-mode-hook 'company-mode)
-  (setq company-tooltip-limit  20
-        company-idle-delay     0.3
-        company-echo-delay     0
-        company-begin-commands '(self-insert-command)))
+  (setq eshell-cmpl-cycle-completions     nil
+        eshell-error-if-no-glob           t
+        eshell-hist-ignoredups            t
+        eshell-history-size               4096
+        eshell-prefer-lisp-functions      t
+        eshell-save-history-on-exit       t
+        eshell-scroll-to-bottom-on-input  nil
+        eshell-scroll-to-bottom-on-output nil
+        eshell-scroll-show-maximum-output nil
+        eshell-prompt-regexp              "^[^#$\n]*[#$] "
+        eshell-prompt-function
+        (lambda nil
+          (concat
+           "[" (user-login-name) "@" (system-name) " "
+           (if (string= (eshell/pwd) (getenv "HOME"))
+               "~" (eshell/basename (eshell/pwd))) "]"
+           (if (= (user-uid) 0) "# " "$ ")))
 
-(use-package company-ansible)
-(use-package company-emoji)
-(use-package company-go)
+        eshell-visual-commands
+        '("alsamixer" "atop" "htop" "less" "mosh" "nano" "ssh" "tail"
+          "top" "vi" "vim" "watch" ))
 
-(use-package company-irony
-  :config (add-to-list 'company-backends 'company-irony))
+  (defun eshell/clear()
+    (interactive)
+    (recenter 0))
 
-(use-package company-irony-c-headers
+  (defun eshell-new()
+    "Open a new instance of eshell."
+    (interactive)
+    (eshell 'N)))
+
+(use-package eww
+  :after (eww-lnum)
   :config
-  (add-to-list 'company-backends
-               '(company-irony-c-headers company-irony)))
+  (setq browse-url-browser-function 'eww-browse-url
+        shr-blocked-images          "")
 
-(use-package company-jedi)
-(use-package company-php)
-(use-package company-rtags)
-(use-package company-shell)
-(use-package company-web)
+  (defun eww-toggle-images()
+    "Toggle blocking images in eww."
+    (interactive)
+    (if (bound-and-true-p shr-blocked-images)
+        (setq shr-blocked-images nil)
+      (setq shr-blocked-images ""))
+    (eww-reload))
+
+  (defun eww-new()
+    "Open a new instance of eww."
+    (interactive)
+    (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
+      (switch-to-buffer (generate-new-buffer "*eww*"))
+      (eww-mode)
+      (eww url))))
 
 (use-package counsel
   :bind (("<f1> f"  . counsel-describe-function)
@@ -192,30 +214,20 @@
          ("C-x l"   . counsel-locate)
          ("M-x"     . counsel-M-x)))
 
-(use-package diff-hl
+(use-package gnus
   :config
-  (add-hook 'prog-mode-hook 'diff-hl-mode)
-  (add-hook 'text-mode-hook 'diff-hl-mode))
-
-(use-package eww-lnum
-  :config
-  (define-key eww-mode-map "f" 'eww-lnum-follow)
-  (define-key eww-mode-map "F" 'eww-lnum-universal))
-
-(use-package flycheck
-  :config (add-hook 'prog-mode-hook 'flycheck-mode))
-
-(use-package flyspell
-  :config
-  (add-hook 'flyspell-mode-hook (auto-dictionary-mode 1))
-  (add-hook 'markdown-mode-hook 'flyspell-mode)
-  (add-hook 'prog-mode-hook     'flyspell-prog-mode)
-  (add-hook 'text-mode-hook     'flyspell-mode))
-
-(use-package highlight-indent-guides
-  :config
-  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-  (setq highlight-indent-guides-method 'character))
+  (gnus-add-configuration
+   '(article
+     (horizontal 1.0
+                 (vertical 25 (group 1.0))
+                 (vertical 1.0
+                           (summary 0.25 point)
+                           (article 1.0)))))
+  (gnus-add-configuration
+   '(summary
+     (horizontal 1.0
+                 (vertical 25  (group 1.0))
+                 (vertical 1.0 (summary 1.0 point))))))
 
 (use-package ibuffer
   :bind ("C-x C-b" . ibuffer)
@@ -246,6 +258,7 @@
 
 (use-package linum
   :config
+  (setq linum-delay t)
   (add-hook 'lisp-mode-hook 'linum-mode)
   (add-hook 'prog-mode-hook 'linum-mode)
   (add-hook 'text-mode-hook 'linum-mode))
@@ -260,6 +273,14 @@
   (add-hook 'markdown-mode-hook 'rainbow-delimiters-mode)
   (add-hook 'prog-mode-hook     'rainbow-delimiters-mode)
   (add-hook 'text-mode-hook     'rainbow-delimiters-mode))
+
+(use-package scratch
+  :config
+  (defun scratch-new()
+    "Open a new scratch buffer."
+    (interactive)
+    (switch-to-buffer (generate-new-buffer "*scratch*"))
+    (lisp-mode)))
 
 (use-package smartparens
   :config
@@ -307,6 +328,8 @@
 ;;;
 ;;; Applications
 ;;;
+
+(setq use-package-always-defer t)
 
 (use-package circe
   :config
@@ -357,78 +380,10 @@
   (if (file-exists-p "~/.emacs.d/elfeed.el")
       (load-file "~/.emacs.d/elfeed.el")))
 
-(use-package eshell
+(use-package eww-lnum
   :config
-  (setq eshell-cmpl-cycle-completions     nil
-        eshell-error-if-no-glob           t
-        eshell-hist-ignoredups            t
-        eshell-history-size               4096
-        eshell-prefer-lisp-functions      t
-        eshell-save-history-on-exit       t
-        eshell-scroll-to-bottom-on-input  nil
-        eshell-scroll-to-bottom-on-output nil
-        eshell-scroll-show-maximum-output nil
-        eshell-prompt-regexp              "^[^#$\n]*[#$] "
-        eshell-prompt-function
-        (lambda nil
-          (concat
-           "[" (user-login-name) "@" (system-name) " "
-           (if (string= (eshell/pwd) (getenv "HOME"))
-               "~" (eshell/basename (eshell/pwd))) "]"
-           (if (= (user-uid) 0) "# " "$ ")))
-
-        eshell-visual-commands
-        '("alsamixer" "atop" "htop" "less" "mosh" "nano" "ssh" "tail"
-          "top" "vi" "vim" "watch" ))
-
-  (defun eshell/clear()
-    (interactive)
-    (recenter 0))
-
-  (defun eshell-new()
-    "Open a new instance of eshell."
-    (interactive)
-    (eshell 'N)))
-
-(use-package eww
-  :config
-  (setq browse-url-browser-function 'eww-browse-url
-        shr-blocked-images          "")
-
-  (defun eww-toggle-images()
-    "Toggle blocking images in eww."
-    (interactive)
-    (if (bound-and-true-p shr-blocked-images)
-        (setq shr-blocked-images nil)
-      (setq shr-blocked-images ""))
-    (eww-reload))
-
-  (defun eww-new()
-    "Open a new instance of eww."
-    (interactive)
-    (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
-      (switch-to-buffer (generate-new-buffer "*eww*"))
-      (eww-mode)
-      (eww url))))
-
-(use-package gist)
-
-(use-package gnus
-  :config
-  (gnus-add-configuration
-   '(article
-     (horizontal 1.0
-                 (vertical 25 (group 1.0))
-                 (vertical 1.0
-                           (summary 0.25 point)
-                           (article 1.0)))))
-  (gnus-add-configuration
-   '(summary
-     (horizontal 1.0
-                 (vertical 25  (group 1.0))
-                 (vertical 1.0 (summary 1.0 point))))))
-
-(use-package magit)
+  (define-key eww-mode-map "f" 'eww-lnum-follow)
+  (define-key eww-mode-map "F" 'eww-lnum-universal))
 
 (use-package nov
   :config
@@ -436,20 +391,65 @@
 
 (use-package pdf-tools)
 (use-package ranger)
+
+
+;;;
+;;; Development
+;;;
+
+(setq use-package-always-defer t)
+
+(use-package company
+  :config
+  (add-hook 'prog-mode-hook 'company-mode)
+  (add-hook 'text-mode-hook 'company-mode)
+  (setq company-tooltip-limit  20
+        company-idle-delay     0.3
+        company-echo-delay     0
+        company-begin-commands '(self-insert-command)))
+
+(use-package company-ansible         :after (company ansible-vault))
+(use-package company-emoji           :after (company))
+(use-package company-irony           :after (company)
+  :config (add-to-list 'company-backends 'company-irony))
+(use-package company-irony-c-headers :after (company-irony)
+  :config (add-to-list 'company-backends '(company-irony-c-headers company-irony)))
+(use-package company-jedi            :after (company python-mode))
+(use-package company-php             :after (company php-mode))
+(use-package company-rtags           :after (company))
+(use-package company-shell           :after (company))
+(use-package company-web             :after (company))
+
+(use-package diff-hl
+  :config
+  (add-hook 'prog-mode-hook 'diff-hl-mode)
+  (add-hook 'text-mode-hook 'diff-hl-mode))
+
+(use-package flycheck
+  :config (add-hook 'prog-mode-hook 'flycheck-mode))
+
+(use-package flyspell
+  :config
+  (add-hook 'flyspell-mode-hook (auto-dictionary-mode 1))
+  (add-hook 'markdown-mode-hook 'flyspell-mode)
+  (add-hook 'prog-mode-hook     'flyspell-prog-mode)
+  (add-hook 'text-mode-hook     'flyspell-mode))
+
+(use-package highlight-indent-guides
+  :config
+  (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
+  (setq highlight-indent-guides-method 'character))
+
+(use-package gist)
+(use-package magit)
 (use-package realgud)
 
-(use-package scratch
-  :config
-  (defun scratch-new()
-    "Open a new scratch buffer."
-    (interactive)
-    (switch-to-buffer (generate-new-buffer "*scratch*"))
-    (lisp-mode)))
-
 
 ;;;
-;;; Language Modes
+;;; Languages
 ;;;
+
+(setq use-package-always-defer t)
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
@@ -494,20 +494,21 @@
 (use-package gitconfig-mode)
 (use-package gitignore-mode)
 
-(use-package go-eldoc)
-
 (use-package go-mode
+  :after (go-eldoc go-rename)
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
   (add-hook 'go-mode-hook
-            (lambda()
-              (setq tab-width        4
-                    indent-tabs-mode 1)
-              (set (make-local-variable 'company-backends) '(company-go))
-              (company-mode t)
+	    (lambda()
+	      (setq tab-width        4
+		    indent-tabs-mode 1)
+	      (set (make-local-variable 'company-backends)
+		   '(company-go))
+	      (company-mode t)
 	      (go-eldoc-setup))))
 
-
+(use-package company-go :after (company))
+(use-package go-eldoc)
 (use-package go-rename)
 
 (use-package gradle-mode)
