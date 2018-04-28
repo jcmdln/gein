@@ -145,6 +145,7 @@
         enable-recursive-minibuffers  t))
 
 (use-package eshell
+  :demand t
   :config
   (setq eshell-cmpl-cycle-completions nil
         eshell-error-if-no-glob t
@@ -177,6 +178,7 @@
     (eshell 'N)))
 
 (use-package eww
+  :demand t
   :requires (eww-lnum)
   :config
   (setq browse-url-browser-function  'eww-browse-url
@@ -199,6 +201,7 @@
       (eww url))))
 
 (use-package eww-lnum
+  :after (eww)
   :config
   (define-key eww-mode-map "f" 'eww-lnum-follow)
   (define-key eww-mode-map "F" 'eww-lnum-universal))
@@ -223,11 +226,13 @@
   (add-hook 'text-mode-hook  'linum-mode))
 
 (use-package no-littering
+  :demand t
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
 
 (use-package rainbow-delimiters
+  :demand t
   :config
   (add-hook 'markdown-mode-hook  'rainbow-delimiters-mode)
   (add-hook 'prog-mode-hook      'rainbow-delimiters-mode)
@@ -236,6 +241,7 @@
 (use-package ranger)
 
 (use-package scratch
+  :demand t
   :config
   (defun scratch-new()
     "Open a new scratch buffer."
@@ -244,6 +250,7 @@
     (lisp-mode)))
 
 (use-package server
+  :demand t
   :bind ("C-x C-c" . server-stop)
   :config (unless (server-running-p)(server-start))
 
@@ -268,6 +275,7 @@
     (package-utils-upgrade-all)))
 
 (use-package smartparens
+  :demand t
   :config
   (add-hook 'markdown-mode-hook  'smartparens-mode)
   (add-hook 'prog-mode-hook      'smartparens-mode)
@@ -281,6 +289,7 @@
   :bind ("C-s" . swiper))
 
 (use-package undo-tree
+  :demand t
   :config (global-undo-tree-mode))
 
 (use-package xclip
