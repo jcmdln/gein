@@ -47,5 +47,4 @@ case $1 in
         echo "  -p, purge      Purge package and dependencies"
         echo "  -u, update     Update @world packages"
         echo "  -U, upgrade    Update @system packages"
-        ;;
 esac

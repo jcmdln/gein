@@ -8,6 +8,7 @@ app-emulation/qemu usb
 app-laptop/laptop-mode-tools acpi
 app-misc/screenfetch -X
 app-office/libreoffice collada gltf gstreamer gtk mysql pdfimport postgres
+app-text/asciidoc python_single_target_python2_7
 app-text/ghostscript-gpl cups
 app-text/poppler -qt5
 app-text/xmlto text
