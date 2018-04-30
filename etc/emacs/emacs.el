@@ -179,7 +179,6 @@
 
 (use-package eww
   :demand t
-  :requires (eww-lnum)
   :config
   (setq browse-url-browser-function  'eww-browse-url
         shr-blocked-images           "")
