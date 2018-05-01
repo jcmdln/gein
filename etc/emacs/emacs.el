@@ -10,7 +10,8 @@
 (setq prefer-coding-system        'utf-8
       set-default-coding-systems  'utf-8
       set-language-environment    "UTF-8"
-      set-locale-environment      "en_US.UTF-8")
+      set-locale-environment      "en_US.UTF-8"
+      custom-file                 "~/.emacs.d/custom.el")
 
 (setq initial-scratch-message      nil
       inhibit-splash-screen        t
@@ -229,6 +230,9 @@
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+
+(use-package package-utils
+  :demand t)
 
 (use-package rainbow-delimiters
   :demand t
