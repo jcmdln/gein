@@ -492,10 +492,6 @@
 (use-package company-php :after (company php-mode))
 
 (use-package protobuf-mode)
-
-(use-package python-mode)
-(use-package company-jedi :after (company python-mode))
-
 (use-package qml-mode)
 (use-package rust-mode)
 (use-package sass-mode)
