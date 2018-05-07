@@ -475,8 +475,6 @@
               (company-mode t)
               (go-eldoc-setup))))
 (use-package company-go :after (company go-mode))
-(use-package go-eldoc   :after (go-mode))
-(use-package go-rename  :after (go-mode))
 
 (use-package gradle-mode)
 (use-package json-mode)
