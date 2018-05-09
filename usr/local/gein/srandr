@@ -1,5 +1,16 @@
 #!/usr/bin/env sh
 
+## Example ~/.display.sh Configuration
+#
+# #!/usr/bin/env sh
+# DisplayConfigs="LVDS1 VGA1"
+# LVDS1() {
+#     xrandr --output LVDS1 --auto
+# }
+# VGA1() {
+#     xrandr --output LVDS1 --auto --above LVDS1
+# }
+
 Displays=""
 
 while :; do
@@ -11,6 +22,7 @@ while :; do
             for display in $CDisplays; do
                 if [ -e "$HOME/.display.sh" ]; then
                     . "$HOME/.display.sh"
+
                     for config in $DisplayConfigs; do
                         if [ "$display" == "$config" ]; then
                             $config
