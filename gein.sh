@@ -99,7 +99,7 @@ CONFIG() {
 
     for Folder in $ConfigFolders; do
         [ -d "$Folder" ]  && rm    -rf "$Folder"
-        [ ! -d "$Folder"] && mkdir -p  "$Folder"
+        [ ! -d "$Folder" ] && mkdir -p  "$Folder"
     done
 
     for File in $Configs; do
