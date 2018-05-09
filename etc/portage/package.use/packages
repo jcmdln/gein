@@ -14,6 +14,7 @@ app-text/poppler -qt5
 app-text/xmlto text
 dev-games/ogre examples ois
 dev-games/openscenegraph truetype
+dev-lang/go gccgo
 dev-lang/python:2.7 sqlite
 dev-libs/libpcre pcre16
 dev-libs/libxml2 icu python
@@ -54,7 +55,7 @@ net-wireless/wpa_supplicant -qt5
 sys-apps/openrc -netifrc
 sys-auth/consolekit policykit
 sys-auth/pambase consolekit
-sys-devel/gcc cxx gccgo nls nplt
+sys-devel/gcc cxx go nls nplt
 sys-devel/llvm clang
 sys-libs/libcxx libcxxabi
 sys-libs/zlib minizip
