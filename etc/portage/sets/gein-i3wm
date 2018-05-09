@@ -1,4 +1,4 @@
-# /etc/portage/sets/gein-minimal
+# /etc/portage/sets/gein-i3wm
 
 ## Desktop
 media-fonts/noto
