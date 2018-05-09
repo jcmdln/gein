@@ -74,6 +74,7 @@ export PATH
 export PROMPT_COMMAND="history -a"
 export PS1
 export SSH_KEY_PATH="$HOME/.ssh/rsa_id"
+export TERM="xterm-256color"
 
 
 # This section will find and source all files in '/etc/profile.d' that
