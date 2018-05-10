@@ -214,6 +214,11 @@ BOOTSTRAP() {
         exit
     fi
 
+    echo "gein: Ensuring /mnt/gentoo exists..."
+    if [ ! -e /mnt/gentoo ]; then
+	mkdir -p /mnt/gentoo
+    fi
+
     echo "gein: Ensuring we are in /mnt/gentoo..."
     if [ ! -e /mnt/gentoo/$(basename "$0") ]; then
         cp "$0" /mnt/gentoo/
