@@ -200,7 +200,7 @@ BOOTSTRAP() {
     echo "  - Edited the environment variables at the top of this script."
     echo "  - Partitioned and mounted your disk(s)."
 
-    read -ep "Proceed with installation? [Y/N]: " Proceed
+    read -p "Proceed with installation? [Y/N]: " Proceed
     if echo "$Proceed" | grep -iq "^y"; then
         echo "gein: Proceeding with installation..."
     else
@@ -296,7 +296,7 @@ MINIMAL() {
     echo "gein: choose the latest stable release"
     TargetProfile=""
     while [ -z "$TargetProfile" ]; do
-        read -ep "Which profile?: " TargetProfile
+        read -p "Which profile?: " TargetProfile
     done
     eselect profile set "$TargetProfile"
     $Emerge -uDN @world
@@ -377,7 +377,7 @@ DESKTOP() {
     $Emerge "$DesktopChoice"
     rc-update add consolekit default
 
-    read -ep "gein: Install laptop packages? [Y/N]: " SetupUser
+    read -p "gein: Install laptop packages? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
         $Emerge @gein-laptop
         rc-update add laptop_mode default
@@ -397,10 +397,10 @@ POSTINSTALL() {
     # groupadd power
     #   poweroff reboot shutdown
 
-    read -ep "gein: Setup a standard user? [Y/N]: " SetupUser
+    read -p "gein: Setup a standard user? [Y/N]: " SetupUser
     if echo "$SetupUser" | grep -iq "^y"; then
         echo "gein: Creating user account"
-        read -ep "Username: " Username
+        read -p "Username: " Username
         useradd -m -G wheel,audio,video \
                 -s /bin/bash "$Username"
         passwd $Username
