@@ -214,9 +214,10 @@ BOOTSTRAP() {
         exit
     fi
 
-    echo "gein: Ensuring /mnt/gentoo exists..."
     if [ ! -e /mnt/gentoo ]; then
-	mkdir -p /mnt/gentoo
+	echo "gein: You didn't create /mnt/gentoo before proceeding!"
+	echo "gein: The mount point may be incorrect. Exiting..."
+	exit
     fi
 
     echo "gein: Ensuring we are in /mnt/gentoo..."

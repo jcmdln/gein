@@ -35,7 +35,7 @@ Run `eselect opengl set nvidia` as root.
 
 You may use this script as-is by performing the following steps:
 
-1. Download the latest Gentoo install cd for your architecture. Only
+1. Download the Gentoo install cd (or any Live distribution) for your architecture. Only
 amd64 is currently defined. Create an issue with the output of
 `uname -a` for it to be added to the script.
 
@@ -46,7 +46,8 @@ amd64 is currently defined. Create an issue with the output of
 
 3. Partition and mount your disks. Note that this example assumes that
 you will be using a single partition and later installing GRUB to the
-MBR.
+MBR. Note that if you aren't using the Gentoo installation CD, you will
+need to `mkdir /mnt/gentoo` before proceeding.
 
         $ fdisk /dev/sdX
         $ mount /dev/sdX1 /mnt/gentoo
