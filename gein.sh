@@ -414,7 +414,6 @@ POSTINSTALL() {
 # BOOTSTRAP() needs to be run to completion before running the MINIMAL()
 # or DESKTOP() passes.
 
-shopt -s nocasematch
 case $1 in
     bootstrap)
         BOOTSTRAP
@@ -453,7 +452,7 @@ case $1 in
                 ;;
 
             *)
-                echo "gein desktop: Available options"
+                echo "gein: desktop: Available options"
                 echo "  i3wm         i3wm desktop"
                 echo "  lxqt         LXQT desktop"
         esac
@@ -467,4 +466,3 @@ case $1 in
         echo "  minimal      Headless installation"
         echo "  desktop      Desktop installation"
 esac
-shopt -u nocasematch
