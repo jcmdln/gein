@@ -1,4 +1,4 @@
-# /etc/portage/package.use/packages
+# /etc/portage/package.use/local
 
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/zip -bzip2
@@ -55,7 +55,7 @@ net-wireless/wpa_supplicant -qt5
 sys-apps/openrc -netifrc
 sys-auth/consolekit policykit
 sys-auth/pambase consolekit
-sys-devel/gcc cxx go nls nplt
+sys-devel/gcc cxx go nls ssp
 sys-devel/llvm clang
 sys-libs/libcxx libcxxabi
 sys-libs/zlib minizip
