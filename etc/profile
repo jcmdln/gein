@@ -26,15 +26,6 @@ esac
        . /etc/profile.env
 
 
-# OpenBSD allows setting a custom URL for pkgsrc. This section confirms
-# that 'pkg_add' is an available command
-
-[ -e "$(command -v pkg_add)" ] &&
-    PKG_PATH="https://mirror.leaseweb.com/openbsd" &&
-    PKG_PATH="$PKG_PATH/snapshots/packages/amd64/" &&
-    export PKG_PATH
-
-
 # Setting PS1 correctly depending on the current shell can be important
 # for users of non-standard shells. Here we will attempt to accommodate
 # other shells if currently in use, and default to standard shell
@@ -55,9 +46,6 @@ fi
 
 PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin:/usr/bin:/opt/bin"
 PATH="$PATH:/usr/local/gein:/sbin:/bin:$HOME/.local/bin:$HOME/.bin:$HOME/bin"
-
-[ -d /usr/X11R6/bin ] &&
-    PATH="$PATH:/usr/X11R6/bin"
 
 MANPATH="/usr/man:/usr/share/man:/usr/local/man:/usr/local/share/man"
 MANPATH="$MANPATH:$HOME/.local/man:$HOME/.local/share/man"
