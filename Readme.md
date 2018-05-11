@@ -50,6 +50,7 @@ MBR. Note that if you aren't using the Gentoo installation CD, you will
 need to `mkdir /mnt/gentoo` before proceeding.
 
         $ fdisk /dev/sdX
+        $ mkfs.ext4 /dev/sdX
         $ mount /dev/sdX1 /mnt/gentoo
 
 4. Download and run `gein.sh`
