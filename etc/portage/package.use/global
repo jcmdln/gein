@@ -10,6 +10,6 @@
 */* dbus bzip2 zlib
 
 ## Desktop
-*/* alsa bluetooth pulseaudio
-*/* ffmpeg gif imagemagick jpeg jpeg2k png svg tiff xpm
-*/* X egl gles openal opengl sdl sdl2 vaapi vdpau xft
+# */* alsa bluetooth pulseaudio
+# */* ffmpeg gif imagemagick jpeg jpeg2k png svg tiff xpm
+# */* X egl gles openal opengl sdl sdl2 vaapi vdpau xft
