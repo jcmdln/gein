@@ -52,9 +52,10 @@ CONFIG() {
         /etc/portage/package.accept_keywords
         /etc/portage/package.env
         /etc/portage/package.license
-        /etc/portage/package.use/defaults
+
+        /etc/portage/package.use/global
+        /etc/portage/package.use/local
         /etc/portage/package.use/multilib
-        /etc/portage/package.use/packages
 
         /etc/portage/sets/gein-base
         /etc/portage/sets/gein-i3wm
