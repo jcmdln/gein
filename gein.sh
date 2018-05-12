@@ -373,7 +373,7 @@ MINIMAL() {
 
 DESKTOP() {
     echo "gein: Enabling X in '/etc/portage/package.use/defaults'..."
-    sed -i '2,$s/^# //g' /etc/portage/package.use/defaults
+    sed -i '2,$s/^# //g' /etc/portage/package.use/global
 
     echo "gein: Installing Xorg drivers..."
     $Emerge x11-base/xorg-drivers
