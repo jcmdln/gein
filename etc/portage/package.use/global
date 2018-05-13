@@ -1,7 +1,7 @@
 # /etc/portage/package.use/global
 
 ## Blacklist
-*/* -aqua -athena -avahi -bindist -cairo -doc -games -gnome-keyring -gtk -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive -openssl -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -wayland
+*/* -aqua -athena -avahi -bindist -cairo -doc -games -gnome-keyring -gtk -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive -openssl -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Base
 */* deblob gnutls hardened minimal nplt threads unicode
@@ -12,4 +12,4 @@
 ## Desktop
 # */* alsa bluetooth
 # */* ffmpeg gif imagemagick jpeg jpeg2k png svg tiff xpm
-# */* X egl gles openal opengl sdl sdl2 vaapi vdpau xft
+# */* X egl gles openal opengl sdl sdl2 vaapi vdpau wayland xft
