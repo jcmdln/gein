@@ -17,6 +17,7 @@ dev-games/openscenegraph truetype
 dev-lang/go gccgo
 dev-lang/python:2.7 sqlite
 dev-libs/libpcre pcre16
+dev-libs/libpcre2 pcre16
 dev-libs/libxml2 icu python
 dev-qt/qtcore icu
 dev-qt/qtmultimedia gstreamer qml
@@ -40,7 +41,7 @@ media-gfx/inkscape latex
 media-gfx/pstoedit plotutils
 media-libs/harfbuzz icu
 media-libs/libpng apng
-media-libs/mesa -vaapi gles2
+media-libs/mesa -vaapi gles2 wayland
 media-libs/phonon -vlc gstreamer
 media-plugins/gst-plugins-meta ogg vorbis
 media-sound/cmus aac alsa flac libsamplerate mad mp4 opus oss vorbis wavpack
