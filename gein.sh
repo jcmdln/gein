@@ -42,7 +42,7 @@
 # the main repository, and 'Config' is the list of all configuration
 # files that will be installed.
 
-Source="https://raw.githubusercontent.com/jcmdln/gein/master"
+Source="https://gein.io/"
 
 CONFIG() {
     # This is a list of all config files that need to be downloaded and
