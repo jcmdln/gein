@@ -55,7 +55,7 @@ need to `mkdir /mnt/gentoo` before proceeding.
 
 4. Download and run `gein.sh`
 
-        $ wget https://raw.githubusercontent.com/jcmdln/gein/master/gein.sh
+        $ wget https://gein.io/gein.sh
         $ sh gein.sh
         gein: Linux-based derivative of Gentoo
           bootstrap    Bootstrap the stage3 tarball
