@@ -2,8 +2,10 @@
 
 [ -e /etc/profile ] && source /etc/profile
 
-shopt -s checkwinsize
-shopt -s no_empty_cmd_completion
-shopt -s histappend
+if [ -v "$(command -v shopt)" ]; then
+    shopt -s checkwinsize
+    shopt -s no_empty_cmd_completion
+    shopt -s histappend
+fi
 
 unset sh
