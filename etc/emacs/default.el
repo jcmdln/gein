@@ -1,60 +1,16 @@
 ;;; /etc/emacs/default.el
 
-(when (fboundp 'menu-bar-mode)   (menu-bar-mode   -1))
-(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(when (fboundp 'tool-bar-mode)   (tool-bar-mode   -1))
+;;;
+;;; Startup
+;;;
 
-(load-theme 'tango-dark)
-(set-face-attribute 'default nil :family "Monospace" :height 96)
-
+;; Force using UTF-8
 (setq prefer-coding-system        'utf-8
       set-default-coding-systems  'utf-8
       set-language-environment    "UTF-8"
-      set-locale-environment      "en_US.UTF-8"
-      custom-file                 "~/.emacs.d/custom.el")
+      set-locale-environment      "en_US.UTF-8")
 
-(setq initial-scratch-message      nil
-      inhibit-splash-screen        t
-      inhibit-startup-buffer-menu  t
-      visible-bell                 nil)
-
-(require 'package)
-(setq package-user-dir "~/.emacs.d/pkg/"
-      package-archives
-      '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
-        ("MELPA Stable" . "https://stable.melpa.org/packages/")
-        ("MELPA"        . "https://melpa.org/packages/"))
-      package-archive-priorities
-      '(("MELPA Stable" . 3)
-        ("GNU ELPA"     . 2)
-        ("MELPA"        . 1)))
-(package-initialize)
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-when-compile
-  (require 'use-package)
-  (require 'bind-key))
-(setq use-package-always-defer       t
-      use-package-always-ensure      t
-      use-package-check-before-init  t)
-
-;; Misc
-(setq require-final-newline                t
-      save-interprogram-paste-before-kill  t
-      select-enable-primary                nil)
-
-;; Scrolling
-(setq auto-window-vscroll              nil
-      scroll-conservatively            101
-      scroll-margin                    0
-      scroll-preserve-screen-position  1
-      scroll-step                      1
-      scroll-up-aggressively           0.0
-      scroll-down-aggressively         0.0)
-
-;; Environment Variables
+;; Load and set environment variables
 (setenv "EDITOR"          "emacsclient")
 (setenv "GIT_EDITOR"      "emacsclient")
 (setenv "GOPATH"          (getenv "GOPATH"))
@@ -65,17 +21,56 @@
 (setenv "SHELL"           (getenv "SHELL"))
 (setenv "TERM"            (getenv "TERM"))
 
-;; Frame
-(global-set-key (kbd "M--") (lambda() (interactive)
-                              (split-window-vertically)
-                              (other-window 1 nil)
-                              (switch-to-next-buffer)))
-(global-set-key (kbd "M-=") (lambda() (interactive)
-                              (split-window-horizontally)
-                              (other-window 1 nil)
-                              (switch-to-next-buffer)))
+;; Inhibit
+(setq initial-scratch-message      nil
+      inhibit-splash-screen        t
+      inhibit-startup-buffer-menu  t)
 
-;; Movement
+;; Inhibit loading toolbars as early as possible
+(when (fboundp 'menu-bar-mode)   (menu-bar-mode   -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+(when (fboundp 'tool-bar-mode)   (tool-bar-mode   -1))
+
+;; Load theme and set font face
+(load-theme 'tango-dark)
+(set-face-attribute 'default nil :family "Monospace" :height 96)
+
+;; Misc
+(setq custom-file                          "~/.emacs.d/custom.el"
+      require-final-newline                t
+      save-interprogram-paste-before-kill  t
+      select-enable-primary                nil
+      visible-bell                         nil)
+
+;; Scrolling
+(setq auto-window-vscroll              nil
+      scroll-conservatively            101
+      scroll-margin                    0
+      scroll-preserve-screen-position  1
+      scroll-step                      1
+      scroll-up-aggressively           0.0
+      scroll-down-aggressively         0.0)
+
+
+;;;
+;;; Input
+;;;
+
+;; Split vertically and switch to frame using "-"
+(global-set-key (kbd "M--")
+                (lambda() (interactive)
+                  (split-window-vertically)
+                  (other-window 1 nil)
+                  (switch-to-next-buffer)))
+
+;; Split horizontally and switch to frame using "+"
+(global-set-key (kbd "M-=")
+                (lambda() (interactive)
+                  (split-window-horizontally)
+                  (other-window 1 nil)
+                  (switch-to-next-buffer)))
+
+;; Additional frame movement keys
 (global-set-key (kbd "<M-down>")     'windmove-down)
 (global-set-key (kbd "<M-left>")     'windmove-left)
 (global-set-key (kbd "<M-right>")    'windmove-right)
@@ -92,14 +87,48 @@
       mouse-yank-at-point            t
       xterm-mouse-mode               t)
 
-(global-set-key (kbd "<mouse-4>") (lambda() (interactive)
-                                    (scroll-down-line 3)))
-(global-set-key (kbd "<mouse-5>") (lambda() (interactive)
-                                    (scroll-up-line 3)))
+;; Set scroll "speed"
+(global-set-key (kbd "<mouse-4>") (lambda() (interactive) (scroll-down-line 3)))
+(global-set-key (kbd "<mouse-5>") (lambda() (interactive) (scroll-up-line 3)))
+
+
+;;
+;; Package Management
+;;
+
+;; Require built-in package manager
+(require 'package)
+
+;; Set package repositories and priority before initializing
+(setq package-user-dir "~/.emacs.d/pkg/"
+      package-archives
+      '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
+        ("MELPA Stable" . "https://stable.melpa.org/packages/")
+        ("MELPA"        . "https://melpa.org/packages/"))
+      package-archive-priorities
+      '(("MELPA Stable" . 3)
+        ("GNU ELPA"     . 2)
+        ("MELPA"        . 1)))
+(package-initialize)
+
+;; Install use-package if missing
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+;; Ensure that use-package and bind-key are loaded
+(eval-when-compile
+  (require 'use-package)
+  (require 'bind-key))
+
+;; Configure use-package
+(setq use-package-always-defer       t
+      use-package-always-ensure      t
+      use-package-check-before-init  t)
 
 
 ;;;
-;;; Applications
+;;; Utilities
 ;;;
 
 (use-package async
@@ -145,67 +174,6 @@
   (setq ivy-use-virtual-buffers       t
         enable-recursive-minibuffers  t))
 
-(use-package eshell
-  :demand t
-  :config
-  (setq eshell-cmpl-cycle-completions nil
-        eshell-error-if-no-glob t
-        eshell-hist-ignoredups t
-        eshell-history-size 4096
-        eshell-prefer-lisp-functions t
-        eshell-save-history-on-exit t
-        eshell-scroll-to-bottom-on-input nil
-        eshell-scroll-to-bottom-on-output nil
-        eshell-scroll-show-maximum-output nil
-        eshell-prompt-regexp "^[^#$\n]*[#$] "
-        eshell-prompt-function
-        (lambda nil
-          (concat
-           "[" (user-login-name) "@" (system-name) " "
-           (if (string= (eshell/pwd) (getenv "HOME"))
-               "~" (eshell/basename (eshell/pwd))) "]"
-           (if (= (user-uid) 0) "# " "$ ")))
-        eshell-visual-commands '("alsamixer" "atop" "htop" "less" "mosh"
-                                 "nano" "ssh" "tail" "top" "vi" "vim"
-                                 "watch"))
-
-  (defun eshell/clear()
-    (interactive)
-    (recenter 0))
-
-  (defun eshell-new()
-    "Open a new instance of eshell."
-    (interactive)
-    (eshell 'N)))
-
-(use-package eww
-  :demand t
-  :config
-  (setq browse-url-browser-function  'eww-browse-url
-        shr-blocked-images           "")
-
-  (defun eww-toggle-images()
-    "Toggle blocking images in eww."
-    (interactive)
-    (if (bound-and-true-p shr-blocked-images)
-        (setq shr-blocked-images nil)
-      (setq shr-blocked-images ""))
-    (eww-reload))
-
-  (defun eww-new()
-    "Open a new instance of eww."
-    (interactive)
-    (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
-      (switch-to-buffer (generate-new-buffer "*eww*"))
-      (eww-mode)
-      (eww url))))
-
-(use-package eww-lnum
-  :after (eww)
-  :config
-  (define-key eww-mode-map "f" 'eww-lnum-follow)
-  (define-key eww-mode-map "F" 'eww-lnum-universal))
-
 (use-package ibuffer
   :bind (("C-x C-b"         . ibuffer)
          ("<C-tab>"         . next-buffer)
@@ -240,17 +208,6 @@
   (add-hook 'markdown-mode-hook  'rainbow-delimiters-mode)
   (add-hook 'prog-mode-hook      'rainbow-delimiters-mode)
   (add-hook 'text-mode-hook      'rainbow-delimiters-mode))
-
-(use-package ranger)
-
-(use-package scratch
-  :demand t
-  :config
-  (defun scratch-new()
-    "Open a new scratch buffer."
-    (interactive)
-    (switch-to-buffer (generate-new-buffer "*scratch*"))
-    (lisp-mode)))
 
 (use-package server
   :demand t
@@ -348,19 +305,95 @@
   (if (file-exists-p  "~/.emacs.d/elfeed.el")
       (load-file      "~/.emacs.d/elfeed.el")))
 
+(use-package eshell
+  :demand t
+  :config
+  (setq eshell-cmpl-cycle-completions nil
+        eshell-error-if-no-glob t
+        eshell-hist-ignoredups t
+        eshell-history-size 4096
+        eshell-prefer-lisp-functions t
+        eshell-save-history-on-exit t
+        eshell-scroll-to-bottom-on-input nil
+        eshell-scroll-to-bottom-on-output nil
+        eshell-scroll-show-maximum-output nil
+        eshell-prompt-regexp "^[^#$\n]*[#$] "
+        eshell-prompt-function
+        (lambda nil
+          (concat
+           "[" (user-login-name) "@" (system-name) " "
+           (if (string= (eshell/pwd) (getenv "HOME"))
+               "~" (eshell/basename (eshell/pwd))) "]"
+           (if (= (user-uid) 0) "# " "$ ")))
+        eshell-visual-commands '("alsamixer" "atop" "htop" "less" "mosh"
+                                 "nano" "ssh" "tail" "top" "vi" "vim"
+                                 "watch"))
+
+  (defun eshell/clear()
+    (interactive)
+    (recenter 0))
+
+  (defun eshell-new()
+    "Open a new instance of eshell."
+    (interactive)
+    (eshell 'N)))
+
+(use-package eww
+  :demand t
+  :config
+  (setq browse-url-browser-function  'eww-browse-url
+        shr-blocked-images           "")
+
+  (defun eww-toggle-images()
+    "Toggle blocking images in eww."
+    (interactive)
+    (if (bound-and-true-p shr-blocked-images)
+        (setq shr-blocked-images nil)
+      (setq shr-blocked-images ""))
+    (eww-reload))
+
+  (defun eww-new()
+    "Open a new instance of eww."
+    (interactive)
+    (let ((url (read-from-minibuffer "Enter URL or keywords: ")))
+      (switch-to-buffer (generate-new-buffer "*eww*"))
+      (eww-mode)
+      (eww url))))
+
+(use-package eww-lnum
+  :after (eww)
+  :config
+  (define-key eww-mode-map "f" 'eww-lnum-follow)
+  (define-key eww-mode-map "F" 'eww-lnum-universal))
+
 (use-package nov
   :config (add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode)))
 
 (use-package pdf-tools)
+
+(use-package ranger)
+
+(use-package scratch
+  :demand t
+  :config
+  (defun scratch-new()
+    "Open a new scratch buffer."
+    (interactive)
+    (switch-to-buffer (generate-new-buffer "*scratch*"))
+    (lisp-mode)))
 
 
 ;;;
 ;;; Development
 ;;;
 
+;;
 (global-set-key (kbd "C-c c") 'comment-or-uncomment-region)
 
+;;
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+;; Allow C and C++ modes to read .h headers
 (add-hook 'c-mode-hook
           (lambda()
             (add-to-list 'auto-mode-alist
@@ -370,6 +403,7 @@
             (add-to-list 'auto-mode-alist
                          '("\\.h\\'" . c++-mode))))
 
+;; Default indent
 (setq c-basic-offset      2
       column-number-mode  t
       cperl-indent-level  2
@@ -382,8 +416,11 @@
 (show-paren-mode          t)
 (fset 'yes-or-no-p        'y-or-n-p)
 
-(use-package company-ansible
-  :after (company ansible-vault))
+(use-package magit
+  :demand t)
+
+(use-package gist)
+(use-package realgud)
 
 (use-package company-emoji
   :after (company))
@@ -440,14 +477,14 @@
   (define-key irony-mode-map [remap complete-symbol]     'counsel-irony)
   (setq irony-additional-clang-options '("-std=c++14")))
 
-(use-package gist)
-(use-package magit)
-(use-package realgud)
-
 (use-package ahk-mode)
 (use-package android-mode)
 (use-package angular-mode)
+
 (use-package ansible-vault)
+(use-package company-ansible
+  :after (company ansible-vault))
+
 (use-package apache-mode)
 (use-package cmake-mode)
 (use-package coffee-mode)
@@ -472,9 +509,11 @@
                     indent-tabs-mode 1)
               (set (make-local-variable 'company-backends)
                    '(company-go))
-              (company-mode t)
-              (go-eldoc-setup))))
+              (company-mode t))))
 (use-package company-go :after (company go-mode))
+;; (use-package go-eldoc
+;;   :after  (go-mode)
+;;   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
 (use-package gradle-mode)
 (use-package json-mode)
