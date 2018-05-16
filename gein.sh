@@ -1,14 +1,4 @@
 #!/usr/bin/env sh
-#
-# Copyright (C) 2017, 2018
-# * Johnathan C Maudlin <jcmdln@gmail.com>
-#
-# This software is licensed under the Azryn Software Labs Public License
-# of version 1.1.0 or later. You should have received a copy of the
-# Azryn Software Labs Public License along with this program. If not,
-# please see https://apl.azryn.org/ for a copy.
-#
-
 
 ## Grub installation path
 #
