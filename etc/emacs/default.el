@@ -262,6 +262,9 @@
 
 (use-package circe
   :config
+  (load "lui-logging" nil t)
+  (enable-lui-logging-globally)
+
   (if (file-exists-p "~/.emacs.d/circe.el")
       (load-file     "~/.emacs.d/circe.el"))
 
@@ -300,8 +303,8 @@
 (use-package elfeed
   :bind ("C-x w" . elfeed)
   :config
-  (setq elfeed-search-filter "@1-week-ago +unread "
-        url-queue-timeout 30)
+  (setq elfeed-search-filter  "@1-week-ago +unread "
+        url-queue-timeout     30)
   (if (file-exists-p  "~/.emacs.d/elfeed.el")
       (load-file      "~/.emacs.d/elfeed.el")))
 
