@@ -272,6 +272,10 @@
   (enable-circe-color-nicks)
   (setf (cdr (assoc 'continuation fringe-indicator-alist)) nil)
 
+  (if (file-directory-p "~/.emacs/var/circe")
+      nil
+    (make-directory "~/.emacs.d/var/circe"))
+
   (setq circe-default-part-message  ""
         circe-default-quit-message  ""
         circe-format-server-topic   "*** Topic: {userhost}: {topic-diff}"
@@ -280,6 +284,7 @@
         lui-fill-type               nil
         lui-flyspell-alist          '((".*" "american"))
         lui-flyspell-p              t
+        lui-logging-directory       "~/.emacs.d/var/circe"
         lui-time-stamp-format       "%H:%M:%S"
         lui-time-stamp-position     'left-margin)
 
