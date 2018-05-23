@@ -124,33 +124,7 @@ SwapSize="2G"
 TimeZone="America/New_York"
 
 AutoKernel="true"
-KernelConfig="$Source/usr/src/linux/4.16.config"
-
-
-## Portage
-#
-# Leave 'CPUCores' as-is. It will count the number of available cores
-# which will be used during this script and set in the 'make.conf'.
-# Changing this to 'Cores + 1', despite this being suggested in many
-# corners of the web, is not a good idea and will actually increase the
-# total time needed to compile.
-#
-
-case "$(uname -m)" in
-    i486|i586)
-        CPUArch="i486";;
-    i686|x86|x86_32)
-        CPUArch="i686";;
-    amd64|x86_64)
-        CPUArch="amd64";;
-
-    *)
-        echo "gein: CPU arch has not been defined yet"
-        echo "gein: Submit an issue with the output of 'uname -m'"
-        exit
-esac
-
-CPUCores="$(grep -c ^processor /proc/cpuinfo)"
+#KernelConfig="$Source/usr/src/linux/4.16.config"
 
 
 ## Command Aliases
@@ -164,6 +138,34 @@ Make="make -s -j$CPUCores"
 Wget="wget -q"
 
 
+## Portage
+#
+# Leave 'CPUCores' as-is. It will count the number of available cores
+# which will be used during this script and set in the 'make.conf'.
+# Changing this to 'Cores + 1', despite this being suggested in many
+# corners of the web, is not a good idea and will actually increase the
+# total time needed to compile.
+
+case "$(uname -m)" in
+    i486|i586)
+        CPUDir="x86"
+        CPUArch="i486";;
+    i686|x86|x86_32)
+        CPUDir="x86"
+        CPUArch="i686";;
+    amd64|x86_64)
+        CPUDir="amd64"
+        CPUArch="amd64";;
+
+    *)
+        echo "gein: CPU arch has not been defined yet"
+        echo "gein: Submit an issue with the output of 'uname -m'"
+        exit
+esac
+
+CPUCores="$(grep -c ^processor /proc/cpuinfo)"
+
+
 ## Gentoo Stage3
 #
 # This section exists to automate identifying and downloading the latest
@@ -172,7 +174,7 @@ Wget="wget -q"
 # errors when executing MINIMAL() or DESKTOP() due to cURL missing
 # after completing the BOOTSTRAP().
 
-S3_Source="http://distfiles.gentoo.org/releases/$CPUArch/autobuilds"
+S3_Source="http://distfiles.gentoo.org/releases/$CPUDir/autobuilds"
 S3_Release="curl -s $S3_Source/latest-stage3-$CPUArch.txt"
 
 if [ -x "$(command -v curl)" ]; then
