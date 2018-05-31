@@ -53,14 +53,13 @@ to remain somewhat agnostic when possible.
 
 * "How much about Gentoo will I need to know to use `gein`?"
   * Very little to get Gentoo installed, but you'll need to understand
-    how Gentoo and Portage work to maintain the system.
-  * As long as you can follow this Readme, then you can use `gein`
-    without much thought to install Gentoo. Because I have configured
-    Portage for my own needs, this may cause pain later on, such as when
-    attempting to install a package that I haven't defined USE flags for.
-    If you aren't familiar with Portage then you will gradually find
-    yourself further an further at odds with the system unless you read
-    the Gentoo Handbook for your system.
+    how Gentoo and Portage work to maintain the system. As long as you
+    can follow this Readme, then you can use `gein` without much thought.
+  * Because I have configured Portage for my own needs, this may cause 
+	pain later on, such as when attempting to install a package that I 
+	haven't defined USE flags for. If you aren't familiar with Portage 
+	then you will gradually find yourself further and further at odds 
+	with the system unless you read the Gentoo Handbook for your system.
 * "I keep getting boot failures after installing in a VirtualBox VM?"
   * Remove the virtual disk drive from the boot order and restart.
 * "The display is lagging when using LXQT on my Nvidia GPU?"
