@@ -381,12 +381,10 @@
 ;; Allow C and C++ modes to read .h headers
 (add-hook 'c-mode-hook
           (lambda()
-            (add-to-list 'auto-mode-alist
-                         '("\\.h\\'" . c-mode))))
+            (add-to-list 'auto-mode-alist '("\\.h\\'" . c-mode))))
 (add-hook 'c++-mode-hook
           (lambda()
-            (add-to-list 'auto-mode-alist
-                         '("\\.h\\'" . c++-mode))))
+            (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))))
 
 ;; Default indent
 (setq c-basic-offset     2
