@@ -102,13 +102,13 @@
 ;; Set package repositories and priority before initializing
 (setq package-user-dir "~/.emacs.d/pkg/"
       package-archives
-      '(("GNU ELPA"     . "https://elpa.gnu.org/packages/")
+      '(("GNU ELPA"     . "http://elpa.gnu.org/packages/")
         ("MELPA Stable" . "https://stable.melpa.org/packages/")
         ("MELPA"        . "https://melpa.org/packages/"))
       package-archive-priorities
-      '(("MELPA Stable" . 3)
-        ("GNU ELPA"     . 2)
-        ("MELPA"        . 1)))
+      '(("GNU ELPA"     . 1)
+        ("MELPA Stable" . 2)
+        ("MELPA"        . 0)))
 (package-initialize)
 
 ;; Install use-package if missing
@@ -321,7 +321,7 @@
           (concat "[" (user-login-name) "@" (system-name) " "
                   (if (string= (eshell/pwd) (getenv "HOME"))
                       "~" (eshell/basename (eshell/pwd))) "]"
-                      (if (= (user-uid) 0) "# " "$ ")))
+                  (if (= (user-uid) 0) "# " "$ ")))
         eshell-visual-commands '("alsamixer" "atop" "htop" "less" "mosh"
                                  "nano" "ssh" "tail" "top" "vi" "vim"
                                  "watch"))
@@ -431,8 +431,7 @@
   :after (company))
 
 (use-package company-irony
-  :after
-  (company irony)
+  :after (company irony)
   :config
   (add-to-list 'company-backends 'company-irony))
 
@@ -444,7 +443,8 @@
 (use-package company-php :after (company php-mode))
 
 (use-package company-rtags
-  :after (company))
+  :after (company)
+  :config (push 'company-rtags company-backends))
 
 (use-package company-shell
   :after (company))
@@ -500,16 +500,17 @@
 
 (use-package rtags
   :after (company)
+  :init
+  (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
+  (add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
   :config
   (setq rtags-autostart-diagnostics  t
         rtags-completions-enabled    t
         rtags-display-result-backend 'ivy)
-  (push 'company-rtags company-backends)
-
-  (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
-  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
-  (add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
-  (rtags-restart-process))
+  (setq-local flycheck-highlighting-mode nil)
+  (setq-local flycheck-check-syntax-automatically nil)
+  (rtags-diagnostics))
 
 
 ;;;
