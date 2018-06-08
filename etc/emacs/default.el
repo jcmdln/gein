@@ -33,13 +33,6 @@
 (setenv "SHELL"          (getenv "SHELL"))
 (setenv "TERM"           (getenv "TERM"))
 
-;; Misc
-(setq custom-file                         "~/.emacs.d/custom.el"
-      require-final-newline               t
-      save-interprogram-paste-before-kill t
-      select-enable-primary               nil
-      visible-bell                        nil)
-
 ;; Scrolling
 (setq auto-window-vscroll             nil
       scroll-conservatively           101
@@ -48,6 +41,18 @@
       scroll-step                     1
       scroll-up-aggressively          0.0
       scroll-down-aggressively        0.0)
+
+;; Misc
+(add-hook 'after-init-hook
+	  (lambda()
+	    (show-paren-mode   t)
+	    (fset 'yes-or-no-p 'y-or-n-p)))
+
+(setq custom-file                         "~/.emacs.d/custom.el"
+      require-final-newline               t
+      save-interprogram-paste-before-kill t
+      select-enable-primary               nil
+      visible-bell                        nil)
 
 
 ;;;
@@ -395,10 +400,6 @@
       tab-width          2
       show-paren-delay   0)
 
-;;
-(show-paren-mode         t)
-(fset 'yes-or-no-p       'y-or-n-p)
-
 (use-package company
   :demand t
   :config
@@ -532,10 +533,6 @@
               (set (make-local-variable 'company-backends)
                    '(company-go))
               (company-mode t))))
-
-;; (use-package go-eldoc
-;;   :after  (go-mode)
-;;   :config (add-hook 'go-mode-hook 'go-eldoc-setup))
 
 (use-package gradle-mode)
 (use-package json-mode)
