@@ -141,17 +141,6 @@
 
 (use-package auto-dictionary)
 
-(use-package company
-  :config
-  (add-hook 'lisp-mode-hook 'company-mode)
-  (add-hook 'prog-mode-hook 'company-mode)
-  (add-hook 'text-mode-hook 'company-mode)
-
-  (setq company-tooltip-limit  20
-        company-idle-delay     0.3
-        company-echo-delay     0
-        company-begin-commands '(self-insert-command)))
-
 (use-package counsel
   :bind (("<f1> f"  . counsel-describe-function)
          ("<f1> l"  . counsel-find-library)
@@ -328,11 +317,11 @@
         eshell-scroll-show-maximum-output nil
         eshell-prompt-regexp              "^[^#$\n]*[#$] "
         eshell-prompt-function
-	(lambda nil
+        (lambda nil
           (concat "[" (user-login-name) "@" (system-name) " "
-		  (if (string= (eshell/pwd) (getenv "HOME"))
-		      "~" (eshell/basename (eshell/pwd))) "]"
-		  (if (= (user-uid) 0) "# " "$ ")))
+                  (if (string= (eshell/pwd) (getenv "HOME"))
+                      "~" (eshell/basename (eshell/pwd))) "]"
+                  (if (= (user-uid) 0) "# " "$ ")))
         eshell-visual-commands '("alsamixer" "atop" "htop" "less" "mosh"
                                  "nano" "ssh" "tail" "top" "vi" "vim"
                                  "watch"))
@@ -424,11 +413,35 @@
 (show-paren-mode         t)
 (fset 'yes-or-no-p       'y-or-n-p)
 
+(use-package gist)
+
 (use-package magit
   :demand t)
 
-(use-package gist)
 (use-package realgud)
+
+(use-package rtags
+  :after (company)
+  :config
+  (setq rtags-autostart-diagnostics t
+        rtags-completions-enabled   t)
+  (push 'company-rtags company-backends)
+
+  (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
+  (add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
+  (rtags-restart-process))
+
+(use-package company
+  :config
+  (add-hook 'lisp-mode-hook 'company-mode)
+  (add-hook 'prog-mode-hook 'company-mode)
+  (add-hook 'text-mode-hook 'company-mode)
+
+  (setq company-tooltip-limit  20
+        company-idle-delay     0.3
+        company-echo-delay     0
+        company-begin-commands '(self-insert-command)))
 
 (use-package company-emoji
   :after (company))
@@ -484,6 +497,11 @@
   (define-key irony-mode-map [remap completion-at-point] 'counsel-irony)
   (define-key irony-mode-map [remap complete-symbol]     'counsel-irony)
   (setq irony-additional-clang-options '("-std=c++14")))
+
+
+;;;
+;;; Languages
+;;;
 
 (use-package ahk-mode)
 (use-package android-mode)
