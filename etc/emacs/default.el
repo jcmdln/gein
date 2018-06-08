@@ -321,7 +321,7 @@
           (concat "[" (user-login-name) "@" (system-name) " "
                   (if (string= (eshell/pwd) (getenv "HOME"))
                       "~" (eshell/basename (eshell/pwd))) "]"
-                  (if (= (user-uid) 0) "# " "$ ")))
+                      (if (= (user-uid) 0) "# " "$ ")))
         eshell-visual-commands '("alsamixer" "atop" "htop" "less" "mosh"
                                  "nano" "ssh" "tail" "top" "vi" "vim"
                                  "watch"))
@@ -413,25 +413,6 @@
 (show-paren-mode         t)
 (fset 'yes-or-no-p       'y-or-n-p)
 
-(use-package gist)
-
-(use-package magit
-  :demand t)
-
-(use-package realgud)
-
-(use-package rtags
-  :after (company)
-  :config
-  (setq rtags-autostart-diagnostics t
-        rtags-completions-enabled   t)
-  (push 'company-rtags company-backends)
-
-  (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
-  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
-  (add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
-  (rtags-restart-process))
-
 (use-package company
   :config
   (add-hook 'lisp-mode-hook 'company-mode)
@@ -446,14 +427,21 @@
 (use-package company-emoji
   :after (company))
 
+(use-package company-go
+  :after (company))
+
 (use-package company-irony
-  :after (company irony)
-  :config (add-to-list 'company-backends 'company-irony))
+  :after
+  (company irony)
+  :config
+  (add-to-list 'company-backends 'company-irony))
 
 (use-package company-irony-c-headers
   :after (company irony company-irony)
   :config (add-to-list 'company-backends
                        '(company-irony-c-headers company-irony)))
+
+(use-package company-php :after (company php-mode))
 
 (use-package company-rtags
   :after (company))
@@ -474,6 +462,10 @@
   :demand t
   :config (add-hook 'prog-mode-hook 'flycheck-mode))
 
+(use-package flycheck-rtags
+  :after (rtags flycheck)
+  :config (add-hook 'prog-mode-hook 'flycheck-mode))
+
 (use-package flyspell
   :demand t
   :config
@@ -481,6 +473,8 @@
   (add-hook 'markdown-mode-hook 'flyspell-mode)
   (add-hook 'prog-mode-hook     'flyspell-prog-mode)
   (add-hook 'text-mode-hook     'flyspell-mode))
+
+(use-package gist)
 
 (use-package highlight-indent-guides
   :demand t
@@ -490,13 +484,32 @@
 
 (use-package irony
   :config
+  (setq irony-additional-clang-options '("-std=c++14"))
+
   (add-hook 'c++-mode-hook   'irony-mode)
   (add-hook 'c-mode-hook     'irony-mode)
   (add-hook 'objc-mode-hook  'irony-mode)
   (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
   (define-key irony-mode-map [remap completion-at-point] 'counsel-irony)
-  (define-key irony-mode-map [remap complete-symbol]     'counsel-irony)
-  (setq irony-additional-clang-options '("-std=c++14")))
+  (define-key irony-mode-map [remap complete-symbol]     'counsel-irony))
+
+(use-package magit
+  :demand t)
+
+(use-package realgud)
+
+(use-package rtags
+  :after (company)
+  :config
+  (setq rtags-autostart-diagnostics  t
+        rtags-completions-enabled    t
+        rtags-display-result-backend 'ivy)
+  (push 'company-rtags company-backends)
+
+  (add-hook 'c-mode-hook 'rtags-start-process-unless-running)
+  (add-hook 'c++-mode-hook 'rtags-start-process-unless-running)
+  (add-hook 'objc-mode-hook 'rtags-start-process-unless-running)
+  (rtags-restart-process))
 
 
 ;;;
@@ -526,7 +539,6 @@
 (use-package gitconfig-mode)
 (use-package gitignore-mode)
 
-(use-package company-go :after (company))
 (use-package go-mode
   :config
   (add-hook 'before-save-hook 'gofmt-before-save)
@@ -553,10 +565,7 @@
 (use-package nginx-mode)
 (use-package ninja-mode)
 (use-package npm-mode)
-
 (use-package php-mode)
-(use-package company-php :after (company php-mode))
-
 (use-package protobuf-mode)
 (use-package qml-mode)
 (use-package rust-mode)
