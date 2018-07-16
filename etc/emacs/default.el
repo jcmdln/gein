@@ -548,6 +548,7 @@
 (use-package php-mode)
 (use-package protobuf-mode)
 (use-package qml-mode)
+(use-package rjsx-mode)
 (use-package rust-mode)
 (use-package sass-mode)
 (use-package swift-mode)
