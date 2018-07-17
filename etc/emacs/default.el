@@ -44,9 +44,9 @@
 
 ;; Misc
 (add-hook 'after-init-hook
-	  (lambda()
-	    (show-paren-mode   t)
-	    (fset 'yes-or-no-p 'y-or-n-p)))
+          (lambda()
+            (show-paren-mode   t)
+            (fset 'yes-or-no-p 'y-or-n-p)))
 
 (setq custom-file                         "~/.emacs.d/custom.el"
       require-final-newline               t
@@ -192,6 +192,14 @@
   :config
   (setq auto-save-file-name-transforms
         `((".*" ,(no-littering-expand-var-file-name "auto-save/") t))))
+
+(use-package org-beautify-theme
+  :bind (("C-c l"   . org-store-link)
+         ("C-c a"   . org-agenda)
+         ("C-c C-c" . org-capture)
+         ("C-c b"   . org-switchb))
+  :config
+  (add-hook 'org-mode-hook (lambda() (load-theme 'org-beautify))))
 
 (use-package package-utils
   :demand t)
