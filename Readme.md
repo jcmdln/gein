@@ -6,11 +6,9 @@ Installation. This repository contains the following:
   * The installation script
   * This is the only script that performs any installation tasks.
 * `etc/`
-  * Configuration files
-  * I've placed my own personal configurations here to suit my needs,
-    though feel free to use, replace, or remove them.
-* `usr/local/gein`
-  * This folder contains some helpful scripts
+  * Configuration files for Portage
+* `usr/local/sbin`
+  * This folder contains some "helpful" scripts
   * `gpkg`
     * emerge front-end for managing packages
     * Not needed at all. Think of this as a set of aliases in the form
@@ -55,10 +53,10 @@ to remain somewhat agnostic when possible.
   * Very little to get Gentoo installed, but you'll need to understand
     how Gentoo and Portage work to maintain the system. As long as you
     can follow this Readme, then you can use `gein` without much thought.
-  * Because I have configured Portage for my own needs, this may cause 
-	pain later on, such as when attempting to install a package that I 
-	haven't defined USE flags for. If you aren't familiar with Portage 
-	then you will gradually find yourself further and further at odds 
+  * Because I have configured Portage for my own needs, this may cause
+	pain later on, such as when attempting to install a package that I
+	haven't defined USE flags for. If you aren't familiar with Portage
+	then you will gradually find yourself further and further at odds
 	with the system unless you read the Gentoo Handbook for your system.
 * "I keep getting boot failures after installing in a VirtualBox VM?"
   * Remove the virtual disk drive from the boot order and restart.

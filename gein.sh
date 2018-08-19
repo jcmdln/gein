@@ -52,25 +52,8 @@ CONFIG() {
         /etc/portage/sets/gein-lxqt
         /etc/portage/sets/gein-laptop
 
-        /etc/profile
-        /etc/profile.d/alias.sh
-        /etc/profile.d/defaults.sh
-        /etc/profile.d/golang.sh
-        /etc/profile.d/racket.sh
-
-        /etc/Xresources
-        /etc/bash/bashrc
-        /etc/emacs/default.el
-        /etc/i3/config
-        /etc/i3status.conf
-        /etc/tmux.conf
-        /etc/vim/vimrc
-        /etc/xinitrc
-        /etc/zsh/zshrc
-
-        /usr/local/gein/gpkg
-        /usr/local/gein/kbuild
-        /usr/local/gein/srandr
+        /usr/local/sbin/gpkg
+        /usr/local/sbin/kbuild
     "
 
     # Files/Folders that need to be removed and re-created. Sometimes
@@ -78,19 +61,12 @@ CONFIG() {
     # be a folder so we'll remove it outright and create what we need.
     # Sure, this is wasting a little time, I know.
     ConfigFolders="
-       /etc/bash
-       /etc/emacs
-       /etc/i3
        /etc/portage/package.use
        /etc/portage/sets
-       /etc/profile.d
-       /etc/zshrc
-       /usr/local/gein
     "
 
     for Folder in $ConfigFolders; do
         [ -f "$Folder" ]  && rm "$Folder"
-	[ -d "$Folder" ]  && rm -rf "$Folder"/
         [ ! -d "$Folder" ] && mkdir -p  "$Folder"
     done
 
