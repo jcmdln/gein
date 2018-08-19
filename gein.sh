@@ -269,7 +269,7 @@ MINIMAL() {
     emerge -q --sync
     eselect profile list | grep -Evi "dev|exp"
 
-    echo "gein: choose the latest stable release"
+    echo "gein: Choose the latest stable release"
     TargetProfile=""
     while [ -z "$TargetProfile" ]; do
         read -p "Which profile?: " TargetProfile
@@ -284,9 +284,9 @@ MINIMAL() {
     echo "gein: Setting locale..."
     echo "$Locale" > /etc/locale.gen
     locale-gen
-    L=$(echo $Locale | awk -F '[-]' '{print $1}')
-    LSet=$(eselect locale list|grep -i $L|awk -F '[][]' '{print $2}')
-    eselect locale set $LSet
+    L="$(echo $Locale | awk -F '[-]' '{print $1}')"
+    LSet="$(eselect locale list|grep -i $L|awk -F '[][]' '{print $2}')"
+    eselect locale set "$LSet"
     env-update && source /etc/profile
     export PS1="[chroot \u@\h \W]$ "
 
