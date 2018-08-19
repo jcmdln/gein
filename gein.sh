@@ -89,7 +89,8 @@ CONFIG() {
     "
 
     for Folder in $ConfigFolders; do
-        [ -d "$Folder" ]  && rm    -rf "$Folder"
+        [ -f "$Folder" ]  && rm "$Folder"
+	[ -d "$Folder" ]  && rm -rf "$Folder"/
         [ ! -d "$Folder" ] && mkdir -p  "$Folder"
     done
 
