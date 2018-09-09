@@ -32,7 +32,7 @@
 # the main repository, and 'Config' is the list of all configuration
 # files that will be installed.
 
-Source="https://gein.io/"
+Source="https://gein.io"
 
 CONFIG() {
     # This is a list of all config files that need to be downloaded and
@@ -40,12 +40,12 @@ CONFIG() {
     Configs="
         /etc/portage/make.conf
 
-	/etc/portage/package.accept_keywords/development
-	/etc/portage/package.accept_keywords/lxqt
-	/etc/portage/package.accept_keywords/media
-	/etc/portage/package.accept_keywords/system
+        /etc/portage/package.accept_keywords/development
+        /etc/portage/package.accept_keywords/lxqt
+        /etc/portage/package.accept_keywords/media
+        /etc/portage/package.accept_keywords/system
 
-	/etc/portage/package.env
+        /etc/portage/package.env
         /etc/portage/package.license
 
         /etc/portage/package.use/global
@@ -72,10 +72,8 @@ CONFIG() {
     "
 
     for Folder in $ConfigFolders; do
-        if [ ! -d "$Folder" ]; then
-	    rm "$Folder"
-	    mkdir -p "$Folder"
-	fi
+        [ ! -d "$Folder" ] && rm "$Folder"
+        [ ! -e "$Folder" ] && mkdir -p "$Folder"
     done
 
     for File in $Configs; do
@@ -194,9 +192,9 @@ BOOTSTRAP() {
     fi
 
     if [ ! -e /mnt/gentoo ]; then
-	echo "gein: You didn't create /mnt/gentoo before proceeding!"
-	echo "gein: The mount point may be incorrect. Exiting..."
-	exit
+        echo "gein: You didn't create /mnt/gentoo before proceeding!"
+        echo "gein: The mount point may be incorrect. Exiting..."
+        exit
     fi
 
     echo "gein: Ensuring we are in /mnt/gentoo..."
