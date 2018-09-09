@@ -1,0 +1,10 @@
+# /etc/portage/package.accept_keywords/media
+
+app-emulation/wine-mono ~amd64
+app-emulation/wine-staging ~amd64
+media-libs/mesa
+net-misc/cmst ~amd64
+sys-firmware/nvidia-firmware ~amd64
+x11-libs/libdrm
+x11-libs/libxcb
+x11-proto/xcb-proto

@@ -39,8 +39,13 @@ CONFIG() {
     # moved into place.
     Configs="
         /etc/portage/make.conf
-        /etc/portage/package.accept_keywords
-        /etc/portage/package.env
+
+	/etc/portage/package.accept_keywords/development
+	/etc/portage/package.accept_keywords/lxqt
+	/etc/portage/package.accept_keywords/media
+	/etc/portage/package.accept_keywords/system
+
+	/etc/portage/package.env
         /etc/portage/package.license
 
         /etc/portage/package.use/global
@@ -61,13 +66,16 @@ CONFIG() {
     # be a folder so we'll remove it outright and create what we need.
     # Sure, this is wasting a little time, I know.
     ConfigFolders="
-       /etc/portage/package.use
-       /etc/portage/sets
+        /etc/portage/package.accept_keywords
+        /etc/portage/package.use
+        /etc/portage/sets
     "
 
     for Folder in $ConfigFolders; do
-        [ -f "$Folder" ]  && rm "$Folder"
-        [ ! -d "$Folder" ] && mkdir -p  "$Folder"
+        if [ ! -d "$Folder" ]; then
+	    rm "$Folder"
+	    mkdir -p "$Folder"
+	fi
     done
 
     for File in $Configs; do

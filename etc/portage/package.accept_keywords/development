@@ -1,0 +1,5 @@
+# /etc/portage/package.accept_keywords/development
+
+app-editors/emacs
+dev-lang/go
+net-libs/nodejs
