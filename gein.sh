@@ -101,7 +101,8 @@ CONFIG() {
 # 'make defconfig; make menuconfig' then set $AutoKernel to 'false'. You
 # may also supply your own URL to $KernelConfig while setting
 # 'AutoKernel' to 'false' to use a pre-built kernel config. An example
-# kernel config is provided though commented out.
+# kernel config is provided though commented out as it may quickly become
+# irrelevant or dangerous to use.
 
 Hostname="gein"
 Locale="en_US.UTF-8 UTF-8"
