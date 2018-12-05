@@ -1,17 +1,52 @@
 #!/usr/bin/env sh
-
-## Grub installation path
 #
+#
+#
+##
+
+
+# $Source is the protocol and domain that will be the top-level reference
+# when retrieving configuration files.
+
+Source="https://gein.io"
+
+
+# This section defines some command aliases that will be used later on,
+# and is primarily used as a mechanism to inhibit or control output in a
+# way that can be easily updated or changed if needed.
+
+Emerge="emerge -v --quiet-build"
+EmergeSync="emerge -q --sync"
+Make="make -s -j$CPUCores"
+Mkdir="mkdir -p"
+Rm="rm"
+Wget="wget -q"
+
+
+# The following variables will be called later on to perform the
+# following:
+#
+#  * $Hostname is used to set the hostname.
+#  * $Locale is your language and encoding of choice
+#  * $TimeZone is the target within '/usr/share/zoneinfo' of your region
+
+Hostname="gein"
+Locale="en_US.UTF-8 UTF-8"
+TimeZone="America/New_York"
+
+
 # The 'PartitionBoot' variable *MUST* be set to proceed with the
 # installation. The example uses '/dev/sda' which will later install
 # GRUB to the MBR rather than a partition. Change this to your desired
 # '/boot' partition.
 
-#PartitionBoot="/dev/sda"
+#PartitionBoot="/dev/sda1"
+#PartitionUefi="/dev/sda2"
+#PartitionRoot="/dev/sda3"
+#PartitionHome="/dev/sda4"
+#PartitionSwap="/dev/sda5"
 
 
-## GPU/VGA drivers
-#
 # The 'VideoCards' variable *MUST* be set to proceed with the
 # installation. Several examples have been provided based on brand or
 # target, though if you have any specific needs then set this variable
@@ -25,14 +60,75 @@
 #VideoCards="false"
 
 
-## Configuration
+## Portage
 #
-# This script relies on downloading configuration files from the main
+# Leave 'CPUCores' as-is. It will count the number of available cores
+# which will be used during this script and set in the 'make.conf'.
+# Changing this to 'Cores + 1', despite this being suggested in many
+# corners of the web, is not a good idea and will actually increase the
+# total time needed to compile.
+
+case "$(uname -m)" in
+    i486|i586)
+        CPUDir="x86"
+        CPUArch="i486";;
+    i686|x86|x86_32)
+        CPUDir="x86"
+        CPUArch="i686";;
+    amd64|x86_64)
+        CPUDir="amd64"
+        CPUArch="amd64";;
+
+    *)
+        echo "gein: error: your architecture has not been defined yet" \
+	    | fold -s
+        echo "gein: Submit an issue with the output of 'uname -m'" \
+	    | fold -s
+        exit 1
+esac
+
+CPUCores="$(grep -c ^processor /proc/cpuinfo)"
+
+
+## Gentoo Stage3
+#
+# This section exists to automate identifying and downloading the latest
+# stage3 archive under the condition that cURL is present. This is not
+# an issue when using the Gentoo installation CD's though prevents
+# errors when executing MINIMAL() or DESKTOP() due to cURL missing
+# after completing the BOOTSTRAP().
+
+S3_Source="http://distfiles.gentoo.org/releases/$CPUDir/autobuilds"
+
+if [ -x "$(command -v curl)" ]; then
+    S3_Release="curl -s $S3_Source/latest-stage3-$CPUArch.txt"
+    S3_Current="$($S3_Release|tail -1|awk '{print $1}')"
+    Stage3="$S3_Source/$S3_Current"
+else
+    echo "gein: error: curl not present!"
+    echo "gein: Exiting..."
+    exit 1
+fi
+
+
+# By default, 'AutoKernel' is set to 'true' which means that the kernel
+# will be built using 'make defconfig'. If you want to run
+# 'make defconfig; make menuconfig' then set $AutoKernel to 'false'. You
+# may also supply your own URL to $KernelConfig while setting
+# 'AutoKernel' to 'false' to use a pre-built kernel config. An example
+# kernel config is provided though commented out as it may quickly become
+# irrelevant or dangerous to use.
+
+AutoKernel="true"
+#KernelConfig=""
+
+
+# `gein` relies on downloading configuration files from the main
 # repository. Here we will create the 'Source' variable which points to
 # the main repository, and 'Config' is the list of all configuration
 # files that will be installed.
 
-Source="https://gein.io"
+ConfigSource="$Source"
 
 CONFIG() {
     # This is a list of all config files that need to be downloaded and
@@ -72,99 +168,51 @@ CONFIG() {
     "
 
     for Folder in $ConfigFolders; do
-        [ ! -d "$Folder" ] && rm "$Folder"
-        [ ! -e "$Folder" ] && mkdir -p "$Folder"
+        if [ ! -d "$Folder" ]; then
+	    $Rm "$Folder"
+	fi
+
+        if [ ! -e "$Folder" ]; then
+	    $Mkdir "$Folder"
+	fi
     done
 
     for File in $Configs; do
-        wget -q "$Source/$File" -O "$File"
+        $Wget "$Source/$File" -O "$File"
     done
 }
 
 
-## System
 #
-# The 'Hostname' is used to set the 'Hostname'.
 #
-# Change 'Locale' to your language and encoding of choice as needed.
+
+PREREQUISITES() {
+    if [ -z "$PartitionBoot" ] || [ -z "$VideoCards" ]; then
+        echo "gein: error: required variables are unset!" | fold -s
+	echo "gein: please ensure you have partitioned and mounted" \
+	     "your disks, as well as updated the variables associated" \
+	     "with the required partitions. You must also declare" \
+	     "your VideoCard. Please see gein.sh for instructions." \
+	    | fold -s
+        echo "gein: Exiting..." | fold -s
+        exit 1
+    fi
+}
+
+
 #
-# A 2G 'SwapSize' seems to be plenty, even for compiling chromium or
-# firefox. Make this larger if needed.
 #
-# Change 'TimeZone' as needed. 'ls /usr/share/zoneinfo' for your region
-# and so on.
-#
-# By default, 'AutoKernel' is set to 'true' which means that the kernel
-# will be built using 'make defconfig'. If you want to run
-# 'make defconfig; make menuconfig' then set $AutoKernel to 'false'. You
-# may also supply your own URL to $KernelConfig while setting
-# 'AutoKernel' to 'false' to use a pre-built kernel config. An example
-# kernel config is provided though commented out as it may quickly become
-# irrelevant or dangerous to use.
 
-Hostname="gein"
-Locale="en_US.UTF-8 UTF-8"
-SwapSize="2G"
-TimeZone="America/New_York"
-
-AutoKernel="true"
-#KernelConfig="$Source/usr/src/linux/4.16.config"
-
-
-## Command Aliases
-#
-# This section defines some command aliases that will be used later on,
-# and is primarily used as a mechanism to inhibit or control output in a
-# way that can be easily updated or changed if needed.
-
-Emerge="emerge -v --quiet-build"
-Make="make -s -j$CPUCores"
-Wget="wget -q"
-
-
-## Portage
-#
-# Leave 'CPUCores' as-is. It will count the number of available cores
-# which will be used during this script and set in the 'make.conf'.
-# Changing this to 'Cores + 1', despite this being suggested in many
-# corners of the web, is not a good idea and will actually increase the
-# total time needed to compile.
-
-case "$(uname -m)" in
-    i486|i586)
-        CPUDir="x86"
-        CPUArch="i486";;
-    i686|x86|x86_32)
-        CPUDir="x86"
-        CPUArch="i686";;
-    amd64|x86_64)
-        CPUDir="amd64"
-        CPUArch="amd64";;
-
-    *)
-        echo "gein: CPU arch has not been defined yet"
-        echo "gein: Submit an issue with the output of 'uname -m'"
-        exit
-esac
-
-CPUCores="$(grep -c ^processor /proc/cpuinfo)"
-
-
-## Gentoo Stage3
-#
-# This section exists to automate identifying and downloading the latest
-# stage3 archive under the condition that cURL is present. This is not
-# an issue when using the Gentoo installation CD's though prevents
-# errors when executing MINIMAL() or DESKTOP() due to cURL missing
-# after completing the BOOTSTRAP().
-
-S3_Source="http://distfiles.gentoo.org/releases/$CPUDir/autobuilds"
-S3_Release="curl -s $S3_Source/latest-stage3-$CPUArch.txt"
-
-if [ -x "$(command -v curl)" ]; then
-    S3_Current="$($S3_Release|tail -1|awk '{print $1}')"
-    Stage3="$S3_Source/$S3_Current"
-fi
+PARTITION() {
+    if [ ! -e /mnt/gentoo ]; then
+        echo "gein: error: '/mnt/gentoo' does not exist!" | fold -s
+	echo "gein: '/mnt/gentoo' is referred to later in this script," \
+	     "and is required to continue. Please ensure your mounted" \
+	     "partitions are correct." | fold -s
+        echo "gein: Exiting..." | fold -s
+        exit 1
+    fi
+}
 
 
 # Bootstrapping a Gentoo stage3 archive is a fairly quick process though
@@ -173,37 +221,13 @@ fi
 # setup in this section.
 
 BOOTSTRAP() {
-    echo "Please ensure that you have performed the following: "
-    echo "  - Edited the environment variables at the top of this script."
-    echo "  - Partitioned and mounted your disk(s)."
-
-    read -p "Proceed with installation? [Y/N]: " Proceed
-    if echo "$Proceed" | grep -iq "^y"; then
-        echo "gein: Proceeding with installation..."
-    else
-        echo "gein: Exiting..."
-        exit
-    fi
-
-    if [ -z "$VideoCards" ] || [ -z "$PartitionBoot" ]; then
-        echo "gein: You didn't read $0 and adjust the variables!"
-        echo "gein: Exiting..."
-        exit
-    fi
-
-    if [ ! -e /mnt/gentoo ]; then
-        echo "gein: You didn't create /mnt/gentoo before proceeding!"
-        echo "gein: The mount point may be incorrect. Exiting..."
-        exit
-    fi
-
     echo "gein: Ensuring we are in /mnt/gentoo..."
     if [ ! -e /mnt/gentoo/$(basename "$0") ]; then
         cp "$0" /mnt/gentoo/
         cd /mnt/gentoo
     fi
 
-    echo "gein: Setting system time via ntpd..."
+    echo "gein: Setting system time via ntpd..." | fold -s
     if [ -x "$(command -v ntpd)" ]; then
         ntpd -q -g
     fi
@@ -214,8 +238,8 @@ BOOTSTRAP() {
         tar -xpf stage3-* --xattrs --numeric-owner
         rm -rf stage3-*
     else
-        echo "gein: 'Stage3' variable is not set! Is cURL missing?"
-        echo "gein: Exiting..."
+        echo "gein: 'Stage3' variable is not set! Is cURL missing?" | fold -s
+        echo "gein: Exiting..." | fold -s
         exit
     fi
 
@@ -229,29 +253,28 @@ BOOTSTRAP() {
                       mount --make-rslave /mnt/gentoo/sys ;;
                 dev ) mount --rbind /dev  /mnt/gentoo/dev
                       mount --make-rslave /mnt/gentoo/dev ;;
-                *) echo "gein: $target: Improper hardware device"
+                *) echo "gein: $target: Improper hardware device" \
+			 | fold -s
                    exit
             esac
         else
-            echo "gein: $target unable to be mounted! Exiting..."
+            echo "gein: $target unable to be mounted! Exiting..." \
+		| fold -s
             exit
         fi
     done
 
-    SwapFile="/mnt/gentoo/swapfile"
     if [ ! -e "$SwapFile" ]; then
-        echo "gein: Setting up swapfile..."
-        fallocate -l "$SwapSize" "$SwapFile"
-        chmod 0600 "$SwapFile"
-        mkswap "$SwapFile"
-        swapon "$SwapFile"
+        echo "gein: Setting up swapfile..." | fold -s
+        mkswap "$PartitionSwap"
+        swapon "$PartitionSwap"
         echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
-    echo "gein: Copying '/etc/resolv.conf'..."
+    echo "gein: Copying '/etc/resolv.conf'..." | fold -s
     cp -L /etc/resolv.conf /mnt/gentoo/etc/
 
-    echo "gein: Chroot'ing into /mnt/gentoo..."
+    echo "gein: Chroot'ing into /mnt/gentoo..." | fold -s
     chroot /mnt/gentoo /usr/bin/env -i \
            HOME="/root" TERM="$TERM" PS1="[chroot \u@\h \W]$ " \
            PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
@@ -268,15 +291,15 @@ BOOTSTRAP() {
 MINIMAL() {
     CONFIG
 
-    echo "gein: Setting CPU cores and GPU type..."
+    echo "gein: Setting CPU cores and GPU type..." | fold -s
     sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
         /etc/portage/make.conf
 
-    echo "gein: Syncing Portage and selecting profile..."
-    emerge -q --sync
+    echo "gein: Syncing Portage and selecting profile..." | fold -s
+    $EmergeSync
     eselect profile list | grep -Evi "dev|exp"
 
-    echo "gein: Choose the latest stable release"
+    echo "gein: Choose the latest stable release" | fold -s
     TargetProfile=""
     while [ -z "$TargetProfile" ]; do
         read -p "Which profile?: " TargetProfile
@@ -284,11 +307,11 @@ MINIMAL() {
     eselect profile set "$TargetProfile"
     $Emerge -uDN @world
 
-    echo "gein: Setting timezone..."
+    echo "gein: Setting timezone..." | fold -s
     echo "$TimeZone" > /etc/timezone
     $Emerge --config sys-libs/timezone-data
 
-    echo "gein: Setting locale..."
+    echo "gein: Setting locale..." | fold -s
     echo "$Locale" > /etc/locale.gen
     locale-gen
     L="$(echo $Locale | awk -F '[-]' '{print $1}')"
@@ -297,7 +320,7 @@ MINIMAL() {
     env-update && source /etc/profile
     export PS1="[chroot \u@\h \W]$ "
 
-    echo "gein: Emerging base system packages..."
+    echo "gein: Emerging base system packages..." | fold -s
     $Emerge @gein-base
 
     if grep -Rqi 'intel' /proc/cpuinfo; then
@@ -343,31 +366,6 @@ MINIMAL() {
 }
 
 
-# In this section we will install the chosen xorg-driver and packages
-# for i3wm as the desktop of choice. Some additional packages are added
-# as a convenience.
-
-DESKTOP() {
-    echo "gein: Enabling X in '/etc/portage/package.use/defaults'..."
-    sed -i '2,$s/^# //g' /etc/portage/package.use/global
-
-    echo "gein: Installing Xorg drivers..."
-    $Emerge x11-base/xorg-drivers
-    env-update && source /etc/profile
-    export PS1="[chroot \u@\h \W]$ "
-
-    echo "gein: Installing desktop packages..."
-    $Emerge "$DesktopChoice"
-    rc-update add consolekit default
-
-    read -p "gein: Install laptop packages? [Y/N]: " SetupUser
-    if echo "$SetupUser" | grep -iq "^y"; then
-        $Emerge @gein-laptop
-        rc-update add laptop_mode default
-    fi
-}
-
-
 # This section is for completing tasks after the installation is
 # complete. The user will have a complete system already installed and
 # may skip these steps if desired.
@@ -398,54 +396,25 @@ POSTINSTALL() {
 # or DESKTOP() passes.
 
 case $1 in
-    bootstrap)
-        BOOTSTRAP
+    -p|--partition)
+        PREREQUISITES
+	PARTITION
+	;;
+
+    -b|--bootstrap)
+        PREREQUISITES
+	BOOTSTRAP
         ;;
 
-    minimal)
-        MINIMAL && POSTINSTALL
-        ;;
-
-    desktop)
-        if [ "$VideoCards" == 'false' ]; then
-            echo "gein: VideoCards is false, though this requires xorg drivers"
-            echo "gein: Exiting..."
-            exit
-        fi
-
-        case $2 in
-            i3wm)
-                DesktopChoice="@gein-i3wm"
-                MINIMAL && DESKTOP && POSTINSTALL
-                ;;
-
-            lxqt)
-                DesktopChoice="@gein-lxqt"
-                MINIMAL && DESKTOP
-
-                echo "azryn: Set SDDM as the display manager"
-                sed -i 's/DISPLAYMANAGER="xdm"/DISPLAYMANAGER="sddm"/g' \
-                    /etc/conf.d/xdm
-                sed -i 's/startlxqt/"ck-launch-session dbus-launch startlxqt"/g' \
-                    /usr/share/xsessions/lxqt.desktop
-                rc-update add xdm default
-                rc-update add dbus default
-
-                POSTINSTALL
-                ;;
-
-            *)
-                echo "gein: desktop: Available options"
-                echo "  i3wm         i3wm desktop"
-                echo "  lxqt         LXQT desktop"
-        esac
+    -i|--install)
+        PREREQUISITES
+	MINIMAL
+	POSTINSTALL
         ;;
 
     *)
         echo "gein: Linux-based derivative of Gentoo"
-        echo "  bootstrap    Bootstrap the stage3 tarball"
-        echo ""
-        echo "Post-bootstrap:"
-        echo "  minimal      Headless installation"
-        echo "  desktop      Desktop installation"
+        echo "  -p, partition    Partition and mount disk(s)"
+        echo "  -b. bootstrap    Bootstrap the stage3 tarball"
+        echo "  -i, install      Install Gentoo"
 esac
