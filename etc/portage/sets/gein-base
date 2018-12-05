@@ -8,10 +8,10 @@ net-dns/bind-tools
 net-misc/dhcpcd
 net-misc/mosh
 net-misc/whois
-net-vpn/openvpn 
 sys-apps/pciutils
 sys-apps/usbutils
 sys-boot/grub:2
 sys-kernel/gentoo-sources
 sys-kernel/linux-firmware
 sys-process/htop
+www-client/links
