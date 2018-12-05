@@ -81,9 +81,9 @@ case "$(uname -m)" in
 
     *)
         echo "gein: error: your architecture has not been defined yet" \
-	    | fold -s
+            | fold -s
         echo "gein: Submit an issue with the output of 'uname -m'" \
-	    | fold -s
+            | fold -s
         exit 1
 esac
 
@@ -169,12 +169,12 @@ CONFIG() {
 
     for Folder in $ConfigFolders; do
         if [ ! -d "$Folder" ]; then
-	    $Rm "$Folder"
-	fi
+            $Rm "$Folder"
+        fi
 
         if [ ! -e "$Folder" ]; then
-	    $Mkdir "$Folder"
-	fi
+            $Mkdir "$Folder"
+        fi
     done
 
     for File in $Configs; do
@@ -189,11 +189,11 @@ CONFIG() {
 PREREQUISITES() {
     if [ -z "$PartitionBoot" ] || [ -z "$VideoCards" ]; then
         echo "gein: error: required variables are unset!" | fold -s
-	echo "gein: please ensure you have partitioned and mounted" \
-	     "your disks, as well as updated the variables associated" \
-	     "with the required partitions. You must also declare" \
-	     "your VideoCard. Please see gein.sh for instructions." \
-	    | fold -s
+        echo "gein: please ensure you have partitioned and mounted" \
+             "your disks, as well as updated the variables associated" \
+             "with the required partitions. You must also declare" \
+             "your VideoCard. Please see gein.sh for instructions." \
+            | fold -s
         echo "gein: Exiting..." | fold -s
         exit 1
     fi
@@ -206,9 +206,9 @@ PREREQUISITES() {
 PARTITION() {
     if [ ! -e /mnt/gentoo ]; then
         echo "gein: error: '/mnt/gentoo' does not exist!" | fold -s
-	echo "gein: '/mnt/gentoo' is referred to later in this script," \
-	     "and is required to continue. Please ensure your mounted" \
-	     "partitions are correct." | fold -s
+        echo "gein: '/mnt/gentoo' is referred to later in this script," \
+             "and is required to continue. Please ensure your mounted" \
+             "partitions are correct." | fold -s
         echo "gein: Exiting..." | fold -s
         exit 1
     fi
@@ -254,12 +254,12 @@ BOOTSTRAP() {
                 dev ) mount --rbind /dev  /mnt/gentoo/dev
                       mount --make-rslave /mnt/gentoo/dev ;;
                 *) echo "gein: $target: Improper hardware device" \
-			 | fold -s
+                         | fold -s
                    exit
             esac
         else
             echo "gein: $target unable to be mounted! Exiting..." \
-		| fold -s
+                | fold -s
             exit
         fi
     done
@@ -398,18 +398,18 @@ POSTINSTALL() {
 case $1 in
     -p|--partition)
         PREREQUISITES
-	PARTITION
-	;;
+        PARTITION
+        ;;
 
     -b|--bootstrap)
         PREREQUISITES
-	BOOTSTRAP
+        BOOTSTRAP
         ;;
 
     -i|--install)
         PREREQUISITES
-	MINIMAL
-	POSTINSTALL
+        MINIMAL
+        POSTINSTALL
         ;;
 
     *)
