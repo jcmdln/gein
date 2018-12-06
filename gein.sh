@@ -1,8 +1,23 @@
 #!/usr/bin/env sh
 #
+# While this script does assist with installing Gentoo, it is NOT a
+# replacement for reading and understanding the Gentoo Handbook for your
+# system. See https://gentoo.org/get-started/ for information on getting
+# started with Gentoo.
 #
+# This file uses inline documentation whenever possible to preserve
+# context, situational or otherwise. Please read the entire file before
+# continuing to ensure you are aware of how this script functions, as
+# undesired behaviors for your use-case may exist.
 #
-##
+# This script does NOT automatically partition your disk(s). You MUST
+# partition and mount your disk(s) before running this script.
+#
+# This file uses a modified 0-clause MIT license. If you did not receive
+# a copy of the license, please visit https://gein.io/License.md for a
+# copy.
+#
+###
 
 
 # This section describes variables that will define the resulting
@@ -31,8 +46,27 @@ rm="rm"
 wget="wget -q"
 
 
-# This section describes two variables: '$AutoKernel'
+# This section describes how the kernel will be built, and whether the
+# user will be prompted to configure their kernel. The two mentioned
+# variables may be used together to suit a variety of use-cases.
 #
+#   kernel_autobuild
+#
+#     When 'true', this implies that the user does not want to perform
+#     any manual configuration of the kernel, regardless of whether a
+#     configuration file was provided. '$ make menuconfig' will NOT be
+#     run before compiling the kernel.
+#
+#     When any value OTHER than 'true', this implies that the use DOES
+#     want to perform manual configuration on the kernel, regardless
+#     of whether a configuration file was provided. '$ make menuconfig'
+#     will be run before compiling the kernel.
+#
+#   kernel_config
+#
+#     The URL location of a kernel configuration file. If this variable
+#     is unset, no attempt to download a configuration file will be
+#     made, instead using the kernel defconfig.
 
 kernel_autobuild="true"
 #kernel_config=""
@@ -41,11 +75,9 @@ kernel_autobuild="true"
 #
 #
 
-#partition_boot="/dev/sda1"
-#partition_uefi="/dev/sda2"
-#partition_root="/dev/sda3"
-#partition_home="/dev/sda4"
-#partition_swap="/dev/sda5"
+#partition_boot=""
+#partition_uefi=""
+#partition_swap=""
 
 
 #
@@ -63,7 +95,7 @@ case "$(uname -m)" in
         cpu_arch="amd64";;
 
     *)
-        echo "gein: error: your architecture has not been defined yet" \
+        echo "gein: error: your architecture has not been defined yet." \
              "Submit an issue with the output of 'uname -m'" | fold -s
         echo "gein: Exiting..." \
             | fold -s
