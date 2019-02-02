@@ -72,35 +72,11 @@ kernel_autobuild="true"
 #kernel_config=""
 
 
-#
+# I would like this section to be where a user defines their partitions,
 #
 
 #partition_boot=""
 #partition_uefi=""
-#partition_swap=""
-
-
-#
-#
-
-case "$(uname -m)" in
-    i486|i586)
-        cpu_dir="x86"
-        cpu_arch="i486";;
-    i686|x86|x86_32)
-        cpu_dir="x86"
-        cpu_arch="i686";;
-    amd64|x86_64)
-        cpu_dir="amd64"
-        cpu_arch="amd64";;
-
-    *)
-        echo "gein: error: your architecture has not been defined yet." \
-             "Submit an issue with the output of 'uname -m'" | fold -s
-        echo "gein: Exiting..." \
-            | fold -s
-        exit 1
-esac
 
 
 #
@@ -159,6 +135,29 @@ CONFIG() {
 
     config_complete="true"
 }
+
+
+# This section determines the current system architecture, which is
+# used to download the correct Stage 3 archive in the following section.
+
+case "$(uname -m)" in
+    i486|i586)
+        cpu_dir="x86"
+        cpu_arch="i486";;
+    i686|x86|x86_32)
+        cpu_dir="x86"
+        cpu_arch="i686";;
+    amd64|x86_64)
+        cpu_dir="amd64"
+        cpu_arch="amd64";;
+
+    *)
+        echo "gein: error: your architecture has not been defined yet." \
+             "Submit an issue with the output of 'uname -m'" | fold -s
+        echo "gein: Exiting..." \
+            | fold -s
+        exit 1
+esac
 
 
 #
