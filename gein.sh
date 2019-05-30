@@ -82,7 +82,7 @@ kernel_autobuild="true"
 #
 #
 
-config_source="https://gein.io"
+config_source="https://raw.githubusercontent.com/jcmdln/gein/master"
 
 CONFIG() {
     config_files="
