@@ -1,9 +1,34 @@
 #!/usr/bin/env sh
 #
+# gein.sh - Gentoo minimal installation script
+#
+#
+## License
+#
+# Copyright (c) 2018, 2019 Johnathan C. Maudlin
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+#
+## About
+#
 # While this script does assist with installing Gentoo, it is NOT a
-# replacement for reading and understanding the Gentoo Handbook for your
-# system. See https://gentoo.org/get-started/ for information on getting
-# started with Gentoo.
+# replacement for reading and understanding the Gentoo Handbook for
+# your system.  See https://gentoo.org/get-started/ for information on
+# getting started with Gentoo.
 #
 # This file uses inline documentation whenever possible to preserve
 # context, situational or otherwise. Please read the entire file before
@@ -13,44 +38,78 @@
 # This script does NOT automatically partition your disk(s). You MUST
 # partition and mount your disk(s) before running this script.
 #
-# This file uses a modified 0-clause MIT license. If you did not receive
-# a copy of the license, please visit https://gein.io/License.md for a
-# copy.
+# This file uses a modified 0-clause MIT license. If you did not
+# receive a copy of the license, please visit
+# https://jcmdln.github.io/gein/License.md for a copy.
+#
+#
+## Conventions
+#
+#   Functions
+#
+#   Variables
+#
+#       Global Variables
+#
+#       Local Variables
 #
 ###
 
 
 # This section describes variables that will define the resulting
-# system. '$Hostname', '$Locale', and '$TimeZone' are mostly obvious in
-# terms of their use, though '$VideoCards' is used as the value of
-# 'VIDEO_CARDS' within '/etc/portage/make.conf'.
+# system.
+#
+#   GEIN_CONFIG_URL
+#
+#       Missing description
+#
+#   GEIN_HOSTNAME
+#
+#       Missing description
+#
+#   GEIN_LOCALE
+#
+#       Missing description
+#
+#   GEIN_NCPUS
+#
+#       The number of CPUs reported as available.
+#
+#   GEIN_VIDEO_CARDS
+#
+#       The value of VIDEO_CARDS to use in '/etc/portage/make.conf'.
+#
+#   GEIN_TIMEZONE
+#
+#       Missing description
 
-cpu_cores="$(grep -c ^processor /proc/cpuinfo)"
-hostname="gein"
-locale="en_US.UTF-8 UTF-8"
-timezone="America/New_York"
-video_cards="false"
+GEIN_CONFIG_URL="https://raw.githubusercontent.com/jcmdln/gein/master"
+GEIN_HOSTNAME="gein"
+GEIN_LOCALE="en_US.UTF-8 UTF-8"
+GEIN_NCPUS="$(grep -c ^processor /proc/cpuinfo)"
+GEIN_TIMEZONE="America/New_York"
+GEIN_VIDEO_CARDS="false"
 
 
 # This section contains aliases for commands which are used throughout
-# the script. By default commands have their output and prompts
-# suppressed, though should you want to review or debug this script you
-# may want to adjust these as desired.
+# the script.  By default, commands have their output and prompts
+# suppressed when possible.  Should you want to review or debug this
+# script, you may want to adjust these as desired.
 
-curl="curl -sSf"
-emerge="emerge -v --quiet-build"
-emerge_sync="emerge -q --sync"
-make="make -s -j$cpu_cores"
-mkdir="mkdir -p"
-rm="rm"
-wget="wget -q"
+alias curl="curl -sSf"
+alias emerge="emerge -v --quiet-build"
+alias emerge_sync="emerge -q --sync"
+alias make="make -s -j$GEIN_NCPUS"
+alias mkdir="mkdir -p"
+alias rm="rm"
+alias wget="wget -q"
 
 
 # This section describes how the kernel will be built, and whether the
 # user will be prompted to configure their kernel. The two mentioned
 # variables may be used together to suit a variety of use-cases.
 #
-#   kernel_autobuild
+#   GEIN_KERNEL_AUTOBUILD
 #
 #     When 'true', this implies that the user does not want to perform
 #     any manual configuration of the kernel, regardless of whether a
@@ -62,127 +121,96 @@ wget="wget -q"
 #     of whether a configuration file was provided. '$ make menuconfig'
 #     will be run before compiling the kernel.
 #
-#   kernel_config
+#   GEIN_KERNEL_CONFIG
 #
-#     The URL location of a kernel configuration file. If this variable
+#     The URL location of a kernel configuration file.  If this variable
 #     is unset, no attempt to download a configuration file will be
 #     made, instead using the kernel defconfig.
 
-kernel_autobuild="true"
-#kernel_config=""
+GEIN_KERNEL_AUTOBUILD="true"
+#GEIN_KERNEL_CONFIG=""
 
 
-# I would like this section to be where a user defines their partitions,
+# TODO: I would like this section to be where a user defines their
+# partition schema specifically for configuring GRUB2.
 #
-
-#partition_boot=""
-#partition_uefi=""
-
-
+#   GEIN_PARTITION_BOOT
 #
+#       Missing description
 #
+#   GEIN_PARTITION_UEFI
+#
+#       Missing description
+#
+#   GEIN_PARTITION_SWAP
+#
+#       Missing description
 
-config_source="https://raw.githubusercontent.com/jcmdln/gein/master"
-
-CONFIG() {
-    config_files="
-        /etc/portage/make.conf
-
-        /etc/portage/package.accept_keywords/development
-        /etc/portage/package.accept_keywords/lxqt
-        /etc/portage/package.accept_keywords/media
-        /etc/portage/package.accept_keywords/system
-
-        /etc/portage/package.env
-        /etc/portage/package.license
-
-        /etc/portage/package.use/global
-        /etc/portage/package.use/local
-        /etc/portage/package.use/multilib
-
-        /etc/portage/sets/gein-base
-        /etc/portage/sets/gein-i3wm
-        /etc/portage/sets/gein-lxqt
-        /etc/portage/sets/gein-laptop
-
-        /usr/local/sbin/gpkg
-        /usr/local/sbin/kbuild
-     "
-
-    config_dirs="
-        /etc/portage/package.accept_keywords
-        /etc/portage/package.use
-        /etc/portage/sets
-     "
-
-    for dir in $config_dirs; do
-        if [ ! -d "$dir" ]; then
-            $rm "$dir"
-        fi
-
-        if [ ! -e "$dir" ]; then
-            $mkdir "$dir"
-        fi
-    done
-
-    unset config_dirs dir
-
-    for file in $config_files; do
-        $wget "$config_source/$file" -O "$file"
-    done
-
-    unset config_files file
-
-    config_complete="true"
-}
+#GEIN_PARTITION_BOOT=""
+#GEIN_PARTITION_UEFI=""
+#GEIN_PARTITION_SWAP=""
 
 
-# This section determines the current system architecture, which is
-# used to download the correct Stage 3 archive in the following section.
+# This section determines the current system architecture, which later
+# is used to download the correct Stage 3 archive.  Depending on the
+# architecture, there may be implications in which directory we should
+# retrieve our Stage 3 from.
+#
+# TODO: use qemu/kvm to define and test against more achitectures
 
 case "$(uname -m)" in
+    # TODO: document _what_ and _why_
     i486|i586)
-        cpu_dir="x86"
-        cpu_arch="i486";;
+        GEIN_CPU_DIR="x86"
+        GEIN_CPU_ARCH="i486"
+    ;;
+
+    # TODO: document _what_ and _why_
     i686|x86|x86_32)
-        cpu_dir="x86"
-        cpu_arch="i686";;
+        GEIN_CPU_DIR="x86"
+        GEIN_CPU_ARCH="i686"
+    ;;
+
+    # TODO: document _what_ and _why_
     amd64|x86_64)
-        cpu_dir="amd64"
-        cpu_arch="amd64";;
+        GEIN_CPU_DIR="amd64"
+        GEIN_CPU_ARCH="amd64"
+    ;;
 
     *)
-        echo "gein: error: your architecture has not been defined yet." \
-             "Submit an issue with the output of 'uname -m'" | fold -s
-        echo "gein: Exiting..." \
-            | fold -s
+        echo "gein: error: your architecture has not been defined." \
+             "Submit an issue with the output of 'uname -m'." \
+             | fold -s
+        echo "gein: Exiting..."
         exit 1
 esac
 
 
+# TODO: document this section
+#
+#   GEIN_CONFIG_URL
+#
+#       Missing description
+
+GEIN_CONFIG_URL="https://raw.githubusercontent.com/jcmdln/gein/master"
+
+
+# TODO: document this section
 #
 #
 
 PREREQUISITES() {
-    if [ -z "$partition_boot" ] || [ -z "$video_cards" ]; then
+    if [ -z "$GEIN_PARTITION_BOOT" ] || [ -z "$GEIN_VIDEO_CARDS" ]; then
         echo "gein: error: required variables are unset!" | fold -s
         echo "gein: please ensure you have partitioned and mounted" \
              "your disks, as well as updated the variables associated" \
              "with the required partitions. You must also declare" \
-             "your VideoCard. Please see gein.sh for instructions." \
+             "your VideoCard.  Please see gein.sh for instructions." \
             | fold -s
         echo "gein: Exiting..." | fold -s
         exit 1
     fi
 
-    prerequisites_complete="true"
-}
-
-
-#
-#
-
-PARTITION() {
     if [ ! -e /mnt/gentoo ]; then
         echo "gein: error: '/mnt/gentoo' does not exist!" | fold -s
         echo "gein: '/mnt/gentoo' is referred to later in this script," \
@@ -192,30 +220,38 @@ PARTITION() {
         exit 1
     fi
 
-    partition_complete="true"
+    # TODO: check that all required packages/utilities are available
+    # in case this script isn't run from the Gentoo installation CD.
+
+    export GEIN_COMPLETED_STAGES="$GEIN_COMPLETED_STAGES PREREQUISITES"
 }
 
 
+# TODO: document this section
 #
 #
 
 BOOTSTRAP() {
-    echo "gein: Ensuring we are in /mnt/gentoo..."
+    echo "gein: ensure script is available in /mnt/gentoo... "
     if [ ! -e /mnt/gentoo/$(basename "$0") ]; then
         cp "$0" /mnt/gentoo/
         cd /mnt/gentoo
     fi
 
-    echo "gein: Setting system time via ntpd..." | fold -s
+    echo "gein: correct system time via ntpd... "
     if [ -x "$(command -v ntpd)" ]; then
         ntpd -q -g
+    else
+        echo "gein: error: ntpd is not available!"
+        echo "gein: exiting..."
+        exit 1
     fi
 
     echo "gein: Downloading and extracting Stage3 tarball..."
     if [ -x "$(command -v curl)" ]; then
-        stage3_source="http://distfiles.gentoo.org/releases/$cpu_dir/autobuilds"
-        stage3_release="curl -s $stage3_source/latest-stage3-$cpu_arch.txt"
-        stage3_current="$($stage3_release|tail -1|awk '{print $1}')"
+        stage3_source="http://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
+        stage3_release="curl -s $stage3_source/latest-stage3-$GEIN_CPU_ARCH.txt"
+        stage3_current="$($stage3_release | tail -1 | awk '{print $1}')"
 
         $wget "$stage3_source/$stage3_current"
         tar -xpf stage3-* --xattrs --numeric-owner
@@ -229,32 +265,36 @@ BOOTSTRAP() {
     fi
 
     echo "gein: Mounting hardware devices..."
-    hardware_mountpoints="proc sys dev"
-    for target in $hardware_mountpoints; do
-        if [ -e /mnt/gentoo/"$target" ]; then
-            case "$target" in
-                proc) mount -t proc /proc /mnt/gentoo/proc ;;
-                sys ) mount --rbind /sys  /mnt/gentoo/sys
-                      mount --make-rslave /mnt/gentoo/sys ;;
-                dev ) mount --rbind /dev  /mnt/gentoo/dev
-                      mount --make-rslave /mnt/gentoo/dev ;;
-                *) echo "gein: $target: Improper hardware device" \
-                         | fold -s
-                   exit
+    for hw_mountpoint in "proc sys dev"; do
+        if [ -e /mnt/gentoo/"$hw_mountpoint" ]; then
+            case "$hw_mountpoint" in
+                proc)
+                    mount -t proc /proc /mnt/gentoo/proc
+                ;;
+
+                sys)
+                    mount --rbind /sys /mnt/gentoo/sys
+                    mount --make-rslave /mnt/gentoo/sys
+                ;;
+
+                dev)
+                    mount --rbind /dev /mnt/gentoo/dev
+                    mount --make-rslave /mnt/gentoo/dev
+                ;;
+
+                *) echo "gein: error: $hw_mountpoint: Improper hardware device"
+                   exit 1
             esac
         else
-            echo "gein: $target unable to be mounted! Exiting..." \
-                | fold -s
-            exit
+            echo "gein: error: $hw_mountpoint unable to be mounted! Exiting..."
+            exit 1
         fi
-    done
+    done; unset hw_mountpoint
 
-    unset hardware_mountpoints target
-
-    if [ ! -e "$partition_swap" ]; then
-        echo "gein: Setting up swapfile..." | fold -s
-        mkswap "$partition_swap"
-        swapon "$partition_swap"
+    if [ ! -e "$GEIN_PARTITION_SWAP" ]; then
+        echo "gein: Setting up swapfile..."
+        mkswap "$GEIN_PARTITION_SWAP"
+        swapon "$GEIN_PARTITION_SWAP"
         echo "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
@@ -266,14 +306,15 @@ BOOTSTRAP() {
         /mnt/gentoo /usr/bin/env -i \
         HOME="/root" \
         TERM="$TERM" \
-        PS1="[chroot \u@\h \W]$ " \
-        PATH="/usr/local/sbin/:/usr/local/bin:/usr/sbin" \
-        PATH="$PATH:/usr/bin:/sbin:/bin:/opt/bin" \
-        MANPATH="/usr/man:/usr/share/man:/usr/local/man" \
-        MANPATH="$MANPATH:/usr/local/share/man" \
+        PS1="\[\e];\u@\h: \w\a\][\u@\h \W]\$ " \
+        PATH="/sbin:/usr/sbin:/opt/sbin:/usr/local/sbin/" \
+        PATH="$PATH:/bin:/usr/bin:/opt/bin:/usr/local/bin" \
+        PATH="$PATH:$HOME/bin:$HOME/.local/bin" \
+        MANPATH="/usr/man:/usr/share/man:/usr/local/man:/usr/local/share/man" \
+        MANPATH="$MANPATH:$HOME/man:$HOME/.local/man:$HOME/.local/share/man" \
         /bin/bash --login
 
-    bootstrap_complete="true"
+    export GEIN_COMPLETED_STAGES="$GEIN_COMPLETED_STAGES BOOTSTRAP"
 }
 
 
@@ -281,57 +322,99 @@ BOOTSTRAP() {
 #
 
 INSTALL() {
-    CONFIG
+    config_dirs="
+        /etc/portage/package.accept_keywords
+        /etc/portage/package.use
+        /etc/portage/sets
+     "
 
-    echo "gein: Setting CPU cores and GPU type..." | fold -s
-    sed -i "s/Video_Cards/$VideoCards/g; s/Make_Opts/-j$CPUCores/g" \
+    for config_dir in $config_dirs; do
+        if [ ! -d "$config_dir" ]; then
+            rm "$config_dir"
+        fi
+
+        if [ ! -e "$config_dir" ]; then
+            mkdir "$config_dir"
+        fi
+    done; unset config_dirs config_dir
+
+    config_files="
         /etc/portage/make.conf
 
-    echo "gein: Syncing Portage and selecting profile..." | fold -s
-    $emerge_sync
+        /etc/portage/package.accept_keywords/development
+        /etc/portage/package.accept_keywords/lxqt
+        /etc/portage/package.accept_keywords/media
+        /etc/portage/package.accept_keywords/system
+        /etc/portage/package.env
+        /etc/portage/package.license
+        /etc/portage/package.use/global
+        /etc/portage/package.use/local
+        /etc/portage/package.use/multilib
+
+        /etc/portage/sets/gein-base
+        /etc/portage/sets/gein-i3wm
+        /etc/portage/sets/gein-lxqt
+        /etc/portage/sets/gein-laptop
+
+        /usr/local/sbin/gpkg
+        /usr/local/sbin/kbuild
+     "
+
+    for config_file in $config_files; do
+        wget "$GEIN_CONFIG_URL/$config_file" -O "$config_file"
+    done; unset config_files config_file
+
+    echo "gein: Setting CPU cores and GPU type..."
+    sed -i "s/GEIN_VIDEO_CARDS/$GEIN_VIDEO_CARDS/g; s/GEIN_NCPUS/-j$GEIN_NCPUS/g" \
+        /etc/portage/make.conf
+
+    echo "gein: Syncing Portage and selecting profile..."
+    emerge_sync
     eselect profile list | grep -Evi "dev|exp"
 
-    echo "gein: Choose the latest stable release" | fold -s
+    echo "gein: Choose the latest stable release"
     profile_target=""
     while [ -z "$profile_target" ]; do
         read -p "Which profile?: " profile_target
     done
     eselect profile set "$profile_target"
-    $emerge -uDN @world
+    emerge -uDN @world
 
     echo "gein: Setting timezone..." | fold -s
-    echo "$timezone" > /etc/timezone
-    $emerge --config sys-libs/timezone-data
+    echo "$GEIN_TIMEZONE" > /etc/timezone
+    emerge --config sys-libs/timezone-data
 
     echo "gein: Setting locale..." | fold -s
-    echo "$Locale" > /etc/locale.gen && locale-gen
-    L="$(echo $Locale | awk -F '[-]' '{print $1}')"
-    LL="$(eselect locale list|grep -i $L|awk -F '[][]' '{print $2}')"
+    echo "$GEIN_LOCALE" > /etc/locale.gen &&
+    locale-gen
+    L="$(echo $GEIN_LOCALE | awk -F '[-]' '{print $1}')"
+    LL="$(eselect locale list | grep -i $L | awk -F '[][]' '{print $2}')"
     eselect locale set "$LL"
-    env-update && source /etc/profile
-    export PS1="[chroot \u@\h \W]$ "
+    env-update &&
+    source /etc/profile
+    export PS1="\[\e];\u@\h: \w\a\][\u@\h \W]\$ "
 
     echo "gein: Emerging base system packages..." | fold -s
-    $emerge @gein-base
+    emerge @gein-base
     if grep -Rqi 'intel' /proc/cpuinfo; then
         echo "gein: Emerging intel-microcode"
-        $emerge intel-microcode
+        emerge intel-microcode
     fi
 
     echo "gein: Configuring Linux kernel..."
     cd /usr/src/linux
-    if [ "$kernel_autobuild" = "true" ]; then
-        if [ -z "$kernel_config" ]; then
+    if [ "$GEIN_KERNEL_AUTOBUILD" = "true" ]; then
+        if [ -z "$GEIN_KERNEL_CONFIG" ]; then
             make defconfig
         else
-            $wget "$kernel_config" -O /usr/src/linux/.config
+            wget "$GEIN_KERNEL_CONFIG" -O /usr/src/linux/.config
         fi
-    elif [ "$kernel_autobuild" = "false" ]; then
-        if [ -z "$kernel_config" ]; then
+    elif [ "$GEIN_KERNEL_AUTOBUILD" = "false" ]; then
+        if [ -z "$GEIN_KERNEL_CONFIG" ]; then
             make defconfig
             make menuconfig
         else
-            $wget "$kernel_config" -O /usr/src/linux/.config
+            wget "$GEIN_KERNEL_CONFIG" -O /usr/src/linux/.config
             make menuconfig
         fi
     else
@@ -339,9 +422,11 @@ INSTALL() {
     fi
 
     echo "gein: Compiling Linux kernel and modules..."
-    $make && $make modules && \
-        $make install && $make modules install && \
-        $make distclean
+    make &&
+    make modules &&
+    make install &&
+    make modules install &&
+    make distclean &&
     cd /
 
     echo "gein: Adding services to OpenRC..."
@@ -349,20 +434,12 @@ INSTALL() {
     rc-update add cronie default
 
     echo "gein: Setting hostname..."
-    echo "hostname=$hostname" > /etc/conf.d/hostname
+    echo "hostname=$GEIN_HOSTNAME" > /etc/conf.d/hostname
 
-    echo "gein: Installing Grub to $partition_boot..."
-    grub-install "$partition_boot"
+    echo "gein: Installing Grub to $GEIN_PARTITION_BOOT..."
+    grub-install "$GEIN_PARTITION_BOOT"
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    install_complete="true"
-}
-
-
-#
-#
-
-POSTINSTALL() {
     echo "gein: Setting root password..."
     passwd
 
@@ -370,8 +447,8 @@ POSTINSTALL() {
     # groupadd power
     #   poweroff reboot shutdown
 
-    read -p "gein: Setup a standard user? [Y/N]: " user_setup
-    if echo "$user_setup" | grep -iq "^y"; then
+    read -p "gein: Setup a standard user? [Y/N]: " setup_user
+    if echo "$setup_user" | grep -iq "^y"; then
         echo "gein: Creating user account"
         read -p "Username: " username
         useradd -m -G wheel,audio,video \
@@ -381,7 +458,7 @@ POSTINSTALL() {
 
     echo "gein: Installation complete."
 
-    postinstall_complete="true"
+    export GEIN_COMPLETED_STAGES="$GEIN_COMPLETED_STAGES INSTALL"
 }
 
 
@@ -389,25 +466,18 @@ POSTINSTALL() {
 #
 
 case $1 in
-    -p|--partition)
-        PREREQUISITES
-        PARTITION
-        ;;
-
     -b|--bootstrap)
         PREREQUISITES
         BOOTSTRAP
-        ;;
+    ;;
 
     -i|--install)
         PREREQUISITES
         INSTALL
-        POSTINSTALL
-        ;;
+    ;;
 
     *)
-        echo "gein: Linux-based derivative of Gentoo"
-        echo "  -p, partition    Partition and mount disk(s)"
+        echo "gein: Gentoo minimal installation script"
         echo "  -b. bootstrap    Bootstrap the stage3 tarball"
         echo "  -i, install      Install Gentoo"
 esac
