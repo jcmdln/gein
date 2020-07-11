@@ -320,6 +320,7 @@ INSTALL() {
     "
 
     for config_file in $config_files; do
+        [ -d "$config_file" ] && rm "$config_file"
         wget "$GEIN_CONFIG_URL/$config_file" -O "$config_file"
     done; unset config_files config_file
 
@@ -329,17 +330,15 @@ INSTALL() {
         s/^VIDEO_CARDS.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
     " /etc/portage/make.conf
 
-    print "gein: Setting GPU type..."
-    sed -i "
-    " /etc/portage/package.use
-
-    print "gein: Syncing Portage and selecting profile..."
+    print "gein: Syncing Portage..."
     emerge_sync
+
+    print "gein: Selecting a profile..."
     eselect profile list | grep -Evi "dev|exp"
 
     print "gein: Choose the latest stable release"
     profile_target=""
-    while [ ! -v "$profile_target" ]; do
+    while [ -z "$profile_target" ]; do
         read -p "Which profile?: " profile_target
     done
     eselect profile set "$profile_target"
@@ -435,12 +434,11 @@ case $1 in
     ;;
 
     -i|--install)
-        PREREQUISITES
         INSTALL
     ;;
 
     *)
         print "gein: Gentoo minimal installation script"
-        print "  -b. bootstrap    Bootstrap the stage3 tarball"
-        print "  -i, install      Install Gentoo"
+        print "  -b. --bootstrap    Bootstrap the stage3 tarball"
+        print "  -i, --install      Install Gentoo"
 esac
