@@ -132,18 +132,17 @@ GEIN_KERNEL_CONFIG=""
 #
 #       Missing description
 #
-#   GEIN_PARTITION_UEFI
-#
-#       Missing description
-#
 #   GEIN_PARTITION_SWAP
 #
 #       Missing description
+#
+#   GEIN_PARTITION_SWAPFILE_SIZE
+#
+#       Only used if GEIN_PARTITION_SWAP is "/swapfile"
 
 GEIN_PARTITION_BOOT=""
-GEIN_PARTITION_UEFI=""
-GEIN_PARTITION_SWAP=""
-
+GEIN_PARTITION_SWAP="/swapfile"
+GEIN_PARTITION_SWAPFILE_SIZE="4G"
 
 # This section determines the current system architecture, which later
 # is used to download the correct Stage 3 archive.  Depending on the
@@ -180,12 +179,11 @@ esac
 #
 
 PREREQUISITES() {
-    if [ ! -v "$GEIN_PARTITION_BOOT" ] || [ ! -v "$VIDEO_CARDS" ]; then
-        print "gein: error: required variables are unset!"
+    if [ -v "$GEIN_PARTITION_BOOT" ]; then
+        print "gein: error: GEIN_PARTITION_BOOT is not set!"
         print "gein: please ensure you have partitioned and mounted" \
             "your disks, as well as updated the variables associated" \
-            "with the required partitions. You must also declare" \
-            "your VideoCard.  Please see gein.sh for instructions."
+            "with the required partitions."
         print "gein: Exiting..."
         exit 1
     fi
@@ -207,28 +205,27 @@ PREREQUISITES() {
 
 BOOTSTRAP() {
     print "gein: ensure script is available in /mnt/gentoo... "
-    if [ ! -e /mnt/gentoo/$(basename "$0") ]; then
-        cp "$0" /mnt/gentoo/
+    if [ ! -e /mnt/gentoo/gein.sh ]; then
+        cp gein.sh /mnt/gentoo/
         cd /mnt/gentoo
     fi
 
     print "gein: correct system time via ntpd... "
-    if [ -x "$(command -v ntpd)" ]; then
+    if [ -n "$(command -v ntpd)" ]; then
         ntpd -q -g
     else
-        print "gein: error: ntpd is not available!"
-        print "gein: exiting..."
-        exit 1
+        print "gein: warning: ntpd not found!"
+        print "gein: assuming system time is correct"
     fi
 
     print "gein: Downloading and extracting Stage3 tarball..."
-    if [ -x "$(command -v curl)" ]; then
+    if [ -n "$(command -v curl)" ]; then
         stage3_source="http://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
         stage3_release="curl -s $stage3_source/latest-stage3-$GEIN_CPU_ARCH.txt"
         stage3_current="$($stage3_release | tail -1 | awk '{print $1}')"
 
-        $wget "$stage3_source/$stage3_current"
-        tar -xpf stage3-* --xattrs --numeric-owner
+        wget "$stage3_source/$stage3_current"
+        tar -xpf stage3-* --xattrs --numeric-owner -C /mnt/gentoo
         rm -rf "$PWD/stage3-*"
 
         unset stage3_source stage3_release stage3_current
@@ -239,7 +236,7 @@ BOOTSTRAP() {
     fi
 
     print "gein: Mounting hardware devices..."
-    for hw_mountpoint in "proc sys dev"; do
+    for hw_mountpoint in $(echo proc sys dev); do
         if [ -e /mnt/gentoo/"$hw_mountpoint" ]; then
             case "$hw_mountpoint" in
                 proc)
@@ -268,11 +265,15 @@ BOOTSTRAP() {
         fi
     done; unset hw_mountpoint
 
-    if [ ! -v "$GEIN_PARTITION_SWAP" ]; then
-        print "gein: Setting up swapfile..."
+    print "gein: Setting up swapfile..."
+    if [ -v "$GEIN_PARTITION_SWAP" ]; then
+        if [ "$GEIN_PARTITION_SWAP" = "/swapfile" ]; then
+            fallocate -l "$GEIN_PARTITION_SWAP_SIZE"
+        fi
+
         mkswap "$GEIN_PARTITION_SWAP"
         swapon "$GEIN_PARTITION_SWAP"
-        print "/swapfile none swap sw 0 0" >> /mnt/gentoo/etc/fstab
+        echo "$GEIN_PARTITION_SWAP none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
     print "gein: Copying '/etc/resolv.conf'..."
@@ -300,7 +301,7 @@ BOOTSTRAP() {
 INSTALL() {
     config_dirs="
         /etc/portage/sets
-     "
+    "
 
     for config_dir in $config_dirs; do
         [ ! -d "$config_dir" ] && rm "$config_dir"
@@ -310,15 +311,13 @@ INSTALL() {
     config_files="
         /etc/portage/make.conf
         /etc/portage/package.accept_keywords
-        /etc/portage/package.env
         /etc/portage/package.license
         /etc/portage/package.use
         /etc/portage/sets/gein-base
         /etc/portage/sets/gein-workstation
-
         /usr/local/sbin/gpkg
         /usr/local/sbin/kbuild
-     "
+    "
 
     for config_file in $config_files; do
         wget "$GEIN_CONFIG_URL/$config_file" -O "$config_file"
@@ -418,8 +417,7 @@ INSTALL() {
     if print "$setup_user" | grep -iq "^y"; then
         print "gein: Creating user account"
         read -p "Username: " username
-        useradd -m -G wheel,audio,video \
-                -s /bin/bash "$username"
+        useradd -m -G wheel,audio,video -s /bin/bash "$username"
         passwd "$username"
     fi
 
