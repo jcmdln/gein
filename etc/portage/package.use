@@ -1,5 +1,18 @@
-# /etc/portage/package.use/local
+# /etc/portage/package.use
 
+## Exclude
+*/* -aqua -athena -avahi -bindist -cairo -doc -games -gnome-keyring -gtk -gtk2
+*/* -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive
+*/* -openssl -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
+
+## Include
+*/* deblob gnutls hardened minimal nplt threads unicode
+
+## Desktop
+*/* X alsa bluetooth bzip2 dbus egl ffmpeg gif gles imagemagick jpeg jpeg2k
+*/* openal opengl png sdl sdl2 smp svg tiff vaapi vdpau wayland xft xpm zlib
+
+## Packages
 app-admin/sudo -gcrypt -openssl sendmail
 app-arch/zip -bzip2
 app-editors/emacs dynamic-loading gtk3 gzip-el libxml2 mailutils ssl
@@ -35,7 +48,6 @@ mail-client/thunderbird lightning system-cairo system-harfbuzz system-icu system
 media-fonts/noto cjk
 media-gfx/blender boost bullet collada colorio cuda cycles dds elbeem game-engine jemalloc openimageio opensubdiv player sndfile valgrind
 media-gfx/feh curl exif cinerma xinerama
-media-gfx/gimp smp
 media-gfx/imagemagick corefonts cxx djvu fontconfig fpx fttw hdri jbig lcms lzma openexr raw opencl truetype webp wmf xml
 media-gfx/inkscape latex
 media-gfx/pstoedit plotutils

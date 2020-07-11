@@ -1,0 +1,22 @@
+# /etc/portage/package.accept_keywords
+
+app-editors/emacs
+app-emulation/wine-mono ~amd64
+app-emulation/wine-staging ~amd64
+dev-lang/go
+dev-lang/rust
+dev-util/bcc
+lxqt-base/*
+media-gfx/lximage-qt
+media-libs/mesa
+net-libs/nodejs
+net-misc/cmst ~amd64
+sys-devel/binutils
+sys-devel/gcc
+sys-kernel/gentoo-sources
+sys-kernel/linux-headers
+x11-libs/libdrm
+x11-libs/libxcb
+x11-misc/obconf-qt
+x11-misc/pcmanfm-qt
+x11-proto/xcb-proto

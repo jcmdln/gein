@@ -1,4 +1,3 @@
 # /etc/portage/package.license
 
 app-emulation/virtualbox-bin PUEL
-www-client/google-chrome google-chrome

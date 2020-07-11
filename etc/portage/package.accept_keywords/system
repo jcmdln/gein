@@ -1,7 +1,0 @@
-# /etc/portage/package.accept_keywords/system
-
-dev-util/bcc
-sys-devel/binutils
-sys-devel/gcc
-sys-kernel/gentoo-sources
-sys-kernel/linux-headers

@@ -1,5 +1,0 @@
-# /etc/portage/sets/gein-laptop
-
-app-laptop/laptop-mode-tools
-net-misc/connman
-sys-power/acpilight
