@@ -9,8 +9,8 @@
 */* deblob gnutls hardened minimal nplt threads unicode
 
 ## Desktop
-*/* X alsa bluetooth bzip2 dbus egl ffmpeg gif gles imagemagick jpeg jpeg2k
-*/* openal opengl png sdl sdl2 smp svg tiff vaapi vdpau wayland xft xpm zlib
+# */* X alsa bluetooth bzip2 dbus egl ffmpeg gif gles imagemagick jpeg jpeg2k
+# */* openal opengl png sdl sdl2 smp svg tiff vaapi vdpau wayland xft xpm zlib
 
 ## Packages
 app-admin/sudo -gcrypt -openssl sendmail
@@ -67,6 +67,7 @@ net-vpn/openvpn lz4 lzo plugins
 net-wireless/wpa_supplicant -qt5
 sys-apps/openrc -netifrc
 sys-auth/consolekit policykit
+sys-auth/polkit consolekit
 sys-auth/pambase consolekit
 sys-devel/gcc cxx go nls ssp
 sys-devel/llvm clang

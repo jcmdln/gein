@@ -48,7 +48,7 @@ alias emerge_sync="emerge -q --sync"
 alias fold="fold -s -w ${COLUMNS:-$(stty size|awk '{print $2}')}"
 alias make="make -s -j $(grep -c ^processor /proc/cpuinfo)"
 alias mkdir="mkdir -p"
-alias rm="rm"
+alias rm="rm -f"
 alias wget="wget -q"
 
 # Width-respecting print
@@ -304,8 +304,11 @@ INSTALL() {
     "
 
     for config_dir in $config_dirs; do
-        [ ! -d "$config_dir" ] && rm "$config_dir"
-        [ ! -e "$config_dir" ] && mkdir "$config_dir"
+        if [ ! -e "$config_dir" ]; then
+            mkdir "$config_dir"
+        else
+            [ ! -d "$config_dir" ] && rm "$config_dir"
+        fi
     done; unset config_dirs config_dir
 
     config_files="
@@ -320,7 +323,10 @@ INSTALL() {
     "
 
     for config_file in $config_files; do
-        [ -d "$config_file" ] && rm "$config_file"
+        if [ -e "$config_file" ]; then
+            rm -r "$config_file"
+        fi
+
         wget "$GEIN_CONFIG_URL/$config_file" -O "$config_file"
     done; unset config_files config_file
 
