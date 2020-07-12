@@ -18,6 +18,7 @@ net-misc/cmst
 net-misc/connman
 sys-apps/mlocate
 sys-power/acpilight
+www-client/chromium
 x11-apps/xset
 x11-apps/xsetroot
 x11-misc/xclip

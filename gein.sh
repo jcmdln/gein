@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # gein.sh - Gentoo installation script
 #
 ## License
@@ -37,6 +37,8 @@
 #
 ##
 
+set -e -o pipefail
+
 # This section contains aliases for commands which are used throughout
 # the script.  By default, commands have their output and prompts
 # suppressed when it makes sense to do so.  Should you want to review
@@ -48,7 +50,7 @@ alias emerge_sync="emerge -q --sync"
 alias fold="fold -s -w ${COLUMNS:-$(stty size|awk '{print $2}')}"
 alias make="make -s -j $(grep -c ^processor /proc/cpuinfo)"
 alias mkdir="mkdir -p"
-alias rm="rm -f"
+alias rm="rm"
 alias wget="wget -q"
 
 # Width-respecting print
@@ -235,6 +237,42 @@ BOOTSTRAP() {
         exit 1
     fi
 
+    print "gein: Downloading portage configuration files..."
+    config_dirs="
+        /etc/portage/sets
+    "
+
+    for config_dir in $config_dirs; do
+        if [ ! -e "/mnt/gentoo/$config_dir" ]; then
+            mkdir "/mnt/gentoo/$config_dir"
+        else
+            [ ! -d "/mnt/gentoo/$config_dir" ] &&
+                rm "/mnt/gentoo/$config_dir"
+        fi
+    done; unset config_dirs config_dir
+
+    config_files="
+        /etc/portage/make.conf
+        /etc/portage/package.accept_keywords
+        /etc/portage/package.license
+        /etc/portage/package.use
+        /etc/portage/sets/gein-base
+        /etc/portage/sets/gein-workstation
+        /usr/local/sbin/gpkg
+        /usr/local/sbin/kbuild
+    "
+
+    for config_file in $config_files; do
+        [ -e "/mnt/gentoo/$config_file" ] && rm -rf "/mnt/gentoo/$config_file"
+        wget "$GEIN_CONFIG_URL/$config_file" -O "/mnt/gentoo/$config_file"
+    done; unset config_files config_file
+
+    print "gein: Updating make.conf..."
+    sed -i "
+        s/^MAKEOPTS.*$/MAKEOPTS\=\"-j$(grep -c ^processor /proc/cpuinfo)\"/;
+        s/^VIDEO_CARDS.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
+    " /mnt/gentoo/etc/portage/make.conf
+
     print "gein: Mounting hardware devices..."
     for hw_mountpoint in $(echo proc sys dev); do
         if [ -e /mnt/gentoo/"$hw_mountpoint" ]; then
@@ -290,7 +328,6 @@ BOOTSTRAP() {
         PATH="$PATH:/opt/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin" \
         TERM="$TERM" \
         /bin/bash --login
-
 }
 
 
@@ -299,56 +336,20 @@ BOOTSTRAP() {
 #
 
 INSTALL() {
-    config_dirs="
-        /etc/portage/sets
-    "
-
-    for config_dir in $config_dirs; do
-        if [ ! -e "$config_dir" ]; then
-            mkdir "$config_dir"
-        else
-            [ ! -d "$config_dir" ] && rm "$config_dir"
-        fi
-    done; unset config_dirs config_dir
-
-    config_files="
-        /etc/portage/make.conf
-        /etc/portage/package.accept_keywords
-        /etc/portage/package.license
-        /etc/portage/package.use
-        /etc/portage/sets/gein-base
-        /etc/portage/sets/gein-workstation
-        /usr/local/sbin/gpkg
-        /usr/local/sbin/kbuild
-    "
-
-    for config_file in $config_files; do
-        if [ -e "$config_file" ]; then
-            rm -r "$config_file"
-        fi
-
-        wget "$GEIN_CONFIG_URL/$config_file" -O "$config_file"
-    done; unset config_files config_file
-
-    print "gein: Updating make.conf..."
-    sed -i "
-        s/^MAKEOPTS.*$/MAKEOPTS\=\"-j$(grep -c ^processor /proc/cpuinfo)\"/;
-        s/^VIDEO_CARDS.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
-    " /etc/portage/make.conf
-
     print "gein: Syncing Portage..."
     emerge_sync
 
     print "gein: Selecting a profile..."
     eselect profile list | grep -Evi "dev|exp"
-
-    print "gein: Choose the latest stable release"
     profile_target=""
     while [ -z "$profile_target" ]; do
         read -p "Which profile?: " profile_target
     done
     eselect profile set "$profile_target"
-    emerge -uDN @world
+
+    print "gein: Updating @world"
+    emerge -avuDU --keep-going --quiet-build @world &&
+    emerge -av --depclean --quiet-build
 
     print "gein: Setting timezone..."
     print "$GEIN_TIMEZONE" > /etc/timezone
@@ -415,9 +416,6 @@ INSTALL() {
     print "gein: Setting root password..."
     passwd
 
-    # TODO: Add a 'power' group so users can perform reboots.
-    # print "gein: Creating 'power' group"
-
     read -p "gein: Setup a standard user? [Y/N]: " setup_user
     if print "$setup_user" | grep -iq "^y"; then
         print "gein: Creating user account"
@@ -425,11 +423,10 @@ INSTALL() {
         useradd -m -G wheel,audio,video -s /bin/bash "$username"
         passwd "$username"
     fi
-
-    print "gein: Installation complete."
 }
 
 
+# TODO: document this section
 #
 #
 
@@ -441,6 +438,7 @@ case $1 in
 
     -i|--install)
         INSTALL
+        print "gein: Installation complete."
     ;;
 
     *)
