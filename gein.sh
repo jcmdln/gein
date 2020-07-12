@@ -348,8 +348,7 @@ INSTALL() {
     eselect profile set "$profile_target"
 
     print "gein: Updating @world"
-    emerge -avuDU --keep-going --quiet-build @world &&
-    emerge -av --depclean --quiet-build
+    emerge -uDN @world
 
     print "gein: Setting timezone..."
     print "$GEIN_TIMEZONE" > /etc/timezone
