@@ -30,7 +30,7 @@ case $1 in
         ;;
 
     -u|update)
-        $SU emerge -avuDU --keep-going --quiet-build @world &&
+        $SU emerge -avuDU --quiet-build @world &&
             $SU emerge -av --depclean --quiet-build
         ;;
 
