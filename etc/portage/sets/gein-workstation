@@ -1,6 +1,5 @@
 # /etc/portage/sets/gein-workstation
 
-app-laptop/laptop-mode-tools
 kde-frameworks/breeze-icons
 kde-plasma/breeze
 kde-plasma/breeze-grub
@@ -12,13 +11,11 @@ lxqt-base/lxqt-meta
 media-fonts/noto
 media-libs/alsa-lib
 media-sound/alsa-utils
-media-sound/pavucontrol
 media-sound/pulseaudio
 media-video/mpv
 net-misc/cmst
 net-misc/connman
 sys-apps/mlocate
-sys-power/acpilight
 www-client/chromium
 x11-apps/xset
 x11-apps/xsetroot
