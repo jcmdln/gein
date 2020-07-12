@@ -140,7 +140,8 @@ GEIN_KERNEL_CONFIG=""
 #
 #   GEIN_PARTITION_SWAPFILE_SIZE
 #
-#       Only used if GEIN_PARTITION_SWAP is "/swapfile"
+#       The size of the swapfile to create.  This is only used if
+#       GEIN_PARTITION_SWAP is set to "/swapfile", and defaults to 4G.
 
 GEIN_PARTITION_BOOT=""
 GEIN_PARTITION_SWAP="/swapfile"
