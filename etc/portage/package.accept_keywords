@@ -1,23 +1,25 @@
 # /etc/portage/package.accept_keywords
 
-app-editors/emacs
+app-editors/emacs ~amd64
 app-emulation/wine-mono ~amd64
 app-emulation/wine-staging ~amd64
-dev-lang/go
-dev-lang/rust
-dev-util/bcc
-lxqt-base/*
-media-gfx/lximage-qt
-media-libs/mesa
-net-libs/nodejs
+dev-lang/go ~amd64
+dev-lang/rust ~amd64
+dev-libs/libbpf ~amd64
+dev-util/bcc ~amd64
+dev-util/bpftrace ~amd64
+lxqt-base/* ~amd64
+media-gfx/lximage-qt ~amd64
+media-libs/mesa ~amd64
+net-libs/nodejs ~amd64
 net-misc/cmst ~amd64
-sys-devel/binutils
-sys-devel/gcc
-sys-kernel/gentoo-sources
-sys-kernel/linux-firmware
-sys-kernel/linux-headers
-x11-libs/libdrm
-x11-libs/libxcb
-x11-misc/obconf-qt
-x11-misc/pcmanfm-qt
-x11-proto/xcb-proto
+sys-devel/binutils ~amd64
+sys-devel/gcc ~amd64
+sys-kernel/gentoo-sources ~amd64
+sys-kernel/linux-firmware ~amd64
+sys-kernel/linux-headers ~amd64
+x11-libs/libdrm ~amd64
+x11-libs/libxcb ~amd64
+x11-misc/obconf-qt ~amd64
+x11-misc/pcmanfm-qt ~amd64
+x11-proto/xcb-proto ~amd64

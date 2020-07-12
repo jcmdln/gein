@@ -299,7 +299,7 @@ BOOTSTRAP() {
     fi
 
     print "gein: Copying '/etc/resolv.conf'..."
-    cp -L /etc/resolv.conf /mnt/gentoo/etc/
+    echo "nameserver 1.1.1.1" > /mnt/gentoo/etc/resolv.conf
 
     print "gein: Chroot'ing into /mnt/gentoo..."
     chroot \
@@ -320,6 +320,17 @@ BOOTSTRAP() {
 #
 
 INSTALL() {
+    print "gein: Setting root password..."
+    passwd
+
+    read -p "gein: Setup a standard user? [Y/N]: " setup_user
+    if print "$setup_user" | grep -iq "^y"; then
+        print "gein: Creating user account"
+        read -p "Username: " username
+        useradd -m -G wheel,audio,video -s /bin/bash "$username"
+        passwd "$username"
+    fi
+
     print "gein: Syncing Portage..."
     emerge -q --sync
 
@@ -334,13 +345,13 @@ INSTALL() {
     print "gein: Updating @world"
     emerge -uvDN --quiet-build @world
     print "gein: Setting timezone..."
-    print "$GEIN_TIMEZONE" > /etc/timezone
+    echo "$GEIN_TIMEZONE" > /etc/timezone
     emerge --config sys-libs/timezone-data
 
     print "gein: Setting locale..."
-    print "$GEIN_LOCALE" > /etc/locale.gen &&
+    echo "$GEIN_LOCALE" > /etc/locale.gen &&
     locale-gen
-    L="$(print $GEIN_LOCALE | awk -F '[-]' '{print $1}')"
+    L="$(echo $GEIN_LOCALE | awk -F '[-]' '{print $1}')"
     LL="$(eselect locale list | grep -i $L | awk -F '[][]' '{print $2}')"
     eselect locale set "$LL"
 
@@ -386,16 +397,7 @@ INSTALL() {
     grub-install "$GEIN_PARTITION_BOOT"
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    print "gein: Setting root password..."
-    passwd
-
-    read -p "gein: Setup a standard user? [Y/N]: " setup_user
-    if print "$setup_user" | grep -iq "^y"; then
-        print "gein: Creating user account"
-        read -p "Username: " username
-        useradd -m -G wheel,audio,video -s /bin/bash "$username"
-        passwd "$username"
-    fi
+    print "gein: Installation complete."
 }
 
 
@@ -411,7 +413,6 @@ case $1 in
 
     -i|--install)
         INSTALL
-        print "gein: Installation complete."
     ;;
 
     *)
