@@ -11,7 +11,6 @@ media-gfx/lximage-qt
 media-libs/mesa
 net-libs/nodejs
 net-misc/cmst ~amd64
-sys-devel/binutils
 sys-devel/gcc
 sys-kernel/gentoo-sources
 sys-kernel/linux-firmware
