@@ -4,7 +4,7 @@ app-admin/sudo
 app-editors/vim
 app-misc/tmux
 app-portage/portage-utils
-dev-util/bpftrace
+#dev-util/bpftrace
 net-analyzer/traceroute
 net-dns/bind-tools
 net-misc/dhcpcd
