@@ -6,11 +6,11 @@
 */* -openssl -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat
 
 ## Include
-*/* deblob gnutls hardened minimal nplt threads unicode
+*/* bzip2 dbus deblob gnutls hardened minimal nplt threads unicode zlib
 
 ## Desktop
-# */* X alsa bluetooth bzip2 dbus egl ffmpeg gif gles imagemagick jpeg jpeg2k
-# */* openal opengl png sdl sdl2 smp svg tiff vaapi vdpau wayland xft xpm zlib
+# */* X alsa bluetooth cups egl ffmpeg gif gles imagemagick jpeg jpeg2k openal
+# */* opengl pulseaudio png sdl sdl2 svg tiff vaapi vdpau wayland xft xpm
 
 ## Packages
 app-admin/sudo -gcrypt -openssl sendmail
@@ -22,12 +22,10 @@ app-laptop/laptop-mode-tools acpi
 app-misc/screenfetch -X
 app-office/libreoffice collada gltf gstreamer gtk mysql pdfimport postgres
 app-text/asciidoc python_single_target_python2_7
-app-text/ghostscript-gpl cups
 app-text/poppler -qt5
 app-text/xmlto text
 dev-games/ogre examples ois
 dev-games/openscenegraph truetype
-dev-lang/go gccgo
 dev-lang/python:2.7 sqlite
 dev-libs/libpcre pcre16
 dev-libs/libpcre2 pcre16

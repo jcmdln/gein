@@ -1,3 +1,4 @@
 # /etc/portage/package.license
 
 app-emulation/virtualbox-bin PUEL
+sys-kernel/linux-firmware linux-fw-redistributable no-source-code
