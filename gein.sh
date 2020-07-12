@@ -38,24 +38,11 @@
 ##
 
 set -e -o pipefail
-
-# This section contains aliases for commands which are used throughout
-# the script.  By default, commands have their output and prompts
-# suppressed when it makes sense to do so.  Should you want to review
-# or debug this script, you may want to adjust these as desired.
-
-alias curl="curl -sSf"
-alias emerge="emerge -v --quiet-build"
-alias emerge_sync="emerge -q --sync"
-alias fold="fold -s -w ${COLUMNS:-$(stty size|awk '{print $2}')}"
 alias make="make -s -j $(grep -c ^processor /proc/cpuinfo)"
-alias mkdir="mkdir -p"
-alias rm="rm"
-alias wget="wget -q"
 
 # Width-respecting print
 function print() {
-    echo "$@" | fold
+    echo "$@" | fold -s -w ${COLUMNS:-$(stty size|awk '{print $2}')}
 }
 
 # This section describes variables that will define the resulting
@@ -88,6 +75,8 @@ function print() {
 #
 #       https://wiki.gentoo.org/wiki//etc/portage/make.conf#VIDEO_CARDS
 #
+#       You most likely should use "amdpu", "intel", or "nvidia".
+#
 #   GEIN_TIMEZONE
 #
 #       The timezone to set on the resulting system after the
@@ -116,15 +105,8 @@ GEIN_VIDEO_CARDS=""
 #     want to perform manual configuration on the kernel, regardless
 #     of whether a configuration file was provided. '$ make menuconfig'
 #     will be run before compiling the kernel.
-#
-#   GEIN_KERNEL_CONFIG
-#
-#     The URL location of a kernel configuration file.  If this variable
-#     is unset, no attempt to download a configuration file will be
-#     made, instead using the kernel defconfig.
 
 GEIN_KERNEL_AUTOBUILD="true"
-GEIN_KERNEL_CONFIG=""
 
 
 # TODO: I would like this section to be where a user defines their
@@ -223,15 +205,14 @@ BOOTSTRAP() {
 
     print "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$(command -v curl)" ]; then
-        stage3_source="http://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
-        stage3_release="curl -s $stage3_source/latest-stage3-$GEIN_CPU_ARCH.txt"
-        stage3_current="$($stage3_release | tail -1 | awk '{print $1}')"
-
-        wget "$stage3_source/$stage3_current"
+        stage3_src="http://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
+        stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH.txt"
+        stage3_ver="$($stage3_rel | tail -1 | awk '{print $1}')"
+        wget -q "$stage3_src/$stage3_ver"
         tar -xpf stage3-* --xattrs --numeric-owner -C /mnt/gentoo
         rm -rf "$PWD/stage3-*"
 
-        unset stage3_source stage3_release stage3_current
+        unset stage3_src stage3_rel stage3_ver
     else
         print "gein: error: curl not present!"
         print "gein: Exiting..."
@@ -245,7 +226,7 @@ BOOTSTRAP() {
 
     for config_dir in $config_dirs; do
         if [ ! -e "/mnt/gentoo/$config_dir" ]; then
-            mkdir "/mnt/gentoo/$config_dir"
+            mkdir -p "/mnt/gentoo/$config_dir"
         else
             [ ! -d "/mnt/gentoo/$config_dir" ] &&
                 rm "/mnt/gentoo/$config_dir"
@@ -265,7 +246,7 @@ BOOTSTRAP() {
 
     for config_file in $config_files; do
         [ -e "/mnt/gentoo/$config_file" ] && rm -rf "/mnt/gentoo/$config_file"
-        wget "$GEIN_CONFIG_URL/$config_file" -O "/mnt/gentoo/$config_file"
+        wget -q "$GEIN_CONFIG_URL/$config_file" -O "/mnt/gentoo/$config_file"
     done; unset config_files config_file
 
     print "gein: Updating make.conf..."
@@ -307,11 +288,11 @@ BOOTSTRAP() {
     print "gein: Setting up swapfile..."
     if [ -v "$GEIN_PARTITION_SWAP" ]; then
         if [ "$GEIN_PARTITION_SWAP" = "/swapfile" ]; then
-            fallocate -l "$GEIN_PARTITION_SWAP_SIZE"
+            fallocate -l "/mnt/gentoo/$GEIN_PARTITION_SWAP_SIZE"
         fi
 
-        mkswap "$GEIN_PARTITION_SWAP"
-        swapon "$GEIN_PARTITION_SWAP"
+        mkswap "/mnt/gentoo/$GEIN_PARTITION_SWAP"
+        swapon "/mnt/gentoo/$GEIN_PARTITION_SWAP"
         echo "$GEIN_PARTITION_SWAP none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
@@ -338,7 +319,7 @@ BOOTSTRAP() {
 
 INSTALL() {
     print "gein: Syncing Portage..."
-    emerge_sync
+    emerge -q --sync
 
     print "gein: Selecting a profile..."
     eselect profile list | grep -Evi "dev|exp"
@@ -349,8 +330,7 @@ INSTALL() {
     eselect profile set "$profile_target"
 
     print "gein: Updating @world"
-    emerge -uDN @world
-
+    emerge -uvDN --quiet-build @world
     print "gein: Setting timezone..."
     print "$GEIN_TIMEZONE" > /etc/timezone
     emerge --config sys-libs/timezone-data
@@ -368,28 +348,19 @@ INSTALL() {
     export PS1="\[\e];\u@\h: \w\a\][\u@\h \W]\$ "
 
     print "gein: Emerging base system packages..."
-    emerge @gein-base
+    emerge -v --quiet-build @gein-base
     if grep -Rqi 'intel' /proc/cpuinfo; then
         print "gein: Emerging intel-microcode"
-        emerge intel-microcode
+        emerge -v --quiet-build intel-microcode
     fi
 
     print "gein: Configuring Linux kernel..."
     cd /usr/src/linux
     if [ "$GEIN_KERNEL_AUTOBUILD" = "true" ]; then
-        if [ -v "$GEIN_KERNEL_CONFIG" ]; then
-            wget "$GEIN_KERNEL_CONFIG" -O /usr/src/linux/.config
-        else
-            make defconfig
-        fi
+        make defconfig
     elif [ "$GEIN_KERNEL_AUTOBUILD" = "false" ]; then
-        if [ -v "$GEIN_KERNEL_CONFIG" ]; then
-            wget "$GEIN_KERNEL_CONFIG" -O /usr/src/linux/.config
-            make menuconfig
-        else
-            make defconfig
-            make menuconfig
-        fi
+        make defconfig
+        make menuconfig
     else
         print "gein: Error: AutoKernel isn't true or false. Exiting..."
     fi
