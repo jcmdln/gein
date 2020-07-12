@@ -3,6 +3,7 @@
 app-admin/sudo
 app-editors/vim
 app-misc/tmux
+dev-util/bpftrace
 net-analyzer/traceroute
 net-dns/bind-tools
 net-misc/dhcpcd
