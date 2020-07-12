@@ -38,11 +38,13 @@
 ##
 
 set -e -o pipefail
+
+alias fold="fold -s -w ${COLUMNS:-$(stty size|awk '{print $2}')}"
 alias make="make -s -j $(grep -c ^processor /proc/cpuinfo)"
 
 # Width-respecting print
 function print() {
-    echo "$@" | fold -s -w ${COLUMNS:-$(stty size|awk '{print $2}')}
+    echo "$@" | fold
 }
 
 # This section describes variables that will define the resulting
