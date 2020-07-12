@@ -14,5 +14,6 @@ sys-apps/usbutils
 sys-boot/grub:2
 sys-kernel/gentoo-sources
 sys-kernel/linux-firmware
+sys-process/cronie
 sys-process/htop
 www-client/links
