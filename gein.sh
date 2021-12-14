@@ -140,16 +140,19 @@ PREREQUISITES() {
         i486|i586)
             GEIN_CPU_DIR="x86"
             GEIN_CPU_ARCH="i486"
+            print "gein: detected 'GEIN_CPU_ARCH' as 'i486'"
             ;;
 
         i686|x86|x86_32)
             GEIN_CPU_DIR="x86"
             GEIN_CPU_ARCH="i686"
+            print "gein: detected 'GEIN_CPU_ARCH' as 'i686'"
             ;;
 
         amd64|x86_64)
             GEIN_CPU_DIR="amd64"
             GEIN_CPU_ARCH="amd64"
+            print "gein: detected 'GEIN_CPU_ARCH' as 'amd64'"
             ;;
 
         *)
