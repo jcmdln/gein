@@ -66,11 +66,6 @@ function print() {
 #       as this default to some variant of en_US.UTF-8 for simplicity of
 #       design.
 #
-#   GEIN_MIRROR
-#
-#       The list of GENTOO_MIRRORS to use. Defaults to
-#       https://distfiles.gentoo.org.
-#
 #   GEIN_VIDEO_CARDS
 #
 #       The value of VIDEO_CARDS that will be set in '/etc/portage/make.conf',
@@ -89,7 +84,6 @@ function print() {
 GEIN_CONFIG_URL="${GEIN_CONFIG_URL:-https://raw.githubusercontent.com/jcmdln/gein/master}"
 GEIN_HOSTNAME="${GEIN_HOSTNAME:-gein}"
 GEIN_LOCALE="${GEIN_LOCALE:-en_US.UTF-8 UTF-8}"
-GEIN_MIRROR="${GEIN_MIRROR:-https://distfiles.gentoo.org/releases}"
 GEIN_TIMEZONE="${GEIN_TIMEZONE:-America/New_York}"
 GEIN_VIDEO_CARDS="${GEIN_VIDEO_CARDS}"
 
@@ -210,16 +204,20 @@ BOOTSTRAP() {
 
     print "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$(command -v curl)" ]; then
-        stage3_src="$GEIN_MIRROR/$GEIN_CPU_DIR/autobuilds"
+        stage3_src="https://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
 
-        print "gein: Determining the Stage 3 tarball path..."
+        print "gein: Determining the latest Stage3 version..."
         stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH-openrc.txt"
         stage3_ver="$($stage3_rel | tail -1 | awk '{print $1}')"
 
-        echo "gein: Downloading \"$stage3_src/$stage3_ver\"..."
-        wget -q "$stage3_src/$stage3_ver"
-        tar -xpf stage3-* --xattrs --numeric-owner -C /mnt/gentoo
-        rm -rf "$PWD/stage3-*"
+        if [ -f "./$stage3_ver" ]; then
+            print "gein: Latest stage3 tarball is already present"
+        else
+            echo "gein: Downloading \"$stage3_src/$stage3_ver\"..."
+            wget -q "$stage3_src/$stage3_ver"
+            tar -xpf stage3-* --xattrs --numeric-owner -C /mnt/gentoo
+            rm -rf "$PWD/stage3-*"
+        fi
 
         unset stage3_src stage3_rel stage3_ver
     else
@@ -265,9 +263,8 @@ BOOTSTRAP() {
 
     print "gein: Updating make.conf..."
     sed -i "
-        s/^GENTOO_MIRRORS.$/GENTOO_MIRRORS=\"$GEIN_MIRROR\"/;
-        s/^MAKEOPTS.*$/MAKEOPTS\=\"-j$(grep -c ^processor /proc/cpuinfo)\"/;
-        s/^VIDEO_CARDS.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
+        s/^MAKEOPTS=.*$/MAKEOPTS=\"-j$(grep -c ^processor /proc/cpuinfo)\"/;
+        s/^VIDEO_CARDS=.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
     " /mnt/gentoo/etc/portage/make.conf
 
     print "gein: Mounting hardware devices..."
@@ -328,7 +325,6 @@ BOOTSTRAP() {
         GEIN_CONFIG_URL="$GEIN_CONFIG_URL" \
         GEIN_HOSTNAME="$GEIN_HOSTNAME" \
         GEIN_LOCALE="$GEIN_LOCALE" \
-        GEIN_MIRROR="$GEIN_MIRROR" \
         GEIN_TIMEZONE="$GEIN_TIMEZONE" \
         GEIN_VIDEO_CARDS="$GEIN_VIDEO_CARDS" \
         GEIN_KERNEL_AUTOBUILD="$GEIN_KERNEL_AUTOBUILD" \
