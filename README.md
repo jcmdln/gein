@@ -33,9 +33,9 @@ Usage
     before performing these steps:
 
     ```sh
-    $ fdisk /dev/sdX
-    $ mkfs.xfs /dev/sdX
-    $ mount /dev/sdX1 /mnt/gentoo
+    $ fdisk /dev/sda
+    $ mkfs.xfs /dev/sda1
+    $ mount /dev/sda1 /mnt/gentoo
     ```
 
 3. Download `gein.sh`:

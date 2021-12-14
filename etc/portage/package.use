@@ -12,6 +12,7 @@
 
 ## Packages
 app-admin/sudo -gcrypt -sendmail
+app-arch/libarchive -lz4
 app-editors/emacs -X -gui dynamic-loading gmp gnutls gzip-el jit json libxml2 mailutils ssl threads
 app-editors/vim -X
 dev-util/cmake -ncurses -qt5

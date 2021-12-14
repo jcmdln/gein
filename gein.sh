@@ -66,13 +66,18 @@ function print() {
 #       as this default to some variant of en_US.UTF-8 for simplicity of
 #       design.
 #
+#   GEIN_MIRRORS
+#
+#       The list of GENTOO_MIRRORS to use. Defaults to
+#       https://distfiles.gentoo.org.
+#
 #   GEIN_VIDEO_CARDS
 #
 #       The value of VIDEO_CARDS that will be set in '/etc/portage/make.conf',
 #       which may either be left blank or be configured as mentioned in the
 #       following url:
 #
-#           https://wiki.gentoo.org/wiki//etc/portage/make.conf#VIDEO_CARDS
+#           https://wiki.gentoo.org/wiki/etc/portage/make.conf#VIDEO_CARDS
 #
 #       You most likely should use "amdpu", "intel", or "nvidia".
 #
@@ -84,6 +89,7 @@ function print() {
 GEIN_CONFIG_URL="${GEIN_CONFIG_URL:-https://raw.githubusercontent.com/jcmdln/gein/master}"
 GEIN_HOSTNAME="${GEIN_HOSTNAME:-gein}"
 GEIN_LOCALE="${GEIN_LOCALE:-en_US.UTF-8 UTF-8}"
+GEIN_MIRRORS="${GEIN_MIRRORS:-https://distfiles.gentoo.org/releases}"
 GEIN_TIMEZONE="${GEIN_TIMEZONE:-America/New_York}"
 GEIN_VIDEO_CARDS="${GEIN_VIDEO_CARDS}"
 
@@ -204,7 +210,7 @@ BOOTSTRAP() {
 
     print "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$(command -v curl)" ]; then
-        stage3_src="https://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
+        stage3_src="$GEIN_MIRRORS/$GEIN_CPU_DIR/autobuilds"
 
         print "gein: Determining the Stage 3 tarball path..."
         stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH-openrc.txt"
@@ -259,6 +265,7 @@ BOOTSTRAP() {
 
     print "gein: Updating make.conf..."
     sed -i "
+        s/^GENTOO_MIRRORS.$/GENTOO_MIRRORS=\"$GEIN_MIRRORS\"/;
         s/^MAKEOPTS.*$/MAKEOPTS\=\"-j$(grep -c ^processor /proc/cpuinfo)\"/;
         s/^VIDEO_CARDS.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
     " /mnt/gentoo/etc/portage/make.conf
@@ -321,6 +328,7 @@ BOOTSTRAP() {
         GEIN_CONFIG_URL="$GEIN_CONFIG_URL" \
         GEIN_HOSTNAME="$GEIN_HOSTNAME" \
         GEIN_LOCALE="$GEIN_LOCALE" \
+        GEIN_MIRRORS="$GEIN_MIRRORS" \
         GEIN_TIMEZONE="$GEIN_TIMEZONE" \
         GEIN_VIDEO_CARDS="$GEIN_VIDEO_CARDS" \
         GEIN_KERNEL_AUTOBUILD="$GEIN_KERNEL_AUTOBUILD" \
