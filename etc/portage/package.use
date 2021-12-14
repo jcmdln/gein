@@ -2,8 +2,8 @@
 
 ## Exclude
 */* -aqua -athena -bindist -cairo -doc -examples -games -gnome-keyring -gtk
-*/* -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive
-*/* -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -vala
+*/* -gtk2 -handbook -introspection -kdesu -kwallet -llvm -offensive -qt4 -sslv3
+*/* -static -static-libs -systemd -tls-heartbeat -vala
 
 ## Include
 */* bzip2 dbus hardened minimal nplt openssl ssl threads unicode zlib zstd
@@ -25,12 +25,12 @@ net-wireless/wpa_supplicant -qt5
 sys-apps/openrc -netifrc
 sys-devel/gcc cxx go nls ssp
 sys-devel/llvm clang
+sys-kernel/linux-firmware redistributable unknown-license
 sys-libs/libcxx libcxxabi
 sys-libs/zlib minizip
 www-client/w3m -X
 x11-base/xorg-drivers libinput
 x11-base/xorg-server -minimal
-x11-drivers/nvidia-drivers x86_video_abi multilib
 x11-drivers/xf86-video-amdgpu glamor
 x11-drivers/xf86-video-ati glamor
 x11-drivers/xf86-video-intel dri3 sna
