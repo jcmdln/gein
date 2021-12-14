@@ -205,7 +205,9 @@ BOOTSTRAP() {
     print "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$(command -v curl)" ]; then
         stage3_src="https://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
-        stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH-minimal.txt"
+
+        print "gein: Determining the Stage 3 tarball path..."
+        stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH-openrc.txt"
         stage3_ver="$($stage3_rel | tail -1 | awk '{print $1}')"
 
         print "gein: Downloading \"$stage3_src/$stage3_ver\"..."
