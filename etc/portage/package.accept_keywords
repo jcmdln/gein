@@ -1,9 +1,1 @@
 # /etc/portage/package.accept_keywords
-
-app-editors/emacs ~amd64
-dev-util/bpftrace ~amd64
-sys-devel/binutils ~amd64
-sys-devel/gcc ~amd64
-sys-kernel/gentoo-sources ~amd64
-sys-kernel/linux-firmware ~amd64
-sys-kernel/linux-headers ~amd64
