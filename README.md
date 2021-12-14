@@ -114,7 +114,7 @@ Usage
 6. Install the desired target.
 
     ```sh
-    $ sh ./gein.sh install
+    $ sh ./gein.sh --install
     ```
 
 7. Wait
