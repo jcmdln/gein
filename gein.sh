@@ -208,15 +208,17 @@ BOOTSTRAP() {
 
         print "gein: Determining the latest Stage3 version..."
         stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH-openrc.txt"
-        stage3_ver="$($stage3_rel | tail -1 | awk '{print $1}')"
+        stage3_ver="$($stage3_rel | awk -F / 'END{print $1}')"
+        stage3_file="${$stage3_rel | awk -F [/' '] 'END{print $2}'}"
+        stage3_url="$stage3_src/$stage3_ver"
 
-        if [ -f "./$stage3_ver" ]; then
+        if [ -f "./$stage3_file" ]; then
             print "gein: Latest stage3 tarball is already present"
         else
             echo "gein: Downloading \"$stage3_src/$stage3_ver\"..."
-            wget -q "$stage3_src/$stage3_ver"
-            tar -xpf stage3-* --xattrs --numeric-owner -C /mnt/gentoo
-            rm -rf "$PWD/stage3-*"
+            curl -SsfLO "$stage3_src/$stage3_ver"
+            tar -xpf "$stage3_file" --xattrs --numeric-owner -C /mnt/gentoo
+            rm -f "./$stage3_file"
         fi
 
         unset stage3_src stage3_rel stage3_ver
