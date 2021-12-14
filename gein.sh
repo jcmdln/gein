@@ -318,6 +318,15 @@ BOOTSTRAP() {
         PATH="/sbin:/usr/sbin:/opt/sbin:/usr/local/sbin/:/bin:/usr/bin" \
         PATH="$PATH:/opt/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin" \
         TERM="$TERM" \
+        GEIN_CONFIG_URL="$GEIN_CONFIG_URL" \
+        GEIN_HOSTNAME="$GEIN_HOSTNAME" \
+        GEIN_LOCALE="$GEIN_LOCALE" \
+        GEIN_TIMEZONE="$GEIN_TIMEZONE" \
+        GEIN_VIDEO_CARDS="$GEIN_VIDEO_CARDS" \
+        GEIN_KERNEL_AUTOBUILD="$GEIN_KERNEL_AUTOBUILD" \
+        GEIN_PARTITION_BOOT="$GEIN_PARTITION_BOOT" \
+        GEIN_PARTITION_SWAP="$GEIN_PARTITION_SWAP" \
+        GEIN_PARTITION_SWAPFILE_SIZE="$GEIN_PARTITION_SWAPFILE_SIZE" \
         /bin/bash --login
 }
 
