@@ -1,7 +1,7 @@
 # /etc/portage/package.use
 
-*/* PYTHON_SINGLE_TARGET: python3_10
-*/* PYTHON_TARGETS: python3_10
+*/* PYTHON_SINGLE_TARGET: -* python3_10
+*/* PYTHON_TARGETS: -* python3_10
 
 ## Exclude
 */* -aqua -athena -bindist -cairo -doc -examples -games -gnome-keyring -gtk
