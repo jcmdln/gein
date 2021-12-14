@@ -79,7 +79,7 @@ Usage
     privileged user to begin with.
 
     ```sh
-    $ wget https://raw.githubusercontent.com/jcmdln/master/gein.sh
+    $ wget https://raw.githubusercontent.com/jcmdln/gein/master/gein.sh
     $ sh gein.sh
     gein: Gentoo minimal installation script
     -b. --bootstrap    Bootstrap the stage3 tarball
