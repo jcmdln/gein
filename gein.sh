@@ -235,7 +235,8 @@ BOOTSTRAP() {
                 rm "/mnt/gentoo/$config_dir"
             fi
         fi
-    done; unset config_dirs config_dir
+    done
+    unset config_dirs config_dir
 
     config_files="
         /etc/portage/make.conf
@@ -253,7 +254,8 @@ BOOTSTRAP() {
             rm -rf "/mnt/gentoo/$config_file"
         fi
         wget -q "$GEIN_CONFIG_URL/$config_file" -O "/mnt/gentoo/$config_file"
-    done; unset config_files config_file
+    done
+    unset config_files config_file
 
     print "gein: Updating make.conf..."
     sed -i "
@@ -289,7 +291,8 @@ BOOTSTRAP() {
                   "Exiting..."
             exit 1
         fi
-    done; unset hw_mountpoint
+    done
+    unset hw_mountpoint
 
     print "gein: Setting up swapfile..."
     if [ -v "$GEIN_PARTITION_SWAP" ]; then
