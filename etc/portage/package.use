@@ -1,29 +1,30 @@
 # /etc/portage/package.use
 
+*/* PYTHON_SINGLE_TARGET: python3_10
+*/* PYTHON_TARGETS: python3_10
+
 ## Exclude
-*/* -aqua -athena -avahi -bindist -cairo -doc -games -gnome-keyring
-*/* -gtk -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib
-*/* -offensive -openssl -qt4 -sslv3 -static -static-libs -systemd
-*/* -tls-heartbeat -vala
+*/* -aqua -athena -bindist -cairo -doc -examples -games -gnome-keyring -gtk
+*/* -gtk2 -handbook -introspection -kdesu -kwallet -llvm -multilib -offensive
+/*/ -qt4 -sslv3 -static -static-libs -systemd -tls-heartbeat -vala
 
 ## Include
-*/* bzip2 dbus deblob gnutls hardened minimal nplt threads unicode zlib
+*/* bzip2 dbus hardened minimal nplt openssl ssl threads unicode zlib zstd
 
-## Desktop
-*/* X alsa bluetooth cups egl ffmpeg gif gles2 imagemagick jpeg jpeg2k
-*/* openal opengl policykit pulseaudio png sdl2 svg tiff vaapi vdpau
-*/* wayland xcb xft xpm
+## Desktop (Disabled)
+# */* X alsa bluetooth cups egl ffmpeg gif gles2 imagemagick jpeg jpeg2k
+# */* openal opengl policykit pulseaudio png sdl2 svg tiff vaapi vdpau
+# */* wayland xcb xft xpm
 
 ## Packages
 app-admin/sudo -gcrypt -openssl -sendmail
 app-arch/zip -bzip2
-app-editors/emacs dynamic-loading gtk3 gzip-el libxml2 mailutils ssl
+app-editors/emacs -X -gui dynamic-loading gmp gnutls gzip-el jit json libxml2 mailutils ssl threads
 app-editors/vim -X -minimal -perl -python -racket -tcl
 app-emulation/qemu usb
 app-laptop/laptop-mode-tools acpi
 app-misc/screenfetch -X
 app-office/libreoffice collada gltf gstreamer gtk mysql pdfimport postgres
-#app-text/asciidoc python_single_target_python2_7
 app-text/poppler -qt5
 app-text/xmlto text
 dev-games/ogre examples ois
@@ -74,7 +75,6 @@ sys-devel/llvm clang
 sys-fs/cryptsetup openssl
 sys-libs/libcxx libcxxabi
 sys-libs/zlib minizip
-www-client/chromium hangouts proprietary-codecs system-ffmpeg system-icu system-libvpx
 www-client/w3m -X
 www-plugins/adobe-flash ppapi
 x11-base/xorg-drivers libinput
@@ -83,7 +83,6 @@ x11-drivers/nvidia-drivers x86_video_abi multilib
 x11-drivers/xf86-video-amdgpu glamor
 x11-drivers/xf86-video-ati glamor
 x11-drivers/xf86-video-intel dri3 sna
-x11-drivers/xf86-video-virtualbox dri
 x11-libs/cairo xcb
 x11-libs/libfm vala
 x11-libs/libva -egl
