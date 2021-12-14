@@ -105,7 +105,7 @@ Usage
     architecture and do some housekeeping.
 
     ```sh
-    $ sh ./gein.sh bootstrap
+    $ sh ./gein.sh --bootstrap
     ```
 
     Once the boostrap process finishes, you will be in a chroot within
