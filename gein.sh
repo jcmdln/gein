@@ -172,8 +172,8 @@ PREREQUISITES() {
     if [ ! -e /mnt/gentoo ]; then
         print "gein: error: '/mnt/gentoo' does not exist!"
         print "gein: '/mnt/gentoo' is required for us to build" \
-            "Gentoo, as it is referred to later in this script." \
-            "Please ensure your mounted partitions are correct."
+              "Gentoo, as it is referred to later in this script." \
+              "Please ensure your mounted partitions are correct."
         print "gein: Exiting..."
         exit 1
     fi
@@ -196,12 +196,12 @@ BOOTSTRAP() {
         ntpd -q -g
     else
         print "gein: warning: ntpd not found!"
-        print "gein: assuming system time is correct"
+        print "gein: warning: assuming system time is correct"
     fi
 
     print "gein: Downloading and extracting Stage3 tarball..."
     if [ -n "$(command -v curl)" ]; then
-        stage3_src="http://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
+        stage3_src="https://distfiles.gentoo.org/releases/$GEIN_CPU_DIR/autobuilds"
         stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH.txt"
         stage3_ver="$($stage3_rel | tail -1 | awk '{print $1}')"
         wget -q "$stage3_src/$stage3_ver"
@@ -224,8 +224,9 @@ BOOTSTRAP() {
         if [ ! -e "/mnt/gentoo/$config_dir" ]; then
             mkdir -p "/mnt/gentoo/$config_dir"
         else
-            [ ! -d "/mnt/gentoo/$config_dir" ] &&
+            if [ ! -d "/mnt/gentoo/$config_dir" ]; then
                 rm "/mnt/gentoo/$config_dir"
+            fi
         fi
     done; unset config_dirs config_dir
 
@@ -241,7 +242,9 @@ BOOTSTRAP() {
     "
 
     for config_file in $config_files; do
-        [ -e "/mnt/gentoo/$config_file" ] && rm -rf "/mnt/gentoo/$config_file"
+        if [ -e "/mnt/gentoo/$config_file" ]; then
+            rm -rf "/mnt/gentoo/$config_file"
+        fi
         wget -q "$GEIN_CONFIG_URL/$config_file" -O "/mnt/gentoo/$config_file"
     done; unset config_files config_file
 
@@ -257,26 +260,26 @@ BOOTSTRAP() {
             case "$hw_mountpoint" in
                 proc)
                     mount -t proc /proc /mnt/gentoo/proc
-                ;;
+                    ;;
 
                 sys)
                     mount --rbind /sys /mnt/gentoo/sys
                     mount --make-rslave /mnt/gentoo/sys
-                ;;
+                    ;;
 
                 dev)
                     mount --rbind /dev /mnt/gentoo/dev
                     mount --make-rslave /mnt/gentoo/dev
-                ;;
+                    ;;
 
                 *)
                     print "gein: error: $hw_mountpoint: Improper " \
-                    "hardware device"
+                          "hardware device"
                     exit 1
             esac
         else
             print "gein: error: $hw_mountpoint unable to be mounted!" \
-            "Exiting..."
+                  "Exiting..."
             exit 1
         fi
     done; unset hw_mountpoint
@@ -343,14 +346,14 @@ INSTALL() {
     emerge --config sys-libs/timezone-data
 
     print "gein: Setting locale..."
-    echo "$GEIN_LOCALE" > /etc/locale.gen &&
+    echo "$GEIN_LOCALE" > /etc/locale.gen
     locale-gen
     L="$(echo $GEIN_LOCALE | awk -F '[-]' '{print $1}')"
     LL="$(eselect locale list | grep -i $L | awk -F '[][]' '{print $2}')"
     eselect locale set "$LL"
 
     print "gein: Updating environment..."
-    env-update &&
+    env-update
     source /etc/profile
     export PS1="\[\e];\u@\h: \w\a\][\u@\h \W]\$ "
 
@@ -373,11 +376,11 @@ INSTALL() {
     fi
 
     print "gein: Compiling Linux kernel and modules..."
-    make &&
-    make modules &&
-    make install &&
-    make modules install &&
-    make distclean &&
+    make
+    make modules
+    make install
+    make modules install
+    make distclean
     cd /
 
     print "gein: Adding services to OpenRC..."
@@ -403,11 +406,11 @@ case $1 in
     -b|--bootstrap)
         PREREQUISITES
         BOOTSTRAP
-    ;;
+        ;;
 
     -i|--install)
         INSTALL
-    ;;
+        ;;
 
     *)
         print "gein: Gentoo minimal installation script"
