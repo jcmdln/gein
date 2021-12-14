@@ -5,7 +5,6 @@ app-editors/emacs
 app-editors/vim
 app-misc/tmux
 app-portage/portage-utils
-#dev-util/bpftrace
 net-analyzer/traceroute
 net-dns/bind-tools
 net-misc/dhcpcd
@@ -13,8 +12,8 @@ net-misc/mosh
 net-misc/whois
 sys-apps/pciutils
 sys-apps/usbutils
-sys-boot/grub:2
-sys-kernel/gentoo-sources
+sys-boot/grub
+sys-kernel/gentoo-kernel
 sys-kernel/linux-firmware
 sys-process/cronie
 sys-process/htop
