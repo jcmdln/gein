@@ -1,36 +1,27 @@
 # /etc/portage/package.use
 
 ## Exclude
-*/* -aqua -athena -bindist -cairo -doc -examples -games -gnome-keyring -gtk
-*/* -gtk2 -handbook -introspection -kdesu -kwallet -llvm -offensive -qt4 -sslv3
-*/* -static -static-libs -systemd -tls-heartbeat -vala
+*/* -bindist -debug -doc -emacs -examples -games -handbook -introspection -llvm
+*/* -lua -offensive -perl -racket -ruby -scp -sendmail -sslv3 -static
+*/* -static-libs -tcl -tls-heartbeat
 
 ## Include
-*/* bzip2 dbus hardened minimal nplt openssl ssl threads unicode zlib zstd
+*/* acl audit brotli bzip2 caps cxx dist-kernel icu idn ipv6 lz4 lzma lzo
+*/* minimal openmp openssl nls pam python readline ssl threads unicode xml zlib
+*/* zstd
 
 ## Packages
-app-admin/sudo -gcrypt -openssl -sendmail
-app-arch/zip -bzip2
+app-admin/sudo -gcrypt -sendmail
 app-editors/emacs -X -gui dynamic-loading gmp gnutls gzip-el jit json libxml2 mailutils ssl threads
-app-editors/vim -X -minimal -perl -python -racket -tcl
-dev-libs/libpcre pcre16
-dev-libs/libpcre2 pcre16
-dev-libs/libxml2 icu python
+app-editors/vim -X
 dev-util/cmake -ncurses -qt5
-net-misc/connman bluetooth ethernet nftables openvpn wifi
-net-misc/iputils -ipv6 abi_x86_64
-net-misc/openssh -X
-net-vpn/openvpn lz4 lzo plugins
-net-wireless/wpa_supplicant -qt5
+net-misc/mosh client server
+net-misc/openssh X509
+net-vpn/openvpn plugins
 sys-apps/openrc -netifrc
-sys-devel/gcc cxx go nls ssp
+sys-apps/pciutils -dns
+sys-devel/gcc -fortran -go jit sanitize
 sys-devel/llvm clang
 sys-kernel/linux-firmware redistributable unknown-license
-sys-libs/libcxx libcxxabi
-sys-libs/zlib minizip
+sys-libs/libcxx libcxxabi libunwind
 www-client/w3m -X
-x11-base/xorg-drivers libinput
-x11-base/xorg-server -minimal
-x11-drivers/xf86-video-amdgpu glamor
-x11-drivers/xf86-video-ati glamor
-x11-drivers/xf86-video-intel dri3 sna
