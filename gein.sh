@@ -3,37 +3,35 @@
 #
 ## License
 #
-# Copyright (c) 2018-2020 Johnathan C. Maudlin
+# Copyright (c) 2020 Johnathan C. Maudlin
 #
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software.
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
-# BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
-# ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 #
 ## About
 #
-# While this script does assist with installing Gentoo, it is NOT a
-# replacement for reading and understanding the Gentoo Handbook for
-# your system.  See https://gentoo.org/get-started/ for information on
-# getting started with Gentoo.
+# While this script does assist with installing Gentoo, it is NOT a replacement
+# for reading and understanding the Gentoo Handbook for your system. See
+# https://gentoo.org/get-started/ for more information.
 #
-# This file uses inline documentation whenever possible to preserve
-# context, situational or otherwise.  Please read the entire file
-# before continuing to ensure you are aware of how this script
-# functions, as undesired behaviors for your use-case may exist.
+# This file uses inline documentation whenever possible to preserve context,
+# situational or otherwise. Please read the entire file before continuing to
+# ensure you are aware of how this script functions, as undesired behaviors for
+# your use-case may exist.
 #
-# This script does NOT automatically partition your disk(s).  You MUST
-# partition and mount your disk(s) before running this script.
+# This script does NOT automatically partition your disk(s). You MUST partition
+# and mount your disk(s) before running this script.
 #
 ##
 
@@ -47,130 +45,126 @@ function print() {
     echo "$@" | fold
 }
 
-# This section describes variables that will define the resulting
-# system.  Some are specific to this script, though others should look
-# familiar, aside from their prefix.
+# This section describes variables that will define the resulting system. Some
+# are specific to this script, though others should look familiar, aside from
+# their prefix.
 #
 #   GEIN_CONFIG_URL
 #
-#       The base URL where the source of this repository (or your fork)
-#       is available.  This allows this script to download all needed
-#       configuration files rather than you having to retrieve them
-#       manually.
+#       The base URL where the source of this repository (or your fork) is
+#       available. This allows this script to download all needed configuration
+#       files rather than you having to retrieve them manually.
 #
 #   GEIN_HOSTNAME
 #
-#       The hostname to set on the resulting system after the
-#       installation has completed.
+#       The hostname to set on the resulting system after the installation has
+#       completed.
 #
 #   GEIN_LOCALE
 #
-#       The LOCALE to set based on your preference.  All language
-#       defaults such as this default to some variant of en_US.UTF-8
-#       for simplicity of design.
+#       The LOCALE to set based on your preference.  All language defaults such
+#       as this default to some variant of en_US.UTF-8 for simplicity of
+#       design.
 #
 #   GEIN_VIDEO_CARDS
 #
-#       The value of VIDEO_CARDS that will be set in
-#       '/etc/portage/make.conf', which may either be left blank or be
-#       configured as mentioned in the following url:
+#       The value of VIDEO_CARDS that will be set in '/etc/portage/make.conf',
+#       which may either be left blank or be configured as mentioned in the
+#       following url:
 #
-#       https://wiki.gentoo.org/wiki//etc/portage/make.conf#VIDEO_CARDS
+#           https://wiki.gentoo.org/wiki//etc/portage/make.conf#VIDEO_CARDS
 #
 #       You most likely should use "amdpu", "intel", or "nvidia".
 #
 #   GEIN_TIMEZONE
 #
-#       The timezone to set on the resulting system after the
-#       installation has completed.  This is set to America/New_York
-#       by default for simplicity of design.
+#       The timezone to set on the resulting system after the installation has
+#       completed. This is set to America/New_York by default.
 
-GEIN_CONFIG_URL="https://raw.githubusercontent.com/jcmdln/gein/master"
-GEIN_HOSTNAME="gein"
-GEIN_LOCALE="en_US.UTF-8 UTF-8"
-GEIN_TIMEZONE="America/New_York"
-GEIN_VIDEO_CARDS=""
+GEIN_CONFIG_URL="${GEIN_CONFIG_URL:-https://raw.githubusercontent.com/jcmdln/gein/master}"
+GEIN_HOSTNAME="${GEIN_HOSTNAME:-gein}"
+GEIN_LOCALE="${GEIN_LOCALE:-en_US.UTF-8 UTF-8}"
+GEIN_TIMEZONE="${GEIN_TIMEZONE:-America/New_York}"
+GEIN_VIDEO_CARDS="${GEIN_VIDEO_CARDS}"
 
 
-# This section describes how the kernel will be built, and whether the
-# user will be prompted to configure their kernel. The two mentioned
-# variables may be used together to suit a variety of use-cases.
+# This section describes how the kernel will be built, and whether the user
+# will be prompted to configure their kernel. The two mentioned variables may
+# be used together to suit a variety of use-cases.
 #
 #   GEIN_KERNEL_AUTOBUILD
 #
-#     When 'true', this implies that the user does not want to perform
-#     any manual configuration of the kernel, regardless of whether a
-#     configuration file was provided. '$ make menuconfig' will NOT be
-#     run before compiling the kernel.
+#     When 'true', this implies that the user does not want to perform any
+#     manual configuration of the kernel, regardless of whether a configuration
+#     file was provided. '$ make menuconfig' will NOT be run before compiling
+#     the kernel.
 #
-#     When any value OTHER than 'true', this implies that the use DOES
-#     want to perform manual configuration on the kernel, regardless
-#     of whether a configuration file was provided. '$ make menuconfig'
-#     will be run before compiling the kernel.
+#     When any value OTHER than 'true', this implies that the use DOES want to
+#     perform manual configuration on the kernel, regardless of whether a
+#     configuration file was provided. '$ make menuconfig' will be run before
+#     compiling the kernel.
 
-GEIN_KERNEL_AUTOBUILD="true"
+GEIN_KERNEL_AUTOBUILD="${GEIN_KERNEL_AUTOBUILD:-true}"
 
 
-# TODO: I would like this section to be where a user defines their
-# partition schema, specifically for configuring GRUB2.
+# TODO: I would like this section to be where a user defines their partition
+# schema, specifically for configuring GRUB2.
 #
 #   GEIN_PARTITION_BOOT
 #
-#       Missing description
+#       The partition to do grub things to. This is blank by default and must
+#       be set, or gein will exit with an error.
 #
 #   GEIN_PARTITION_SWAP
 #
-#       Missing description
+#       The partition used for swap. The default is to use a swapfile so that
+#       you can change this easily later.
 #
 #   GEIN_PARTITION_SWAPFILE_SIZE
 #
 #       The size of the swapfile to create.  This is only used if
 #       GEIN_PARTITION_SWAP is set to "/swapfile", and defaults to 4G.
 
-GEIN_PARTITION_BOOT=""
-GEIN_PARTITION_SWAP="/swapfile"
-GEIN_PARTITION_SWAPFILE_SIZE="4G"
-
-# This section determines the current system architecture, which later
-# is used to download the correct Stage 3 archive.  Depending on the
-# architecture, there may be implications in which directory we should
-# retrieve our Stage 3 from.
-
-case "$(uname -m)" in
-    i486|i586)
-        GEIN_CPU_DIR="x86"
-        GEIN_CPU_ARCH="i486"
-    ;;
-
-    i686|x86|x86_32)
-        GEIN_CPU_DIR="x86"
-        GEIN_CPU_ARCH="i686"
-    ;;
-
-    amd64|x86_64)
-        GEIN_CPU_DIR="amd64"
-        GEIN_CPU_ARCH="amd64"
-    ;;
-
-    *)
-        print "gein: error: your architecture is not yet defined." \
-            "Submit an issue with the output of 'uname -m' to" \
-            "https://github.com/jcmdln/gein so it may be reviewed"
-        print "gein: Exiting..."
-        exit 1
-esac
-
+GEIN_PARTITION_BOOT="${GEIN_PARTITION_BOOT}"
+GEIN_PARTITION_SWAP="${GEIN_PARTITION_SWAP:-/swapfile}"
+GEIN_PARTITION_SWAPFILE_SIZE="${GEIN_PARTITION_SWAPFILE_SIZE:-4G}"
 
 # TODO: document this section
 #
 #
 
 PREREQUISITES() {
+    # Determine the architecture of the host system, which later will be used
+    # to download the correct Stage 3 archive.
+    case "$(uname -m)" in
+        i486|i586)
+            GEIN_CPU_DIR="x86"
+            GEIN_CPU_ARCH="i486"
+            ;;
+
+        i686|x86|x86_32)
+            GEIN_CPU_DIR="x86"
+            GEIN_CPU_ARCH="i686"
+            ;;
+
+        amd64|x86_64)
+            GEIN_CPU_DIR="amd64"
+            GEIN_CPU_ARCH="amd64"
+            ;;
+
+        *)
+            print "gein: error: your architecture is not yet defined." \
+                  "Submit an issue with the output of 'uname -m' to" \
+                  "https://github.com/jcmdln/gein so it may be reviewed"
+            print "gein: Exiting..."
+            exit 1
+    esac
+
     if [ -v "$GEIN_PARTITION_BOOT" ]; then
         print "gein: error: GEIN_PARTITION_BOOT is not set!"
         print "gein: please ensure you have partitioned and mounted" \
-            "your disks, as well as updated the variables associated" \
-            "with the required partitions."
+              "your disks, as well as updated the variables associated" \
+              "with the required partitions."
         print "gein: Exiting..."
         exit 1
     fi
