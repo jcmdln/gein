@@ -210,7 +210,7 @@ BOOTSTRAP() {
         stage3_rel="curl -sSf $stage3_src/latest-stage3-$GEIN_CPU_ARCH-openrc.txt"
         stage3_ver="$($stage3_rel | tail -1 | awk '{print $1}')"
 
-        print "gein: Downloading \"$stage3_src/$stage3_ver\"..."
+        echo "gein: Downloading \"$stage3_src/$stage3_ver\"..."
         wget -q "$stage3_src/$stage3_ver"
         tar -xpf stage3-* --xattrs --numeric-owner -C /mnt/gentoo
         rm -rf "$PWD/stage3-*"
