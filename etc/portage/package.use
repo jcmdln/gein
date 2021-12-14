@@ -20,7 +20,6 @@ dev-libs/libpcre pcre16
 dev-libs/libpcre2 pcre16
 dev-libs/libxml2 icu python
 dev-util/cmake -ncurses -qt5
-dev-vcs/git -gpg
 net-misc/connman bluetooth ethernet nftables openvpn wifi
 net-misc/iputils -ipv6 abi_x86_64
 net-misc/openssh -X
