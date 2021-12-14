@@ -1,6 +1,7 @@
 # /etc/portage/sets/gein-base
 
 app-admin/sudo
+app-editors/emacs
 app-editors/vim
 app-misc/tmux
 app-portage/portage-utils
