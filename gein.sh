@@ -267,7 +267,7 @@ gein_bootstrap() {
     local swap_target="/mnt/gentoo/$GEIN_PARTITION_SWAP"
     if [ -n "$GEIN_PARTITION_SWAP" ]; then
         if [ "$GEIN_PARTITION_SWAP" = "/swapfile" ]; then
-            fallocate -l "$GEIN_PARTITION_SWAP_SIZE" $swap_target
+            fallocate -l $GEIN_PARTITION_SWAP_SIZE $swap_target
             chmod 0600 /mnt/gentoo/swapfile
         fi
 
