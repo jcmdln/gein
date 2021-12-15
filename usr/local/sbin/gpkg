@@ -1,7 +1,11 @@
 #!/usr/bin/env sh
 
+set -e -o pipefail
+
 if [ $EUID -ne 0 ]; then
-    if [ -e $(command -v sudo) ]; then
+    if [ -e $(command -v doas) ]; then
+        SU="doas"
+    elif [ -e $(command -v sudo) ]; then
         SU="sudo"
     else
         SU="su -c"
@@ -9,42 +13,40 @@ if [ $EUID -ne 0 ]; then
 fi
 
 case $1 in
-    -s|sync)
-        echo "gpkg: syncing Portage..."
-        $SU emerge -q --sync &&
-            echo "gpkg: Portage sync completed"
+    -s|--sync)
+        $SU emerge -q --sync
         ;;
 
-    -i|install)
+    -i|--install)
         $SU emerge -av --quiet-build ${@:2}
         ;;
 
-    -r|remove)
-        $SU emerge -avc --quiet-build ${@:2} &&
-            $SU emerge -av --depclean --quiet-build
+    -r|--remove)
+        $SU emerge -avc --quiet-build ${@:2}
+        $SU emerge -av --depclean --quiet-build
         ;;
 
-    -p|purge)
-        $SU gpkg -r $(qlist -CI ${@:2}) &&
-            $SU emerge -av --depclean --quiet-build
+    -p|--purge)
+        $SU gpkg -r $(qlist -CI ${@:2})
+        $SU emerge -av --depclean --quiet-build
         ;;
 
-    -u|update)
-        $SU emerge -avuDU --quiet-build @world &&
-            $SU emerge -av --depclean --quiet-build
+    -u|--update)
+        $SU emerge -avuDU --quiet-build @world
+        $SU emerge -av --depclean --quiet-build
         ;;
 
-    -U|upgrade)
-        $SU emerge -avuDN --quiet-build @system &&
-            $SU emerge -av --depclean --quiet-build
+    -U|--upgrade)
+        $SU emerge -avuDN --quiet-build @system
+        $SU emerge -av --depclean --quiet-build
         ;;
 
     *)
-        echo "gpkg: Available options:"
-        echo "  -s, sync       Sync Portage"
-        echo "  -i, install    Install a package"
-        echo "  -r, remove     Safely remove a package"
-        echo "  -p, purge      Purge package and dependencies"
-        echo "  -u, update     Update @world packages"
-        echo "  -U, upgrade    Update @system packages"
+        echo "gpkg: Available options:" \
+             "  -i, --install    Install a package" \
+             "  -r, --remove     Safely remove a package" \
+             "  -p, --purge      Purge package and dependencies" \
+             "  -s, --sync       Sync Portage" \
+             "  -u, --update     Update @world packages" \
+             "  -U, --upgrade    Update @system packages"
 esac
