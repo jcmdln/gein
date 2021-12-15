@@ -1,4 +1,3 @@
 # /etc/portage/package.accept_keywords
 
-=app-editors/emacs-27* ~amd64
-=sys-kernel/gentoo-kernel-5.15* ~amd64
+app-editors/emacs:27 ~amd64
