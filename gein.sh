@@ -185,11 +185,11 @@ gein_bootstrap() {
     local stage3_target="$stage3_src/latest-stage3-amd64-openrc.txt"
 
     log "Determining the latest Stage3 version..."
-    local stage3_path="$(curl $stage3_target | awk 'END{print $1}')"
+    local stage3_path="$(curl -sf $stage3_target | awk 'END{print $1}')"
     local stage3_file="$(echo $stage3_path | awk -F[/' '] '{print $2}')"
     local stage3_url="$stage3_src/$stage3_path"
 
-    if [ -f "./$stage3_file" ]; then
+    if [ -f "/mnt/gentoo/$stage3_file" ]; then
         log "Latest stage3 tarball is already present"
     else
         log "Downloading \"$stage3_url\"..."
@@ -200,7 +200,7 @@ gein_bootstrap() {
 
     log "Downloading portage configuration files..."
     config_dirs="
-            /etc/portage/sets
+        /etc/portage/sets
     "
 
     for config_dir in $config_dirs; do
@@ -214,32 +214,31 @@ gein_bootstrap() {
     done; unset config_dirs config_dir
 
     config_files="
-            /etc/portage/make.conf
-            /etc/portage/package.accept_keywords
-            /etc/portage/package.license
-            /etc/portage/package.use
-            /etc/portage/sets/gein-base
-            /etc/portage/sets/gein-workstation
-            /usr/local/sbin/gpkg
-            /usr/local/sbin/kbuild
+        /etc/portage/make.conf
+        /etc/portage/package.accept_keywords
+        /etc/portage/package.license
+        /etc/portage/package.use
+        /etc/portage/sets/gein-base
+        /etc/portage/sets/gein-workstation
+        /usr/local/sbin/gpkg
+        /usr/local/sbin/kbuild
     "
 
     for config_file in $config_files; do
         if [ -e "/mnt/gentoo/$config_file" ]; then
             rm -rf "/mnt/gentoo/$config_file"
         fi
-        curl "$GEIN_CONFIG_URL/$config_file" -o "/mnt/gentoo/$config_file"
+        curl -sf "$GEIN_CONFIG_URL/$config_file" -o "/mnt/gentoo/$config_file"
     done; unset config_files config_file
 
     log "Updating make.conf..."
     sed -i "
-            s/^MAKEOPTS=.*$/MAKEOPTS=\"-j$GEIN_MAKEOPTS\"/;
-            s/^VIDEO_CARDS=.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
-            " /mnt/gentoo/etc/portage/make.conf
+        s/^MAKEOPTS=.*$/MAKEOPTS=\"-j$GEIN_MAKEOPTS\"/;
+        s/^VIDEO_CARDS=.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
+    " /mnt/gentoo/etc/portage/make.conf
 
     log "Mounting hardware devices..."
-    hw_mounts="echo proc sys dev"
-    for hw_mount in $hw_mounts; do
+    for hw_mount in $(echo proc sys dev); do
         if [ ! -e /mnt/gentoo/"$hw_mount" ]; then
             log_err "$hw_mount: unable to be mounted!"
         fi
