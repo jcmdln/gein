@@ -193,7 +193,7 @@ gein_bootstrap() {
         log "Latest stage3 tarball is already present"
     else
         log "Downloading \"$stage3_url\"..."
-        curl -sfLO "$stage3_url"
+        curl -sfL "$stage3_url" -o /mnt/gentoo/"$stage3_file"
         tar -xpf "$stage3_file" --xattrs --numeric-owner -C /mnt/gentoo
         rm -f "./$stage3_file"
     fi
@@ -264,13 +264,15 @@ gein_bootstrap() {
     done; unset hw_mounts hw_mount
 
     log "Setting up swapfile..."
+    local swap_target="/mnt/gentoo/$GEIN_PARTITION_SWAP"
     if [ -n "$GEIN_PARTITION_SWAP" ]; then
         if [ "$GEIN_PARTITION_SWAP" = "/swapfile" ]; then
-            fallocate -l "/mnt/gentoo/$GEIN_PARTITION_SWAP_SIZE"
+            fallocate -l "$GEIN_PARTITION_SWAP_SIZE" $swap_target
+            chmod 0600 /mnt/gentoo/swapfile
         fi
 
-        mkswap "/mnt/gentoo/$GEIN_PARTITION_SWAP"
-        swapon "/mnt/gentoo/$GEIN_PARTITION_SWAP"
+        mkswap $swap_target
+        swapon $swap_target
         echo "$GEIN_PARTITION_SWAP none swap sw 0 0" >> /mnt/gentoo/etc/fstab
     fi
 
