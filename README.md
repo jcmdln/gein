@@ -48,8 +48,8 @@ Usage
     $ wget https://raw.githubusercontent.com/jcmdln/gein/master/gein.sh
     $ sh gein.sh
     gein: Gentoo minimal installation script
-    -b. --bootstrap    Bootstrap the stage3 tarball
-    -i, --install      Install Gentoo
+      -b. --bootstrap    Bootstrap the stage3 tarball
+      -i, --install      Install Gentoo
     ```
 
 4. Bootstrap the system

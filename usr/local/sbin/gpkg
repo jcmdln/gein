@@ -42,7 +42,8 @@ case $1 in
         ;;
 
     *)
-        echo "gpkg: Available options:" \
+        echo -e \
+             "gpkg: Available options:" \
              "  -i, --install    Install a package" \
              "  -r, --remove     Safely remove a package" \
              "  -p, --purge      Purge package and dependencies" \
