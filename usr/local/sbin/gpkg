@@ -18,27 +18,27 @@ case $1 in
         ;;
 
     -i|--install)
-        $SU emerge -av --quiet-build ${@:2}
+        $SU emerge -av --oneshot --quiet-build ${@:2}
         ;;
 
     -r|--remove)
-        $SU emerge -avc --quiet-build ${@:2}
-        $SU emerge -av --depclean --quiet-build
+        $SU emerge -acv --quiet-build ${@:2}
+        $SU emerge -a --depclean --quiet-build
         ;;
 
     -p|--purge)
         $SU gpkg -r $(qlist -CI ${@:2})
-        $SU emerge -av --depclean --quiet-build
+        $SU emerge -a --depclean --quiet-build
         ;;
 
     -u|--update)
         $SU emerge -avuDU --quiet-build @world
-        $SU emerge -av --depclean --quiet-build
+        $SU emerge -a --depclean --quiet-build
         ;;
 
     -U|--upgrade)
         $SU emerge -avuDN --quiet-build @system
-        $SU emerge -av --depclean --quiet-build
+        $SU emerge -a --depclean --quiet-build
         ;;
 
     *)
