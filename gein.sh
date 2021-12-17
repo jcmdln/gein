@@ -193,7 +193,7 @@ gein_bootstrap() {
         log "Latest stage3 tarball is already present"
     else
         log "Downloading \"$stage3_url\"..."
-        curl -sfL "$stage3_url" -o /mnt/gentoo/"$stage3_file"
+        curl -sfL "$stage3_url" -o "/mnt/gentoo/$stage3_file"
         tar -xpf "$stage3_file" --xattrs --numeric-owner -C /mnt/gentoo
         rm -f "./$stage3_file"
     fi
