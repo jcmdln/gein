@@ -214,20 +214,19 @@ gein_bootstrap() {
     done; unset config_dirs config_dir
 
     config_files="
-        /etc/portage/make.conf
-        /etc/portage/package.accept_keywords
-        /etc/portage/package.license
-        /etc/portage/package.use
-        /etc/portage/sets/gein-base
-        /etc/portage/sets/gein-workstation
-        /usr/local/sbin/gpkg
-        /usr/local/sbin/kbuild
+        etc/portage/make.conf
+        etc/portage/package.accept_keywords
+        etc/portage/package.license
+        etc/portage/package.use
+        etc/portage/sets/gein-base
+        usr/local/sbin/gpkg
     "
 
     for config_file in $config_files; do
         if [ -e "/mnt/gentoo/$config_file" ]; then
             rm -rf "/mnt/gentoo/$config_file"
         fi
+
         curl -sf "$GEIN_CONFIG_URL/$config_file" -o "/mnt/gentoo/$config_file"
     done; unset config_files config_file
 
