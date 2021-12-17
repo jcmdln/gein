@@ -284,6 +284,11 @@ gein_bootstrap() {
     chroot \
         /mnt/gentoo /usr/bin/env -i \
         HOME="/root" \
+        MANPATH="/usr/man:/usr/share/man:/usr/local/man:/usr/local/share/man" \
+        MANPATH="$MANPATH:$HOME/man:$HOME/.local/man:$HOME/.local/share/man" \
+        PATH="/sbin:/usr/sbin:/opt/sbin:/usr/local/sbin/:/bin:/usr/bin" \
+        PATH="$PATH:/opt/bin:/usr/local/bin:$HOME/bin:$HOME/.local/bin" \
+        TERM="$TERM" \
         GEIN_CONFIG_URL="$GEIN_CONFIG_URL" \
         GEIN_HOSTNAME="$GEIN_HOSTNAME" \
         GEIN_LOCALE="$GEIN_LOCALE" \
