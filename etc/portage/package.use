@@ -3,7 +3,7 @@
 ## Exclude
 */* -bindist -debug -doc -emacs -examples -games -handbook -introspection -llvm
 */* -lua -offensive -perl -racket -ruby -scp -sendmail -sslv3 -static
-*/* -static-libs -tcl -tls-heartbeat
+*/* -static-libs -tcl -tls-heartbeat -vala
 
 ## Include
 */* acl audit brotli bzip2 caps cxx dist-kernel gmp icu idn ipv6 jit lz4 lzma
