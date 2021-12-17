@@ -264,16 +264,18 @@ gein_bootstrap() {
 
     log "Setting up swapfile..."
     local swap_target="/mnt/gentoo/$GEIN_PARTITION_SWAP"
-    if [ -n "$GEIN_PARTITION_SWAP" ]; then
-        if [ "$GEIN_PARTITION_SWAP" = "/swapfile" ]; then
-            fallocate -l $GEIN_PARTITION_SWAP_SIZE $swap_target
-            chmod 0600 /mnt/gentoo/swapfile
+    if [ "$GEIN_PARTITION_SWAP" = "/swapfile" ]; then
+        if [ ! -f "$swap_target" ]; then
+            touch "$swap_target"
+            fallocate -l "$GEIN_PARTITION_SWAPFILE_SIZE" "$swap_target"
         fi
 
-        mkswap $swap_target
-        swapon $swap_target
-        echo "$GEIN_PARTITION_SWAP none swap sw 0 0" >> /mnt/gentoo/etc/fstab
+        chmod 0600 "$swap_target"
     fi
+
+    mkswap "$swap_target"
+    swapon "$swap_target"
+    echo "$GEIN_PARTITION_SWAP none swap sw 0 0" >> /mnt/gentoo/etc/fstab
 
     log "Copying '/etc/resolv.conf'..."
     echo "nameserver 1.1.1.1" > /mnt/gentoo/etc/resolv.conf
