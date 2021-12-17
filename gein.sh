@@ -232,7 +232,7 @@ gein_bootstrap() {
 
     log "Updating make.conf..."
     sed -i "
-        s/^MAKEOPTS=.*$/MAKEOPTS=\"-j$GEIN_MAKEOPTS\"/;
+        s/^MAKEOPTS=.*$/MAKEOPTS=\"$GEIN_MAKEOPTS\"/;
         s/^VIDEO_CARDS=.*$/VIDEO_CARDS=\"$GEIN_VIDEO_CARDS\"/;
     " /mnt/gentoo/etc/portage/make.conf
 
