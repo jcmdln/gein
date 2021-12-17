@@ -6,14 +6,14 @@
 */* -static-libs -tcl -tls-heartbeat
 
 ## Include
-*/* acl audit brotli bzip2 caps cxx dist-kernel icu idn ipv6 lz4 lzma lzo
-*/* minimal openmp openssl nls pam python readline ssl threads unicode xml zlib
-*/* zstd
+*/* acl audit brotli bzip2 caps cxx dist-kernel gmp icu idn ipv6 jit lz4 lzma
+*/* lzo minimal openmp openssl nls pam python readline ssl threads unicode xml
+*/* zlib zstd
 
 ## Packages
 app-admin/sudo -gcrypt -sendmail
 app-arch/libarchive -lz4
-app-editors/emacs -X -gui dynamic-loading gmp gnutls gzip-el jit json libxml2 mailutils ssl threads
+app-editors/emacs -X -gui dynamic-loading gnutls gzip-el json libxml2 mailutils
 app-editors/vim -X
 dev-util/cmake -ncurses -qt5
 net-misc/mosh client server
