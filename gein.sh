@@ -327,11 +327,11 @@ gein_install() {
     eselect profile set "$profile_target"
 
     log "Updating @world"
-    emerge -uDN --quiet-build --verbose @world
+    emerge -uvDN --quiet-build @world
 
     log "Setting timezone..."
     echo "$GEIN_TIMEZONE" > /etc/timezone
-    emerge --config --quiet-build --verbose sys-libs/timezone-data
+    emerge --config --quiet-build -v sys-libs/timezone-data
 
     log "Setting locale..."
     echo "$GEIN_LOCALE" > /etc/locale.gen
@@ -345,10 +345,10 @@ gein_install() {
     source /etc/profile
 
     log "Emerging base system packages..."
-    $emerge @gein-base
+    emerge --quiet-build -v @gein-base
     if grep -Rqi 'intel' /proc/cpuinfo; then
         log "Emerging intel-microcode"
-        $emerge intel-microcode
+        emerge --quiet-build -v intel-microcode
     fi
 
     log "Adding services to OpenRC..."
@@ -362,7 +362,7 @@ gein_install() {
     grub-install "$GEIN_PARTITION_BOOT"
     grub-mkconfig -o /boot/grub/grub.cfg
 
-    log "Installation complete."
+    log "Installation complete!"
 }
 
 
