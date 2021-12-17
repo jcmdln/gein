@@ -2,13 +2,16 @@
 
 app-admin/sudo
 app-editors/emacs
+app-editors/nano
 app-editors/vim
+app-emulation/podman
 app-misc/tmux
 app-portage/portage-utils
 net-analyzer/traceroute
 net-dns/bind-tools
 net-misc/dhcpcd
 net-misc/mosh
+net-misc/openssh
 net-misc/whois
 sys-apps/pciutils
 sys-apps/usbutils
