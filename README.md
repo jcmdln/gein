@@ -64,16 +64,16 @@ Usage
     `/mnt/gentoo` where you may proceed to the next step. Your new chroot has
     all the `GEIN_*` environment variables as you defined them.
 
-6. Install the desired target
+5. Install the desired target
 
     ```sh
     $ sh ./gein.sh --install
     ```
 
     At the start of the installation you'll be prompted to create a root
-    password and pick your profile, after which we move to step 7.
+    password and pick your profile.
 
-7. Wait
+6. Wait
 
     If you used a LiveCD then kill some time while you wait. Enjoy your new
     Gentoo installation!
