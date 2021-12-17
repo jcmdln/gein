@@ -43,11 +43,11 @@ case $1 in
 
     *)
         echo -e \
-             "gpkg: Available options:" \
-             "  -i, --install    Install a package" \
-             "  -r, --remove     Safely remove a package" \
-             "  -p, --purge      Purge package and dependencies" \
-             "  -s, --sync       Sync Portage" \
-             "  -u, --update     Update @world packages" \
+             "gpkg: Available options:\n" \
+             "  -i, --install    Install a package\n" \
+             "  -r, --remove     Safely remove a package\n" \
+             "  -p, --purge      Purge package and dependencies\n" \
+             "  -s, --sync       Sync Portage\n" \
+             "  -u, --update     Update @world packages\n" \
              "  -U, --upgrade    Update @system packages"
 esac
