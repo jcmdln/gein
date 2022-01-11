@@ -379,6 +379,6 @@ case $1 in
     *)
         echo -e \
              "Gentoo minimal installation script\n" \
-             "  -b. --bootstrap    Bootstrap the stage3 tarball" \
+             "  -b. --bootstrap    Bootstrap the stage3 tarball\n" \
              "  -i, --install      Install Gentoo"
 esac
