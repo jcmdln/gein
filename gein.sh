@@ -106,7 +106,7 @@ log() {
 log_err() {
     log "error: $@" >&2
     log "Exiting..."
-    return 1
+    exit 1
 }
 
 log_warn() {
